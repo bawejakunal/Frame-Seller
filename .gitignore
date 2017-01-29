@@ -2,3 +2,4 @@
 .DS_Store
 .idea
 db.sqlite3
+key.json
