@@ -19,5 +19,6 @@ from . import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^stripe_demo/products/',views.get_products, name='get_products')
+    url(r'^stripe_demo/products/',views.get_products, name='get_products'),
+    url(r'^stripe_demo/order/',views.post_order, name='post_order')
 ]
