@@ -39,7 +39,8 @@ def load_key(keyfile):
     return keydata
 
 #set api key for stripe requests
-stripe.api_key = load_key("key.json")
+stripe.api_key = load_key("stripe_demo/key.json")
+print stripe.api_key
 
 @csrf_exempt
 @require_POST
