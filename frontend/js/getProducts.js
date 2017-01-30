@@ -27,7 +27,7 @@ function getProducts() {
                             <strong>' + JSONArray[index].price + '</strong> \
                         </div>\
                         <form action="http://e4fb795b.ngrok.io/stripe_demo/order/" method="POST">\
-                                <script\
+                                \x3Cscript\
                                 src="https://checkout.stripe.com/checkout.js" class="stripe-button"\
                                 data-key="pk_test_HbZ2G2ELK1pvsY2iOIKStdKn"\
                                 data-amount="'+JSONArray[index].price+'"\
@@ -35,9 +35,8 @@ function getProducts() {
                                 data-description="'+JSONArray[index].description+'"\
                                 data-image="https://stripe.com/img/documentation/checkout/marketplace.png"\
                                 data-locale="auto"\
-                                data-zip-code="true"></script>\
+                                data-zip-code="true">\x3C/script>\
                                 <input type="hidden" value="'+JSONArray[index].id+'" name="productid">\
-                                </script>\
                             </form>\
                     </div>';
                 }
@@ -54,7 +53,7 @@ function getProducts() {
                             <strong>' + JSONArray[index].price + '</strong> \
                         </div>\
                         <form action="http://e4fb795b.ngrok.io/stripe_demo/order/" method="POST">\
-                            <script\
+                            \x3Cscript\
                             src="https://checkout.stripe.com/checkout.js" class="stripe-button"\
                             data-key="pk_test_HbZ2G2ELK1pvsY2iOIKStdKn"\
                             data-amount="'+JSONArray[index].price+'"\
@@ -62,9 +61,8 @@ function getProducts() {
                             data-description="'+JSONArray[index].description+'"\
                             data-image="https://stripe.com/img/documentation/checkout/marketplace.png"\
                             data-locale="auto"\
-                            data-zip-code="true"></script>\
+                            data-zip-code="true">\x3C/script>\
                             <input type="hidden" value="'+JSONArray[index].id+'" name="productid">\
-                            </script>\
                         </form>\
                     </div>';
             }
