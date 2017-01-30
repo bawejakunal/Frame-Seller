@@ -25,20 +25,20 @@ function getProducts() {
                         <figcaption>' + JSONArray[index].description + '</figcaption>\
                         <div class="alert alert-info">\
                             <strong>' + JSONArray[index].price + '</strong> \
-                        <form action="http://e4fb795b.ngrok.io/stripe_demo/order/" method="POST">\
-                            <script\
-                            src="https://checkout.stripe.com/checkout.js" class="stripe-button"\
-                            data-key="pk_test_HbZ2G2ELK1pvsY2iOIKStdKn"\
-                            data-amount="'+JSONArray[index].price+'"\
-                            data-name="Photo Gallery Buy"\
-                            data-description="'+JSONArray[index].description+'"\
-                            data-image="https://stripe.com/img/documentation/checkout/marketplace.png"\
-                            data-locale="auto"\
-                            data-zip-code="true"></script>\
-                            <input type="hidden" value="'+JSONArray[index].id+'" name="productid">\
-                            </script>\
-                        </form>\
                         </div>\
+                        <form action="http://e4fb795b.ngrok.io/stripe_demo/order/" method="POST">\
+                                <script\
+                                src="https://checkout.stripe.com/checkout.js" class="stripe-button"\
+                                data-key="pk_test_HbZ2G2ELK1pvsY2iOIKStdKn"\
+                                data-amount="'+JSONArray[index].price+'"\
+                                data-name="Photo Gallery Buy"\
+                                data-description="'+JSONArray[index].description+'"\
+                                data-image="https://stripe.com/img/documentation/checkout/marketplace.png"\
+                                data-locale="auto"\
+                                data-zip-code="true"></script>\
+                                <input type="hidden" value="'+JSONArray[index].id+'" name="productid">\
+                                </script>\
+                            </form>\
                     </div>';
                 }
                 photoSection.innerHTML += '</div>';
@@ -52,6 +52,7 @@ function getProducts() {
                         <figcaption>' + JSONArray[index].description + '</figcaption>\
                         <div class="alert alert-info">\
                             <strong>' + JSONArray[index].price + '</strong> \
+                        </div>\
                         <form action="http://e4fb795b.ngrok.io/stripe_demo/order/" method="POST">\
                             <script\
                             src="https://checkout.stripe.com/checkout.js" class="stripe-button"\
@@ -65,7 +66,6 @@ function getProducts() {
                             <input type="hidden" value="'+JSONArray[index].id+'" name="productid">\
                             </script>\
                         </form>\
-                        </div>\
                     </div>';
             }
             photoSection.innerHTML += '</div>';
