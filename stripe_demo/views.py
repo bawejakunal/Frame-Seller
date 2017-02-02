@@ -6,15 +6,47 @@ Stripe Demo Business Logic
 
 import os
 import json
+from django.contrib.auth.models import User
+from django.utils.datastructures import MultiValueDictKeyError
+from django.db import IntegrityError
 from django.shortcuts import redirect
-
 from django.http.response import HttpResponseRedirect
-
 from stripe_demo.models import Product
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_GET, require_POST
 from django.views.decorators.csrf import csrf_exempt
 import stripe
+
+@csrf_exempt
+@require_POST
+def signup(request):
+    """
+    Sign up a new user on stripe_demo
+    """
+    try:
+        username = request.POST["email"]
+        password = request.POST["password"]
+        first_name = request.POST["firstname"]
+        last_name = request.POST["lastname"]
+        email = username
+
+        user = User.objects.create_user(username, email, password)
+        user.first_name = first_name
+        user.last_name = last_name
+        user.save()
+
+        return HttpResponse(json.dumps({"success":True}),
+                            content_type="application/json")
+
+    except (KeyError, TypeError, MultiValueDictKeyError) as error:
+        error = error
+
+    except IntegrityError:
+        error = "User already exists!"
+
+    return HttpResponse(json.dumps({"success":False, "error": error}),
+                        status=400, content_type="application/json")
+
 
 def load_key(keyfile):
     """
@@ -40,7 +72,6 @@ def load_key(keyfile):
 
 #set api key for stripe requests
 stripe.api_key = load_key("stripe_demo/key.json")
-print stripe.api_key
 
 @csrf_exempt
 @require_POST
