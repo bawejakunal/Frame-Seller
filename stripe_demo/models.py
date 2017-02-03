@@ -15,16 +15,20 @@ class Product(models.Model):
 
 class Order(models.Model):
     """
-        Model for Orders
+    Model for Orders
     """
+    UNPAID = 0
+    PAID = 1
+    FAILED = 2
+
     STATUS = (
-        (0, 'Not Charged'),
-        (1, 'Charged'),
-        (2, 'Failed'),
+        (UNPAID, 'UNPAID'),
+        (PAID, 'PAID'),
+        (FAILED, 'FAILED'),
     )
 
-    userid = models.CharField(max_length=20)
-    productid = models.ForeignKey(Product)
+    userid = models.CharField(max_length=255)
+    product = models.ForeignKey(Product)
     orderdate = models.DateTimeField()
     token = models.CharField(max_length=30)
     paymentstatus = models.IntegerField(choices=STATUS)

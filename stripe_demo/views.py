@@ -6,6 +6,7 @@ Stripe Demo Business Logic
 
 import os
 import json
+from datetime import datetime
 from django.contrib.auth.models import User
 from django.utils.datastructures import MultiValueDictKeyError
 from django.db import IntegrityError
@@ -15,29 +16,21 @@ from django.views.decorators.http import require_POST
 from django.http.response import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 
+from rest_framework import status
 from rest_framework.decorators import (api_view, authentication_classes,
                                        permission_classes)
 from rest_framework.renderers import JSONRenderer
 from rest_framework.authentication import (SessionAuthentication,
                                            BasicAuthentication)
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
-from stripe_demo.models import Product
-from stripe_demo.serializers import ProductSerializer
+from stripe_demo.models import Product, Order
+from stripe_demo.serializers import ProductSerializer, OrderSerializer
 import stripe
 import requests
-
-class JSONResponse(HttpResponse):
-    """
-    An HttpResponse that renders its content into JSON
-    """
-    def __init__(self, data, **kwargs):
-        content = JSONRenderer().render(data)
-        kwargs['content_type'] = 'application/json'
-        super(JSONResponse, self).__init__(content, **kwargs)
-
 
 @api_view(['GET'])
 @authentication_classes((SessionAuthentication, BasicAuthentication, JSONWebTokenAuthentication))
@@ -48,7 +41,7 @@ def get_products(request):
     """
     products = Product.objects.all()
     serializer = ProductSerializer(products, many=True)
-    return JSONResponse(serializer.data)
+    return Response(serializer.data)
 
 
 @csrf_exempt
@@ -79,8 +72,8 @@ def signup(request):
     except IntegrityError:
         error = "User already exists!"
 
-    return HttpResponse(json.dumps({"success":False, "error": error}),status=400, content_type="application/json")
-
+    return HttpResponse(json.dumps({"success":False, "error": error}),
+                        status=400, content_type="application/json")
 
 
 def load_key(keyfile):
@@ -108,33 +101,33 @@ def load_key(keyfile):
 #set api key for stripe requests
 stripe.api_key = load_key("stripe_demo/key.json")
 
-@csrf_exempt
-@require_POST
-def post_order(request):
-    """
 
+@api_view(['POST'])
+@authentication_classes((SessionAuthentication, BasicAuthentication, JSONWebTokenAuthentication))
+@permission_classes((IsAuthenticated,))
+def order(request):
+    """
     :param request:
     :return:
     """
+    #TODO: Stripe Payment using token
+    try:
+        data = request.data
+        data['userid'] = str(request.user)
+        data['orderdate'] = datetime.now()
+        data['paymentstatus'] = Order.UNPAID
+        data['product'] = request.POST["product_id"]
+        data['token'] = request.POST["token"]
+    except KeyError as error:
+        pass
 
-    # TODO: Check for JWT from request
-    print(request.POST)
-    token = request.POST["stripeToken"]
-    productid = request.POST["productid"]
-    product = Product.objects.get(id=productid)
+    print data
+    serializer = OrderSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    print(stripe.api_key)
-
-    # Charge the user's card:
-    charge = stripe.Charge.create(
-        amount=product.price,
-        currency="usd",
-        description=product.description,
-        source=token,
-    )
-    print(charge)
-
-    return redirect("http://stripe6998.s3-website-us-west-2.amazonaws.com/catalog.html")
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @csrf_exempt
 @require_POST
