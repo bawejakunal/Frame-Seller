@@ -103,14 +103,21 @@ stripe.api_key = load_key("stripe_demo/key.json")
 
 
 @api_view(['POST'])
-@authentication_classes((SessionAuthentication, BasicAuthentication, JSONWebTokenAuthentication))
+@authentication_classes((SessionAuthentication, BasicAuthentication,
+                         JSONWebTokenAuthentication))
 @permission_classes((IsAuthenticated,))
 def order(request):
     """
-    :param request:
-    :return:
+    Create an order upon receiving request from client
+    upon verifying successful payment through stripe
+
+    On success: returns 201 order creation successful
+    On failure: 400 Bad Request with error description in detail parameter of
+    json response
     """
+
     #TODO: Stripe Payment using token
+    
     try:
         data = request.data
         data['userid'] = str(request.user)
@@ -121,7 +128,6 @@ def order(request):
     except KeyError as error:
         pass
 
-    print data
     serializer = OrderSerializer(data=data)
     if serializer.is_valid():
         serializer.save()
@@ -129,11 +135,14 @@ def order(request):
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+#TODO: THIS HAS TO BE COMPLETELY CLIENT SIDE
+#REMOVE THIS AND USE /api-token-auth/ endpoint to obtain JWT token to be used
+#in subsequent API calls
 @csrf_exempt
 @require_POST
 def process_login(request):
     """
-
     :param request:
     :return:
     """
