@@ -19,6 +19,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_GET, require_POST
 from django.views.decorators.csrf import csrf_exempt
 import stripe
+import requests
 
 class JSONResponse(HttpResponse):
     """
@@ -123,3 +124,24 @@ def post_order(request):
     print(charge)
 
     return redirect("http://stripe6998.s3-website-us-west-2.amazonaws.com/catalog.html")
+
+@csrf_exempt
+@require_POST
+def process_login(request):
+    """
+
+    :param request:
+    :return:
+    """
+    username = request.POST["userEmail"]
+    password = request.POST["userPassword"]
+    r = requests.post('http://localhost:8000/stripe_demo/api-token-auth/',data={'username': username, 'password': password})
+    if(r.status_code==200):
+        # OK
+        response = r.json()  # this will be in unicode
+        token = str(response)
+        return HttpResponseRedirect("http://stripe6998.s3-website-us-west-2.amazonaws.com/catalog.html")
+        response['X-Auth-Token'] = token
+    else:
+        # error
+        return redirect("http://stripe6998.s3-website-us-west-2.amazonaws.com/")

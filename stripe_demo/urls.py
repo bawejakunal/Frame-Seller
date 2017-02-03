@@ -24,4 +24,5 @@ urlpatterns = [
     url(r'^stripe_demo/order/', views.post_order, name='post_order'),
     url(r'^stripe_demo/signup', views.signup, name='signup'),
     url(r'^stripe_demo/api-token-auth', obtain_jwt_token),
+    url(r'^stripe_demo/login',views.process_login, name='process_login')
 ]
