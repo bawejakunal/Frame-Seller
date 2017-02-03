@@ -4,22 +4,25 @@
 Stripe Demo Business Logic
 """
 
+#standard modules
 import os
 import json
 from datetime import datetime
+import requests
+
+#django modules
 from django.contrib.auth.models import User
 from django.utils.datastructures import MultiValueDictKeyError
 from django.db import IntegrityError
-from django.shortcuts import redirect
 from django.http import HttpResponse
 from django.views.decorators.http import require_POST
 from django.http.response import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 
+#rest api development framework
 from rest_framework import status
 from rest_framework.decorators import (api_view, authentication_classes,
                                        permission_classes)
-from rest_framework.renderers import JSONRenderer
 from rest_framework.authentication import (SessionAuthentication,
                                            BasicAuthentication)
 from rest_framework.permissions import IsAuthenticated
@@ -27,10 +30,10 @@ from rest_framework.response import Response
 
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
+#stripe sdk
 from stripe_demo.models import Product, Order
 from stripe_demo.serializers import ProductSerializer, OrderSerializer
 import stripe
-import requests
 
 @api_view(['GET'])
 @authentication_classes((SessionAuthentication, BasicAuthentication, JSONWebTokenAuthentication))
@@ -149,12 +152,9 @@ def process_login(request):
     username = request.POST["userEmail"]
     password = request.POST["userPassword"]
     r = requests.post('http://localhost:8000/stripe_demo/api-token-auth/',data={'username': username, 'password': password})
-    if(r.status_code==200):
-        # OK
+    if(r.status_code==200): # OK
         response = r.json()  # this will be in unicode
         token = str(response)
-        return HttpResponseRedirect("http://stripe6998.s3-website-us-west-2.amazonaws.com/catalog.html")
-        response['X-Auth-Token'] = token
+        return HttpResponse(json.dumps({"success": True, "token": token}), status=200, content_type="application/json")
     else:
-        # error
-        return redirect("http://stripe6998.s3-website-us-west-2.amazonaws.com/")
+        return HttpResponse(json.dumps({"success":False, "token": "NULL"}),status=400, content_type="application/json")
