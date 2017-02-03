@@ -64,10 +64,10 @@ def signup(request):
         user.first_name = first_name
         user.last_name = last_name
         user.save()
-        return HttpResponseRedirect('https://s3-us-west-2.amazonaws.com/stripe6998/thanks.html')
+        #return HttpResponseRedirect('https://s3-us-west-2.amazonaws.com/stripe6998/thanks.html')
 
-        # return HttpResponse(json.dumps({"success":True}),
-        #                     content_type="application/json")
+        return HttpResponse(json.dumps({"success":True}),
+                             content_type="application/json")
 
     except (KeyError, TypeError, MultiValueDictKeyError) as error:
         error = error

@@ -1,115 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Frameseller - Buy amazing photos!</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <link rel="stylesheet" href="css/index.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script>
-    function jwtToken(username,password){
-        var token = new Promise(function(resolve,reject){
-          $.post(
-              "http://localhost:8000/stripe_demo/api-token-auth/",
-              {
-                'username': username,
-                'password': password
-              },
-              function(data){
-                resolve(data);
-              }
-          )
+    <title>Frameseller - Buy amazing photos!</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/index.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script>
+        function jwtToken(username, password) {
+            var token = new Promise(function (resolve, reject) {
+                $.post(
+                    "http://localhost:8000/stripe_demo/api-token-auth/",
+                    {
+                        'username': username,
+                        'password': password
+                    },
+                    function (data) {
+                        resolve(data);
+                    }
+                )
+            });
+            return token;
+        }
+
+        function getJWTToken(username, password) {
+            jwtToken(username, password)
+                .then(
+                    function (resolveData) {
+                        console.log(resolveData);
+                    }
+                )
+                .catch(
+                    function (errorData) {
+                        console.log(errorData);
+                    }
+                )
+        }
+
+        $(document).ready(function () {
+            $('#loginSubmit').on("click", getJWTToken(document.getElementById('userEmail').value, document.getElementById('userPassword').value));
         });
-        return token;
-    }
 
-    function getJWTToken(username,password){
-        jwtToken(username,password)
-            .then(
-                function (resolveData) {
-                    console.log(resolveData);
+        function signUp() {
+            firstname = $("#sufirstname");
+            lastname = $("#sulastname");
+            email = $("#suemail");
+            password = $("#supassword");
+            repeatpassword = $("#surepeatpassword");
+
+            var bool1 = check(firstname);
+            var bool2 = check(lastname);
+            var bool3 = check(email);
+            var bool4 = check(password);
+            var bool5 = check(repeatpassword);
+
+            if (bool1 && bool2 && bool3 && bool4 && bool5) {
+                var promise = new Promise(function (success, failure) {
+                    parameters = {
+                        firstname: firstname.val(),
+                        lastname: lastname.val(),
+                        email: email.val(),
+                        password: password.val()
+                    };
+                    console.log(parameters);
+                    var request = $.post("http://localhost:8000/stripe_demo/signup", parameters, function (data) {
+                    })
+                        .done(function (data, textStatus, request) {
+                            success(data);
+                        })
+                        .fail(function (data, textStatus, request) {
+                            failure(data.responseText);
+                        })
+                });
+
+                promise.then(function (data) {
+                    alert("User registered successfully. You can now login");
+                    clearSignUpForm();
+                }, function (data) {
+                    var json = JSON.parse(data);
+                    alert(json["error"]);
+                });
+            }
+        }
+
+        function clearSignUpForm() {
+            $("#sufirstname").val("");
+            $("#sulastname").val("");
+            $("#suemail").val("");
+            $("#supassword").val("");
+            $("#surepeatpassword").val("");
+        }
+
+        function check(element) {
+            var bool;
+            console.log(element.val());
+            if (element.val() == "") {
+                element.addClass("invalid");
+                bool = false;
+            } else {
+                element.removeClass("invalid");
+                bool = true;
+
+            }
+
+            if (element.attr('id') == "surepeatpassword" && element.val() !== "") {
+                if ($("#supassword").val() !== element.val()) {
+                    alert("Passwords do not match");
+                    element.addClass("invalid");
+                    $("supassword").addClass("invalid");
                 }
-            )
-            .catch(
-                function (errorData) {
-                    console.log(errorData);
-                }
-            )
-    }
+            }
+            return bool
+        }
+    </script>
+    <style>
+        input.valid {
+            border-color: inherit;
+        }
 
-    $(document).ready(function () {
-        $('#loginSubmit').on("click",getJWTToken(document.getElementById('userEmail').value, document.getElementById('userPassword').value));
-    });
+        input.invalid {
+            border-color: red;
+        }
 
+        input:focus {
+            border-color: inherit;
+        }
 
-  </script>
-
+    </style>
 </head>
 <body>
 
-    <div class="jumbotron text-center">
-      <h1>FrameSeller - Buy Amazing Photos!</h1>
-      <p>Buy amazing photos online!</p>
-    </div>
+<div class="jumbotron text-center">
+    <h1>FrameSeller - Buy Amazing Photos!</h1>
+    <p>Buy amazing photos online!</p>
+</div>
 
-    <div class="container">
-      <div class="row">
+<div class="container">
+    <div class="row">
         <div class="col-sm-6">
             <div class="well">
-              <h3>Existing User?</h3>
-              <h2>Login</h2>
-                <form method="POST" action="#">
+                <h3>Existing User?</h3>
+                <h2>Login</h2>
+                <form method="POST" action="http://localhost:8000/stripe_demo/login">
                     <table>
-                    <tr>
-                      <td class="form">Email:</td>
-                      <td class="form"><input type="email" name="userEmail" id="userEmail"></td>
-                    </tr>
-                    <tr>
-                      <td class="form">Password:</td>
-                      <td class="form"><input type="password" name="userPassword" id="userPassword"></td>
-                    </tr>
-                        <tr><td colspan="2" class="form" align="center"><a href="#" id="loginSubmit" class="loginSubmit">Login</a></td></tr>
+                        <tr>
+                            <td class="form">Email:</td>
+                            <td class="form"><input type="email" name="userEmail" id="userEmail" onblur="check()"></td>
+                        </tr>
+                        <tr>
+                            <td class="form">Password:</td>
+                            <td class="form"><input type="password" name="userPassword" id="userPassword"
+                                                    onblur="check()"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="form" align="center"><input type="submit" value="Login"></td>
+                        </tr>
                     </table>
                 </form>
             </div>
         </div>
         <div class="col-sm-6">
-          <div class="well">
-              <h3>New User?</h3>
-              <h2>SignUp</h2>
-              <form method="POST" action="http://localhost:8000/stripe_demo/signup">
-                  <table>
-                    <tr>
-                      <td class="form">First Name:</td>
-                      <td class="form"><input type="text" id="firstname" name="firstname"></td>
-                    </tr>
-                    <tr>
-                      <td class="form">Last Name:</td>
-                      <td class="form"><input type="text" id="lastname" name="lastname"></td>
-                    </tr>
-                    <tr>
-                      <td class="form">Email:</td>
-                      <td class="form"><input type="email" name="email" id="email"></td>
-                    </tr>
-                    <tr>
-                      <td class="form">Password:</td>
-                      <td class="form"><input type="password" name="password" id="password"></td>
-                    </tr>
-                    <tr>
-                      <td class="form">Repeat Password:</td>
-                      <td class="form"><input type="password" name="repeatUserPassword" id="repeatPassword"></td>
-                    </tr>
-                    <tr>
-                      <td colspan="2" align="center" class="form"><input type="submit" value="Sign Up"></td>
-                    </tr>
-                  </table>
-              </form>
-          </div>
+            <div class="well">
+                <h3>New User?</h3>
+                <h2>SignUp</h2>
+                <form novalidate class="css-form" action="http://localhost:8000/stripe_demo/signup">
+                    <table>
+                        <tr>
+                            <td class="form">First Name:</td>
+                            <td class="form"><input type="text" name="firstname" id="sufirstname"
+                                                    onblur="check($('#sufirstname'))" required></td>
+                        </tr>
+                        <tr>
+                            <td class="form">Last Name:</td>
+                            <td class="form"><input type="text" name="lastname" id="sulastname"
+                                                    onblur="check($('#sulastname'))" required></td>
+                        </tr>
+                        <tr>
+                            <td class="form">Email:</td>
+                            <td class="form"><input type="email" name="email" id="suemail"
+                                                    onblur="check($('#suemail'))" required></td>
+                        </tr>
+                        <tr>
+                            <td class="form">Password:</td>
+                            <td class="form"><input type="password" name="password" id="supassword"
+                                                    onblur="check($('#supassword'))" required></td>
+                        </tr>
+                        <tr>
+                            <td class="form">Repeat Password:</td>
+                            <td class="form"><input type="password" name="repeatUserPassword" id="surepeatpassword"
+                                                    onblur="check($('#surepeatpassword'))" required></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" align="center" class="form"><input type="button" value="Sign Up"
+                                                                               onclick="signUp()"></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
         </div>
-      </div>
     </div>
-    <div class="footer">Copyright 2017 XYZ</div>
+</div>
+<div class="footer">Copyright 2017 XYZ</div>
 </body>
 </html>
