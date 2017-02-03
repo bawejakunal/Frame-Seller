@@ -10,12 +10,34 @@ from django.contrib.auth.models import User
 from django.utils.datastructures import MultiValueDictKeyError
 from django.db import IntegrityError
 from django.shortcuts import redirect
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
 from django.http.response import HttpResponseRedirect
 from stripe_demo.models import Product
+from stripe_demo.serializers import ProductSerializer
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_GET, require_POST
 from django.views.decorators.csrf import csrf_exempt
 import stripe
+
+class JSONResponse(HttpResponse):
+    """
+    An HttpResponse that renders its content into JSON
+    """
+    def __init__(self, data, **kwargs):
+        content = JSONRenderer().render(data)
+        kwargs['content_type'] = 'application/json'
+        super(JSONResponse, self).__init__(content, **kwargs)
+
+@require_GET
+def get_products(request):
+    """
+    get list of products
+    """
+    products = Product.objects.all()
+    serializer = ProductSerializer(products, many=True)
+    return JSONResponse(serializer.data)
+
 
 @csrf_exempt
 @require_POST
@@ -101,18 +123,3 @@ def post_order(request):
     print(charge)
 
     return redirect("http://stripe6998.s3-website-us-west-2.amazonaws.com/catalog.html")
-
-
-@require_GET
-def get_products(request):
-    """
-    function to get all products and send them as json
-    @param request:
-    :return:
-    """
-
-    #TODO: Check for JWT from request
-
-    products = Product.objects.values()
-    product_list = [p for p in products]  # ValuesQuerySet to Python list
-    return JsonResponse(product_list, safe=False)
