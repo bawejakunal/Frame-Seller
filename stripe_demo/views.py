@@ -140,12 +140,10 @@ def process_login(request):
     username = request.POST["userEmail"]
     password = request.POST["userPassword"]
     r = requests.post('http://localhost:8000/stripe_demo/api-token-auth/',data={'username': username, 'password': password})
-    if(r.status_code==200):
-        # OK
+    if(r.status_code==200): # OK
         response = r.json()  # this will be in unicode
         token = str(response)
-        return HttpResponseRedirect("http://stripe6998.s3-website-us-west-2.amazonaws.com/catalog.html")
-        response['X-Auth-Token'] = token
+        return HttpResponse(json.dumps({"success": True, "token": token}), status=200, content_type="application/json")
     else:
         # error
-        return redirect("http://stripe6998.s3-website-us-west-2.amazonaws.com/")
+        return HttpResponse(json.dumps({"success":False, "token": "NULL"}),status=400, content_type="application/json")
