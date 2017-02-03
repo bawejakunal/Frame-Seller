@@ -34,9 +34,10 @@ def signup(request):
         user.first_name = first_name
         user.last_name = last_name
         user.save()
+        return HttpResponseRedirect('https://s3-us-west-2.amazonaws.com/stripe6998/thanks.html')
 
-        return HttpResponse(json.dumps({"success":True}),
-                            content_type="application/json")
+        # return HttpResponse(json.dumps({"success":True}),
+        #                     content_type="application/json")
 
     except (KeyError, TypeError, MultiValueDictKeyError) as error:
         error = error
@@ -44,9 +45,8 @@ def signup(request):
     except IntegrityError:
         error = "User already exists!"
 
-    # return HttpResponse(json.dumps({"success":False, "error": error}),
-    #                     status=400, content_type="application/json")
-        return HttpResponseRedirect('https://s3-us-west-2.amazonaws.com/stripe6998/thanks.html')
+    return HttpResponse(json.dumps({"success":False, "error": error}),status=400, content_type="application/json")
+
 
 
 def load_key(keyfile):
