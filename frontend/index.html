@@ -8,6 +8,43 @@
   <link rel="stylesheet" href="css/index.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script>
+    function jwtToken(username,password){
+        var token = new Promise(function(resolve,reject){
+          $.post(
+              "http://localhost:8000/stripe_demo/api-token-auth/",
+              {
+                'username': username,
+                'password': password
+              },
+              function(data){
+                resolve(data);
+              }
+          )
+        });
+        return token;
+    }
+
+    function getJWTToken(username,password){
+        jwtToken(username,password)
+            .then(
+                function (resolveData) {
+                    console.log(resolveData);
+                }
+            )
+            .catch(
+                function (errorData) {
+                    console.log(errorData);
+                }
+            )
+    }
+
+    $(document).ready(function () {
+        $('#loginSubmit').on("click",getJWTToken(document.getElementById('userEmail').value, document.getElementById('userPassword').value));
+    });
+
+
+  </script>
 
 </head>
 <body>
@@ -23,7 +60,7 @@
             <div class="well">
               <h3>Existing User?</h3>
               <h2>Login</h2>
-                <form method="POST" action="http://localhost:8000/stripe_demo/login">
+                <form method="POST" action="#">
                     <table>
                     <tr>
                       <td class="form">Email:</td>
@@ -33,7 +70,7 @@
                       <td class="form">Password:</td>
                       <td class="form"><input type="password" name="userPassword" id="userPassword"></td>
                     </tr>
-                    <tr><td colspan="2" class="form" align="center"><input type="submit" value="Login"></td></tr>
+                        <tr><td colspan="2" class="form" align="center"><a href="#" id="loginSubmit" class="loginSubmit">Login</a></td></tr>
                     </table>
                 </form>
             </div>
