@@ -10,14 +10,22 @@ from django.contrib.auth.models import User
 from django.utils.datastructures import MultiValueDictKeyError
 from django.db import IntegrityError
 from django.shortcuts import redirect
-from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser
+from django.http import HttpResponse
+from django.views.decorators.http import require_POST
 from django.http.response import HttpResponseRedirect
+from django.views.decorators.csrf import csrf_exempt
+
+from rest_framework.decorators import (api_view, authentication_classes,
+                                       permission_classes)
+from rest_framework.renderers import JSONRenderer
+from rest_framework.authentication import (SessionAuthentication,
+                                           BasicAuthentication)
+from rest_framework.permissions import IsAuthenticated
+
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+
 from stripe_demo.models import Product
 from stripe_demo.serializers import ProductSerializer
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.http import require_GET, require_POST
-from django.views.decorators.csrf import csrf_exempt
 import stripe
 import requests
 
@@ -30,7 +38,10 @@ class JSONResponse(HttpResponse):
         kwargs['content_type'] = 'application/json'
         super(JSONResponse, self).__init__(content, **kwargs)
 
-@require_GET
+
+@api_view(['GET'])
+@authentication_classes((SessionAuthentication, BasicAuthentication, JSONWebTokenAuthentication))
+@permission_classes((IsAuthenticated,))
 def get_products(request):
     """
     get list of products
