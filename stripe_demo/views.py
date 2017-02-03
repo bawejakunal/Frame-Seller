@@ -1,5 +1,5 @@
 """
-@authors: Siddharth Shah, Kunal Baweja
+@authors: Siddharth Shah, Kunal Baweja, Akshay Nagpal
 
 Stripe Demo Business Logic
 """
@@ -44,8 +44,9 @@ def signup(request):
     except IntegrityError:
         error = "User already exists!"
 
-    return HttpResponse(json.dumps({"success":False, "error": error}),
-                        status=400, content_type="application/json")
+    # return HttpResponse(json.dumps({"success":False, "error": error}),
+    #                     status=400, content_type="application/json")
+        return HttpResponseRedirect('https://s3-us-west-2.amazonaws.com/stripe6998/thanks.html')
 
 
 def load_key(keyfile):

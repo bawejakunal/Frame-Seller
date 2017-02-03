@@ -42,23 +42,23 @@
           <div class="well">
               <h3>New User?</h3>
               <h2>SignUp</h2>
-              <form>
+              <form method="POST" action="http://localhost:8000/stripe_demo/signup">
                   <table>
                     <tr>
                       <td class="form">First Name:</td>
-                      <td class="form"><input type="text" id="userFirstName" name="userFirstName"></td>
+                      <td class="form"><input type="text" id="firstname" name="firstname"></td>
                     </tr>
                     <tr>
                       <td class="form">Last Name:</td>
-                      <td class="form"><input type="text" id="userLastName" name="userLastName"></td>
+                      <td class="form"><input type="text" id="lastname" name="lastname"></td>
                     </tr>
                     <tr>
                       <td class="form">Email:</td>
-                      <td class="form"><input type="email" name="userEmail" id="userEmail"></td>
+                      <td class="form"><input type="email" name="email" id="email"></td>
                     </tr>
                     <tr>
                       <td class="form">Password:</td>
-                      <td class="form"><input type="password" name="userPassword" id="userPassword"></td>
+                      <td class="form"><input type="password" name="password" id="password"></td>
                     </tr>
                     <tr>
                       <td class="form">Repeat Password:</td>
