@@ -9,6 +9,85 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script>
+
+        $(document).ready(function () {
+            // executes when HTML-Document is loaded and DOM is ready
+            alert("document is ready");
+            console.log(document.cookie);
+            var cookieExpire = getCookie("expires");
+            if (cookieExpire) {
+                var expiretime = new Date(cookieExpire);
+                var currenttime = new Date();
+                if(currenttime < expiretime) {
+                    var jwttoken = getCookie("jwttoken");
+                    if(!jwttoken){
+                        window.location.href = 'catalog.html';
+                    }
+                }
+            }
+        });
+
+        function getCookie(cname) {
+            var name = cname + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        function login() {
+            username = $("#loginemail");
+            password = $("#loginpassword");
+
+            bool1 = check(username);
+            bool2 = check(password);
+
+            if (bool1 && bool2) {
+                var promise = new Promise(function (success, failure) {
+                    parameters = {
+                        'username': username.val(),
+                        'password': password.val(),
+                    };
+                    //console.log(parameters);
+                    var request = $.post("http://localhost:8000/stripe_demo/api-token-auth/", parameters, function (data) {
+                        //console.log(data);
+                    })
+                        .done(function (data, textStatus, request) {
+                            //console.log(data);
+                            //console.log(request.getAllResponseHeaders());
+                            success(data);
+                        })
+                        .fail(function (data, textStatus, request) {
+                            //console.log(data);
+                            //console.log(data.getAllResponseHeaders())
+                            failure(data.responseText);
+                        })
+                });
+                promise.then(function (data) {
+                    alert(data);
+                    var jwttoken = data["token"];
+                    var jwtpayload = jwttoken.split(".")[1];
+                    var json = JSON.parse(window.atob(jwtpayload));
+                    var exptime = json["exp"];
+                    var d = new Date();
+                    d.setTime(d.getTime() + parseInt(exptime));
+                    var expires = "expires=" + d.toUTCString();
+                    console.log("jwttoken=" + jwttoken + ";" + expires + ";path=/");
+                    document.cookie = "jwttoken=" + jwttoken + ";" + expires;
+                    console.log(document.cookie);
+                }, function (data) {
+                    alert(data);
+                });
+            }
+        }
+
         function jwtToken(username, password) {
             var token = new Promise(function (resolve, reject) {
                 $.post(
@@ -39,10 +118,6 @@
                 )
         }
 
-        $(document).ready(function () {
-            $('#loginSubmit').on("click", getJWTToken(document.getElementById('userEmail').value, document.getElementById('userPassword').value));
-        });
-
         function signUp() {
             firstname = $("#sufirstname");
             lastname = $("#sulastname");
@@ -59,13 +134,14 @@
             if (bool1 && bool2 && bool3 && bool4 && bool5) {
                 var promise = new Promise(function (success, failure) {
                     parameters = {
-                        firstname: firstname.val(),
-                        lastname: lastname.val(),
-                        email: email.val(),
-                        password: password.val()
+                        'firstname': firstname.val(),
+                        'lastname': lastname.val(),
+                        'email': email.val(),
+                        'password': password.val()
                     };
                     console.log(parameters);
                     var request = $.post("http://localhost:8000/stripe_demo/signup", parameters, function (data) {
+
                     })
                         .done(function (data, textStatus, request) {
                             success(data);
@@ -143,19 +219,21 @@
             <div class="well">
                 <h3>Existing User?</h3>
                 <h2>Login</h2>
-                <form method="POST" action="http://localhost:8000/stripe_demo/login">
+                <form>
                     <table>
                         <tr>
                             <td class="form">Email:</td>
-                            <td class="form"><input type="email" name="userEmail" id="userEmail" onblur="check()"></td>
+                            <td class="form"><input type="email" name="userEmail" id="loginemail"
+                                                    onblur="check($('#loginemail'))"></td>
                         </tr>
                         <tr>
                             <td class="form">Password:</td>
-                            <td class="form"><input type="password" name="userPassword" id="userPassword"
-                                                    onblur="check()"></td>
+                            <td class="form"><input type="password" name="userPassword" id="loginpassword"
+                                                    onblur="check($('#loginpassword'))"></td>
                         </tr>
                         <tr>
-                            <td colspan="2" class="form" align="center"><input type="submit" value="Login"></td>
+                            <td colspan="2" class="form" align="center"><input type="button" value="Login"
+                                                                               onclick="login()"></td>
                         </tr>
                     </table>
                 </form>
