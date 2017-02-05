@@ -12,18 +12,9 @@
 
         $(document).ready(function () {
             // executes when HTML-Document is loaded and DOM is ready
-            alert("document is ready");
-            console.log(document.cookie);
-            var cookieExpire = getCookie("expires");
-            if (cookieExpire) {
-                var expiretime = new Date(cookieExpire);
-                var currenttime = new Date();
-                if(currenttime < expiretime) {
-                    var jwttoken = getCookie("jwttoken");
-                    if(!jwttoken){
-                        window.location.href = 'catalog.html';
-                    }
-                }
+            var jwttoken = getCookie("jwttoken");
+            if (jwttoken) {
+                window.location.href = 'catalog.html';
             }
         });
 
@@ -71,51 +62,21 @@
                         })
                 });
                 promise.then(function (data) {
-                    alert(data);
+                    console.log(data);
                     var jwttoken = data["token"];
                     var jwtpayload = jwttoken.split(".")[1];
                     var json = JSON.parse(window.atob(jwtpayload));
                     var exptime = json["exp"];
                     var d = new Date();
-                    d.setTime(d.getTime() + parseInt(exptime));
+                    d.setTime(parseInt(exptime*1000));
                     var expires = "expires=" + d.toUTCString();
-                    console.log("jwttoken=" + jwttoken + ";" + expires + ";path=/");
-                    document.cookie = "jwttoken=" + jwttoken + ";" + expires;
-                    console.log(document.cookie);
+                    console.log(expires);
+                    document.cookie = "jwttoken=" + jwttoken + ";" + expires + ";path=/";
+                    window.location.href = "catalog.html"
                 }, function (data) {
                     alert(data);
                 });
             }
-        }
-
-        function jwtToken(username, password) {
-            var token = new Promise(function (resolve, reject) {
-                $.post(
-                    "http://localhost:8000/stripe_demo/api-token-auth/",
-                    {
-                        'username': username,
-                        'password': password
-                    },
-                    function (data) {
-                        resolve(data);
-                    }
-                )
-            });
-            return token;
-        }
-
-        function getJWTToken(username, password) {
-            jwtToken(username, password)
-                .then(
-                    function (resolveData) {
-                        console.log(resolveData);
-                    }
-                )
-                .catch(
-                    function (errorData) {
-                        console.log(errorData);
-                    }
-                )
         }
 
         function signUp() {
