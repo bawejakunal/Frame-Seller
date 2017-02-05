@@ -64,7 +64,6 @@ def signup(request):
         user.first_name = first_name
         user.last_name = last_name
         user.save()
-        #return HttpResponseRedirect('https://s3-us-west-2.amazonaws.com/stripe6998/thanks.html')
 
         return HttpResponse(json.dumps({"success":True}),
                              content_type="application/json")
@@ -105,7 +104,7 @@ def load_key(keyfile):
 stripe.api_key = load_key("stripe_demo/key.json")
 
 
-@api_view(['POST'])
+@api_view(['GET', 'POST'])
 @authentication_classes((SessionAuthentication, BasicAuthentication,
                          JSONWebTokenAuthentication))
 @permission_classes((IsAuthenticated,))
@@ -119,24 +118,30 @@ def order(request):
     json response
     """
 
+    #send list of orders corresponding to orders
+    if request.method == 'GET':
+        orders = Order.objects.filter(user=request.user.id)
+        serializer = OrderSerializer(orders, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     #TODO: Stripe Payment using token
-    
-    try:
-        data = request.data
-        data['userid'] = str(request.user)
-        data['orderdate'] = datetime.now()
-        data['paymentstatus'] = Order.UNPAID
-        data['product'] = request.POST["product_id"]
-        data['token'] = request.POST["token"]
-    except KeyError as error:
-        pass
+    if request.method == 'POST':
+        try:
+            data = request.data
+            data['user'] = request.user.id
+            data['orderdate'] = datetime.now()
+            data['paymentstatus'] = Order.UNPAID
+            data['product'] = request.POST["product_id"]
+            data['token'] = request.POST["token"]
+        except KeyError as error:
+            pass
 
-    serializer = OrderSerializer(data=data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        serializer = OrderSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 #TODO: THIS HAS TO BE COMPLETELY CLIENT SIDE

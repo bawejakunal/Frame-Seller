@@ -24,4 +24,4 @@ class OrderSerializer(serializers.ModelSerializer):
         Order metadata
         """
         model = Order
-        fields = ('id', 'userid', 'orderdate', 'token', 'paymentstatus', 'product')
+        fields = ('id', 'user', 'orderdate', 'token', 'paymentstatus', 'product')

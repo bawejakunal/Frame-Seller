@@ -1,5 +1,8 @@
+"""
+stripe_demo models for Buy Amazing Photos
+"""
 from django.db import models
-
+from django.contrib.auth.models import User
 
 class Product(models.Model):
     """
@@ -27,7 +30,7 @@ class Order(models.Model):
         (FAILED, 'FAILED'),
     )
 
-    userid = models.CharField(max_length=255)
+    user = models.ForeignKey(User)
     product = models.ForeignKey(Product)
     orderdate = models.DateTimeField()
     token = models.CharField(max_length=30)
