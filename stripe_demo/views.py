@@ -8,7 +8,6 @@ Stripe Demo Business Logic
 import os
 import json
 from datetime import datetime
-import requests
 
 #django modules
 from django.contrib.auth.models import User
@@ -16,7 +15,6 @@ from django.utils.datastructures import MultiValueDictKeyError
 from django.db import IntegrityError
 from django.http import HttpResponse
 from django.views.decorators.http import require_POST
-from django.http.response import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 
 #rest api development framework
@@ -66,7 +64,7 @@ def signup(request):
         user.save()
 
         return HttpResponse(json.dumps({"success":True}),
-                             content_type="application/json")
+                            content_type="application/json")
 
     except (KeyError, TypeError, MultiValueDictKeyError) as error:
         error = error
@@ -126,7 +124,7 @@ def order(request):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     #TODO: Stripe Payment using token
-    if request.method == 'POST':
+    elif request.method == 'POST':
         try:
             data = request.data
             data['user'] = request.user.id
@@ -143,24 +141,3 @@ def order(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-#TODO: THIS HAS TO BE COMPLETELY CLIENT SIDE
-#REMOVE THIS AND USE /api-token-auth/ endpoint to obtain JWT token to be used
-#in subsequent API calls
-@csrf_exempt
-@require_POST
-def process_login(request):
-    """
-    :param request:
-    :return:
-    """
-    username = request.POST["userEmail"]
-    password = request.POST["userPassword"]
-    r = requests.post('http://localhost:8000/stripe_demo/api-token-auth/',data={'username': username, 'password': password})
-    if(r.status_code==200): # OK
-        response = r.json()  # this will be in unicode
-        token = str(response)
-        return HttpResponse(json.dumps({"success": True, "token": token}), status=200, content_type="application/json")
-    else:
-        return HttpResponse(json.dumps({"success":False, "token": "NULL"}),status=400, content_type="application/json")
