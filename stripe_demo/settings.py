@@ -110,6 +110,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # REST Framework with JWT support for Django
 # JSON Web Token
 REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
