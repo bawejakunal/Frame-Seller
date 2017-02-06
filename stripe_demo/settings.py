@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'corsheaders',
     'stripe_demo'
 ]
 
@@ -50,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'stripe_demo.urls'
@@ -78,11 +80,11 @@ WSGI_APPLICATION = 'stripe_demo.wsgi.application'
 
 DATABASES = {
     'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'stripedemo',
-            'USER': 'root',
-            'PASSWORD': '',
-            'HOST': '127.0.0.1',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'stripedemo',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': '127.0.0.1',
     }
 }
 
@@ -123,6 +125,9 @@ REST_FRAMEWORK = {
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3600),
 }
+
+#Allow Cross Origin Requests to API
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 # Internationalization
