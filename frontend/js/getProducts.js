@@ -18,25 +18,23 @@ function getProducts() {
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader('Authorization', 'JWT '+jwttoken);
                 },
-                dataType: 'json',
-                done: function (data, textStatus, request) {
+                success: function (data) {
                     success(data);
                 },
-                fail: function (data, textStatus, request) {
+                fail: function (data) {
                     failure(data.responseText);
                 },
             });
         });
         promise.then(function (data) {
             console.log(data);
+            fillProduct(data);
         }, function (data) {
             console.log(data);
         });
     }
 
-
-    /*
-     $.getJSON(JSONURL, function (data) {
+function fillProduct(data) {
      JSONArray = data;
      var numProducts = JSONArray.length;
      console.log("Number of products=" + numProducts);
@@ -102,7 +100,7 @@ function getProducts() {
      catch (err) {
      console.log("ERROR in getProducts.js:" + err);
      }
-     });*/
+     }
 }
 
 function getCookie(cname) {
