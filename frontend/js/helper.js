@@ -1,3 +1,6 @@
+/**
+ * Created by akshay on 2/05/2017.
+ */
 function logoutUser(){
     console.log("Before deleting Cookie= " + getCookie("jwttoken"));
     document.cookie = "jwttoken=;expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
@@ -11,7 +14,7 @@ function getOrdersForUser() {
     var jwttoken = getCookie("jwttoken");
     console.log("token: "+jwttoken);
     if (!jwttoken) {
-        // window.location.href = "index.html";
+        window.location.href = "index.html";
     } else {
         var promise = new Promise(function (success, failure) {
             $.ajax({
@@ -25,7 +28,7 @@ function getOrdersForUser() {
                 },
                 fail: function (data) {
                     failure(data.responseText);
-                },
+                }
             });
         });
         promise.then(function (data) {
