@@ -2,6 +2,7 @@
 djangorestframerwork serializer of objects
 """
 from rest_framework import serializers
+from django.contrib.auth.models import User
 from stripe_demo.models import Product, Order
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -19,6 +20,11 @@ class OrderSerializer(serializers.ModelSerializer):
     """
     Serialize Order of Product
     """
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(),
+                                              many=False)
+    product = \
+            serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(),
+                                               many=False)
     class Meta:
         """
         Order metadata
@@ -30,7 +36,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
 class OrderDetailSerializer(serializers.ModelSerializer):
     """
-    Serialize Order of Product
+    Serialize Order Details
     """
     product = ProductSerializer(read_only=True)
     class Meta:
