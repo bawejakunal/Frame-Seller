@@ -27,12 +27,12 @@ from rest_framework.authentication import (SessionAuthentication,
                                            BasicAuthentication)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 #stripe sdk
 from stripe_demo.models import Product, Order
-from stripe_demo.serializers import ProductSerializer, OrderSerializer
+from stripe_demo.serializers import (ProductSerializer, OrderSerializer,
+                                     OrderDetailSerializer)
 import stripe
 
 @api_view(['GET'])
@@ -120,8 +120,9 @@ def order(request):
 
     #send list of orders corresponding to orders
     if request.method == 'GET':
-        orders = Order.objects.filter(user=request.user.id)
-        serializer = OrderSerializer(orders, many=True)
+        orders = Order.objects.filter(user=request.user.id).\
+                select_related('product')
+        serializer = OrderDetailSerializer(orders, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     #TODO: Stripe Payment using token

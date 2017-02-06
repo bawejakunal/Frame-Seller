@@ -24,4 +24,18 @@ class OrderSerializer(serializers.ModelSerializer):
         Order metadata
         """
         model = Order
-        fields = ('id', 'user', 'orderdate', 'token', 'paymentstatus', 'product')
+        fields = ('id', 'user', 'orderdate', 'token', 'paymentstatus',
+                  'product')
+
+
+class OrderDetailSerializer(serializers.ModelSerializer):
+    """
+    Serialize Order of Product
+    """
+    product = ProductSerializer(read_only=True)
+    class Meta:
+        """
+        Order metadata
+        """
+        model = Order
+        fields = ('id', 'user', 'orderdate', 'paymentstatus', 'product')
