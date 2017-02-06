@@ -12,21 +12,21 @@ function fillOrders(data){
     for(var i=0; i< numOrders; i++){
         try{
             orderSection.innerHTML +=
-             '<div class="well">\
+             '<div class="well well-lg">\
                   <div class="row">\
-                        <div class="col-md-4">\
+                        <div class="col-sm-4">\
                             <img class="img-thumbnail img-responsive" src="'+ data[i].product.url +'">\
-                            <figcaption>' + data[i].product.description+'</figcaption></div>\
+                            <div class="caption"><p>' + data[i].product.description + '</p></div>\
                         </div>\
-                        <div class="col-md-4">\
-                            Date Placed on:'+ data[i].orderdate+'<br>\
-                            Price: $ '+ data[i].product.price+'\
+                        <div class="col-sm-4">\
+                            <strong>Date Placed on:</strong>'+ data[i].orderdate+'<br>\
+                            <strong>Price:</strong> $ '+ data[i].product.price+'\
                         </div>\
-                        <div class="col-md-4">\
-                            PAYMENT STATUS: <br> '+ data[i].paymentstatus+'\
+                        <div class="col-sm-4">\
+                            <strong>PAYMENT STATUS</strong> <br> '+ data[i].paymentstatus+'\
                         </div>\
                 </div>\
-            </div>';
+             </div>';
         }
         catch (err){
             console.log(err);
@@ -58,10 +58,32 @@ function getOrdersForUser() {
         });
         promise.then(function (data) {
             console.log(data);
+            getNameFromToken();
             fillOrders(data);
 
         }, function (data) {
             console.log(data);
         });
     }
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+function getNameFromToken(){
+    var token = getCookie("jwttoken").split('.')[1];
+    var decodedToken =  atob(token);
+    console.log(decodedToken);
 }
