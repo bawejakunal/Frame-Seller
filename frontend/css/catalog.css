@@ -4,3 +4,12 @@
 h1.container{
     text-align: center;
 }
+
+body {
+	text-align:center;
+	padding:10px;
+}
+.product{
+	align-items: center;
+	margin:10px;
+}
