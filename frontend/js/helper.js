@@ -18,15 +18,14 @@ function getOrdersForUser() {
                 url: JSONURL,
                 type: 'GET',
                 beforeSend: function (xhr) {
-                    xhr.setRequestHeader('Authorization', 'JWT ' + jwttoken);
+                    xhr.setRequestHeader('Authorization', 'JWT '+jwttoken);
                 },
-                dataType: 'jsonp',
-                done: function (data, textStatus, request) {
+                success: function (data) {
                     success(data);
                 },
-                fail: function (data, textStatus, request) {
+                fail: function (data) {
                     failure(data.responseText);
-                }
+                },
             });
         });
         promise.then(function (data) {
