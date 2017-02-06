@@ -20,13 +20,13 @@ function getOrdersForUser() {
                 beforeSend: function (xhr) {
                     xhr.setRequestHeader('Authorization', 'JWT ' + jwttoken);
                 },
-                dataType: 'json',
+                dataType: 'jsonp',
                 done: function (data, textStatus, request) {
                     success(data);
                 },
                 fail: function (data, textStatus, request) {
                     failure(data.responseText);
-                },
+                }
             });
         });
         promise.then(function (data) {
