@@ -6,22 +6,23 @@ var handler = StripeCheckout.configure({
                     image: 'https://stripe.com/img/documentation/checkout/marketplace.png',
                     locale: 'auto',
                     token: function(token) {
+                        console.log(token);
                         // You can access the token ID with `token.id`.\
                         // Get the token ID to your server-side code for use.\
                     }
 });
-window.addEventListener('popstate', function() {
+/*window.addEventListener('popstate', function() {
     handler.close();
-});
+});*/
 
-function processPayment(price,productID){
+function processPayment(price, productID){
+    console.log(price+" "+productID);
        handler.open({
            name: 'Stripe.com',
            description: 'Buy Photo Gallery',
            zipCode: true,
            amount: price
        });
-    console.log(price+" "+productID);
 }
 function getProducts() {
     console.log("get products demo call");
@@ -78,7 +79,7 @@ function fillProduct(data) {
                     <p>" + JSONArray[index].description + "</p>\
                     </div>\
                      <script src=\"https://checkout.stripe.com/checkout.js\"></script>\
-                     <button align=\"center\" class=\"btn btn-success\" id=\"customButton\" onclick='processPayment(JSONArray[index].price,1)'>Pay $ " + JSONArray[index].price + "</button>";
+                     <button align=\"center\" class=\"btn btn-success\" id=\"customButton\" onclick=\"processPayment(" + JSONArray[index].price + ",1);\">Pay $ " + JSONArray[index].price + "</button>";
 
 
                     //     document.getElementById('customButton').addEventListener('click', function(e) {\
@@ -114,33 +115,7 @@ function fillProduct(data) {
                                  <div class=\"caption\">\
                                 <p>" + JSONArray[index].description + "</p>\
                                 </div>\
-                                 <button align=\"center\" class=\"btn btn-success\" id=\"customButton\">Pay $ " + JSONArray[index].price + "</button>\
-                                 <script>\
-                                 var handler = StripeCheckout.configure({\
-                                      key: 'pk_test_HbZ2G2ELK1pvsY2iOIKStdKn',\
-                                      image: 'https://stripe.com/img/documentation/checkout/marketplace.png',\
-                                      locale: 'auto',\
-                                      token: function(token) {\
-                                        // You can access the token ID with `token.id`.\
-                                        // Get the token ID to your server-side code for use.\
-                                        }\
-                                });\
-                                document.getElementById('customButton').addEventListener('click', function(e) {\
-                                // Open Checkout with further options:\
-                                handler.open({\
-                                    name: 'Stripe.com',\
-                                    description: 'Buy Photo Gallery',\
-                                    zipCode: true,\
-                                    amount: " + JSONArray[index].price + "\
-                                });\
-                                e.preventDefault();\
-                                });\
-                                // Close Checkout on page navigation:\
-                                window.addEventListener('popstate', function() {\
-                                      handler.close();\
-                                });\
-                                </script>";
-
+                                 <button align=\"center\" class=\"btn btn-success\" id=\"customButton\" onclick=\"processPayment(" + JSONArray[index].price + ",1);\">Pay $ " + JSONArray[index].price + "</button>";
             $("#photoSection").append(stripeString);
         }
                 photoSection.innerHTML += '</div>';
