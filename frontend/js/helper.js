@@ -14,15 +14,15 @@ function fillOrders(data){
             orderSection.innerHTML +=
              '<div class="well well-lg">\
                   <div class="row">\
-                        <div class="col-sm-4">\
+                        <div class="col-sm-2">\
                             <img class="img-thumbnail img-responsive" src="'+ data[i].product.url +'">\
                             <div class="caption"><p>' + data[i].product.description + '</p></div>\
                         </div>\
-                        <div class="col-sm-4">\
-                            <strong>Date Placed on:</strong>'+ data[i].orderdate+'<br>\
+                        <div class="col-sm-5">\
+                            <strong>Date Placed on:</strong>'+ data[i].orderdate+'<br><br>\
                             <strong>Price:</strong> $ '+ data[i].product.price+'\
                         </div>\
-                        <div class="col-sm-4">\
+                        <div class="col-sm-5">\
                             <strong>PAYMENT STATUS</strong> <br> '+ data[i].paymentstatus+'\
                         </div>\
                 </div>\
