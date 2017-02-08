@@ -127,6 +127,7 @@ REST_FRAMEWORK = {
 #JWT Settings
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=3600),
+    'JWT_PAYLOAD_HANDLER': 'stripe_demo.utils.jwt_payload_handler',
 }
 
 #Allow Cross Origin Requests to API
