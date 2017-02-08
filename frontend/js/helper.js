@@ -8,7 +8,11 @@ function logoutUser(){
 
 function getDateFromString(d){
     var date = new Date(d);
-    var returnString = (date.getMonth()+1)+"/"+date.getDate()+"/"+date.getFullYear()+"  "+date.getHours()+":"+date.getMinutes();
+    var mins = date.getMinutes();
+    if(mins.length==1){
+        mins = "0"+mins.toString();
+    }
+    var returnString = (date.getMonth()+1)+"/"+date.getDate()+"/"+date.getFullYear()+"  "+date.getHours()+":"+mins;
     return returnString;
 }
 
