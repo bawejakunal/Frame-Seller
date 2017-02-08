@@ -24,18 +24,17 @@ function stripe_checkout(product_id) {
         image: 'https://stripe.com/img/documentation/checkout/marketplace.png',
         locale: 'auto',
         token: function (token) {
-            console.log("Send to Sir Baweja");
-            console.log("Product" + product_id);
-            console.log("Token");
             console.log(token);
 
             var jwttoken = getCookie("jwttoken");
 
             var promise = new Promise(function (success, failure) {
+                var orderdetails = {'product': product_id, 'token': token.id};
                 $.ajax({
                     url: orderEndpoint,
                     type: 'POST',
-                    data: {'user':1, 'product_id': product_id, 'token': token.id},
+                    contentType: "application/json",
+                    data: JSON.stringify(orderdetails),
                     beforeSend: function (xhr) {
                         xhr.setRequestHeader('Authorization', 'JWT ' + jwttoken);
                     },
@@ -49,9 +48,20 @@ function stripe_checkout(product_id) {
             });
             promise.then(function (data) {
                 console.log(data);
-                fillProduct(data);
+                //if(data["success"] == true) {
+                    $("#snackbar").text("Your order has been submitted for processing");
+                    $("#snackbar").attr("class","show");
+
+                    // After 3 seconds, remove the show class from DIV
+                    setTimeout(function(){ $("#snackbar").attr("class",""); }, 3000);
+                //}
             }, function (data) {
                 console.log(data);
+                $("#snackbar").text("Order processing failed");
+                $("#snackbar").attr("class","show");
+
+                // After 3 seconds, remove the show class from DIV
+                setTimeout(function(){ $("#snackbar").attr("class","") }, 3000);
             });
         }
     });
@@ -114,23 +124,6 @@ function fillProduct(data) {
                     </div>\
                      <script src=\"https://checkout.stripe.com/checkout.js\"></script>\
                      <button align=\"center\" class=\"btn btn-success\" id=\"customButton\" onclick=\"processPayment(" + JSONArray[index].price + "," + JSONArray[index].id + ");\">Pay $ " + JSONArray[index].price + "</button>";
-
-
-                //     document.getElementById('customButton').addEventListener('click', function(e) {\
-                //       // Open Checkout with further options:\
-                //       handler.open({\
-                //         name: 'Stripe.com',\
-                //         description: 'Buy Photo Gallery',\
-                //         zipCode: true,\
-                //         amount: " + JSONArray[index].price + "\
-                //     });\
-                //     e.preventDefault();\
-                // });\
-                // Close Checkout on page navigation:\
-                //   window.addEventListener('popstate', function() {\
-                //     handler.close();\
-                // });\
-                // </script>";
 
                 $("#photoSection").append(stripeString);
             }
