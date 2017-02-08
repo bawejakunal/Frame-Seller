@@ -6,6 +6,12 @@ function logoutUser(){
     return true;
 }
 
+function getDateFromString(d){
+    var date = new Date(d);
+    var returnString = (date.getMonth()+1)+"/"+date.getDate()+"/"+date.getFullYear()+"  "+date.getHours()+":"+date.getMinutes();
+    return returnString;
+}
+
 function fillOrders(data){
     var orderSection = document.getElementById('orders');
     var numOrders = data.length;
@@ -19,7 +25,7 @@ function fillOrders(data){
                             <div class="caption"><p>' + data[i].product.description + '</p></div>\
                         </div>\
                         <div class="col-sm-5">\
-                            <strong>Date Placed on:</strong>'+ data[i].orderdate+'<br><br>\
+                            <strong>Date Placed on:&nbsp; </strong> '+ getDateFromString(data[i].orderdate)+'<br><br>\
                             <strong>Price:</strong> $ '+ data[i].product.price+'\
                         </div>\
                         <div class="col-sm-5">\
