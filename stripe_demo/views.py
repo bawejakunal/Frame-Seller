@@ -130,9 +130,10 @@ def order(request):
             data['user'] = request.user.id
             data['orderdate'] = datetime.now()
             data['paymentstatus'] = Order.UNPAID
-            data['product'] = request.POST["product_id"]
-            data['token'] = request.POST["token"]
+            # data['product'] = request.POST["product_id"]
+            # data['token'] = request.POST["token"]
         except KeyError as error:
+            print error
             pass
 
         serializer = OrderSerializer(data=data)
