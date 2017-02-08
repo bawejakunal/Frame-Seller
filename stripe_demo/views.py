@@ -10,12 +10,7 @@ import json
 from datetime import datetime
 
 #django modules
-from django.contrib.auth.models import User
 from django.utils.datastructures import MultiValueDictKeyError
-from django.db import IntegrityError
-from django.http import HttpResponse
-from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_exempt
 
 #rest api development framework
 from rest_framework import status
