@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 class Product(models.Model):
     """
-        Model for Products
+    Model for Products
     """
     price = models.FloatField()
     description = models.TextField()
