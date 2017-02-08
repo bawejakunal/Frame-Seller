@@ -24,6 +24,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^stripe_demo/product/', views.get_products, name='get_products'),
     url(r'^stripe_demo/order/', views.order, name='post_order'),
-    url(r'^stripe_demo/signup', views.signup, name='signup'),
+    url(r'^stripe_demo/signup/', views.signup, name='signup'),
     url(r'^stripe_demo/api-token-auth/', obtain_jwt_token)
 ]

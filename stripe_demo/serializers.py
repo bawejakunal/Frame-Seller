@@ -5,6 +5,18 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from stripe_demo.models import Product, Order
 
+
+class UserSerializer(serializers.ModelSerializer):
+    """
+    Serializer user data
+    """
+    class Meta:
+        """
+        User metadata
+        """
+        model = User
+        fields = ('id', 'password', 'username', 'email', 'first_name', 'last_name')
+
 class ProductSerializer(serializers.ModelSerializer):
     """
     Serialize Product list

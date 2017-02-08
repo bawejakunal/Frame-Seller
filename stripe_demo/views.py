@@ -30,7 +30,7 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 #stripe sdk
 from stripe_demo.models import Product, Order
 from stripe_demo.serializers import (ProductSerializer, OrderSerializer,
-                                     OrderDetailSerializer)
+                                     OrderDetailSerializer, UserSerializer)
 import stripe
 
 @api_view(['GET'])
@@ -43,38 +43,6 @@ def get_products(request):
     products = Product.objects.all()
     serializer = ProductSerializer(products, many=True)
     return Response(serializer.data)
-
-
-@csrf_exempt
-@require_POST
-def signup(request):
-    """
-    Sign up a new user on stripe_demo
-    """
-    try:
-        username = request.POST["email"]
-        password = request.POST["password"]
-        first_name = request.POST["firstname"]
-        last_name = request.POST["lastname"]
-        email = username
-
-        user = User.objects.create_user(username, email, password)
-        user.first_name = first_name
-        user.last_name = last_name
-        user.save()
-
-        return HttpResponse(json.dumps({"success":True}),
-                            content_type="application/json")
-
-    except (KeyError, TypeError, MultiValueDictKeyError) as error:
-        error = error
-
-    except IntegrityError:
-        error = "User already exists!"
-
-    return HttpResponse(json.dumps({"success":False, "error": error}),
-                        status=400, content_type="application/json")
-
 
 def load_key(keyfile):
     """
@@ -130,8 +98,6 @@ def order(request):
             data['user'] = request.user.id
             data['orderdate'] = datetime.now()
             data['paymentstatus'] = Order.UNPAID
-            # data['product'] = request.POST["product_id"]
-            # data['token'] = request.POST["token"]
         except KeyError as error:
             print error
             pass
@@ -142,3 +108,29 @@ def order(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+#TODO: restrict spam
+@api_view(['POST'])
+def signup(request):
+    """
+    Sign up a new user on stripe_demo
+    """
+    try:
+        data = request.data
+        data['username'] = data['email']
+        serializer = UserSerializer(data=data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'success':True}, status=status.HTTP_201_CREATED)
+
+        #control reaches here if user not saved
+        error = serializer.errors
+        return Response({'success': False, 'error': serializer.errors},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    except (KeyError, TypeError, MultiValueDictKeyError) as detail:
+        error = {'detail': [detail]}
+        return Response({'success': False, 'error': error},
+                        status=status.HTTP_400_BAD_REQUEST)
