@@ -12,6 +12,7 @@ function getDateFromString(d){
     if(mins.length==1){
         mins = "0"+mins.toString();
     }
+
     var returnString = (date.getMonth()+1)+"/"+date.getDate()+"/"+date.getFullYear()+"  "+date.getHours()+":"+mins;
     return returnString;
 }
