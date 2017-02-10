@@ -1,6 +1,3 @@
-/**
- * Created by akshay on 2/05/2017.
- */
 function logoutUser(){
     document.cookie = "jwttoken=;expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     return true;
