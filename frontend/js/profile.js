@@ -1,10 +1,17 @@
+/**
+ * render first and last name of customer in header of profile.html from decoded token value.
+ * @param jwttoken
+ */
 function fillCustomerName(jwttoken) {
     var token = jwttoken.split('.')[1];
     var decodedToken = atob(token);
     var tokenjson = JSON.parse(decodedToken);
     $("#customername").text("Hello, " + tokenjson["first_name"] + " " + tokenjson["last_name"]);
 }
-
+/**
+ * GET request to orderEndpoint to get orders json for logged in user.
+ * @param jwttoken
+ */
 function getOrdersForUser(jwttoken) {
     var promise = new Promise(function (success, failure) {
         $.ajax({
@@ -31,7 +38,10 @@ function getOrdersForUser(jwttoken) {
         showSnackbar("Failed to fetch orders. Please try again later.");
     });
 }
-
+/**
+ * render orders json on HTML DOM.
+ * @param data
+ */
 function fillOrders(data) {
     var orderSection = document.getElementById('orders');
     var numOrders = data.length;
@@ -60,7 +70,11 @@ function fillOrders(data) {
         }
     }
 }
-
+/**
+ * decide color of container based on payment status.
+ * @param orderStatus
+ * @returns {string}
+ */
 function getPaymentInfoTag(orderStatus) {
     if (orderStatus == "UNPAID") {
         return '<span class="paymentinfo alert alert-warning"><strong>PAYMENT STATUS</strong> <br> ' + orderStatus + '</span>';

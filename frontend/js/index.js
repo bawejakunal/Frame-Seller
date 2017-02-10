@@ -1,3 +1,6 @@
+/**
+ * Check login credentials by sending them to authTokenEndpoint and receiving response inside Promise.
+ */
 function login() {
     username = $("#loginemail");
     password = $("#loginpassword");
@@ -34,7 +37,9 @@ function login() {
         });
     }
 }
-
+/**
+ * Check sign up credentials of new user by sending them to signUpEndpoint and receiving response inside Promise.
+ */
     function signUp() {
         firstname = $("#sufirstname");
         lastname = $("#sulastname");
@@ -87,6 +92,9 @@ function login() {
         }
     }
 
+/**
+ * clears signup form's fields when user presses sign up button
+ */
     function clearSignUpForm() {
         $("#sufirstname").val("");
         $("#sulastname").val("");
@@ -94,7 +102,11 @@ function login() {
         $("#supassword").val("");
         $("#surepeatpassword").val("");
     }
-
+/**
+ * check if a form field is submitted with blank input.
+ * @param element
+ * @return {Boolean} bool
+ */
     function check(element) {
         var bool;
         if (element.val() == "") {
