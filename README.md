@@ -20,11 +20,18 @@
 3. Backend server hosted on Elastic Beanstalk (Load Balancer + EC2 instance)
 
 ## API endpoints
-1. Login service: stripe_demo/api-token-auth/ [POST]
-2. New user signup: stripe_demo/signup/ [POST]
-3. Fetch product catalog: stripe_demo/product/ [GET]
-4. Get orders for logged in user: stripe_demo/order/ [GET]
-5. Submit order & stripe token to backend: stripe_demo/order/ [POST]
+<dl>
+  <dt>POST stripe_demo/api-token-auth/</dt>
+  <dd>Login service</dd>
+  <dt>POST stripe_demo/signup/</dt>
+  <dd>Sign Up service</dd>
+  <dt>GET stripe_demo/product/</dt>
+  <dd>Fetch product catalog service</dd>
+  <dt>GET stripe_demo/order/</dt>
+  <dd>Get orders of logged in user</dd>
+  <dt>POST stripe_demo/order/</dt>
+  <dd>Submit order & stripe token to backend</dd>
+</dl>
 
 ## Screenshots
 ![Homepage](screenshots/home.png "Homepage")
