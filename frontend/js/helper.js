@@ -40,9 +40,3 @@ function getCookie(cname) {
     }
     return "";
 }
-
-/*function getNameFromToken(){
-    var token = getCookie("jwttoken").split('.')[1];
-    var decodedToken =  atob(token);
-    console.log(decodedToken);
-}*/

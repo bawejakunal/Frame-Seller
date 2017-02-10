@@ -1,7 +1,3 @@
-/**
- * Created by siddharthshah on 2/8/17.
- */
-
 var orderEndpoint = "http://localhost:8000/stripe_demo/order/";
 
 function fillCustomerName(jwttoken) {
