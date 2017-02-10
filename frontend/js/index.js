@@ -35,6 +35,7 @@ function login() {
             showSnackbar(data["non_field_errors"]);
         });
     }
+}
 
     function signUp() {
         firstname = $("#sufirstname");
