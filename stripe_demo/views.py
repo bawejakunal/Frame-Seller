@@ -5,10 +5,10 @@ Stripe Demo Business Logic
 """
 
 #standard modules
+from __future__ import print_function
 import os
 import json
 from datetime import datetime
-from __future__ import print_function
 
 #django modules
 from django.utils.datastructures import MultiValueDictKeyError
