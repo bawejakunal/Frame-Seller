@@ -102,15 +102,23 @@
                         'password': password.val()
                     };
                     console.log(parameters);
-                    var request = $.post("http://localhost:8000/stripe_demo/signup", parameters, function (data) {
-
-                    })
-                        .done(function (data, textStatus, request) {
+                    $.ajax({
+                        url: 'http://localhost:8000/stripe_demo/signup',
+                        type: 'POST',
+                        contentType: "application/json",
+                        data: JSON.stringify(parameters),
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader('Authorization', 'JWT ' + jwttoken);
+                        },
+                        success: function (data) {
+                            console.log(data);
                             success(data);
-                        })
-                        .fail(function (data, textStatus, request) {
-                            failure(data.responseText);
-                        })
+                        },
+                        fail: function (data) {
+                            console.log(data);
+                            failure(data);
+                        },
+                    });
                 });
 
                 promise.then(function (data) {
