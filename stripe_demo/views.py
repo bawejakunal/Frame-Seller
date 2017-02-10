@@ -125,7 +125,7 @@ def order(request):
         if serializer.is_valid():
             serializer.save()
             #TODO: promise magic here
-            charge_customer(serializer.data.id, data['product'], data['token'])
+            charge_customer(serializer.data['id'], data['product'], data['token'])
             return Response({'success':True}, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

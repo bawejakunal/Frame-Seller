@@ -20,7 +20,7 @@ function processPayment(price, productID) {
 
 function stripe_checkout(product_id) {
     var handler = StripeCheckout.configure({
-        key: 'pk_test_HbZ2G2ELK1pvsY2iOIKStdKn',
+        key: 'pk_test_sMAdKGvXXhzIt0h42tSNt4if',
         image: 'https://stripe.com/img/documentation/checkout/marketplace.png',
         locale: 'auto',
         token: function (token) {

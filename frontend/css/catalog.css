@@ -8,16 +8,24 @@ h1.container {
 
 body {
     text-align: center;
-    padding: 10px;
+    padding: 5px;
 }
 
 .product {
     align-items: center;
-    margin: 10px;
 }
 
 #photoSection {
     margin-top: 40px;
+}
+
+.row{
+    overflow: hidden;
+}
+
+[class*="col-"]{
+    margin-bottom: -99999px;
+    padding-bottom: 99999px;
 }
 
 /* The snackbar - position it at the bottom and in the middle of the screen */
