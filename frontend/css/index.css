@@ -1,7 +1,19 @@
-.footer{
+.footer {
     text-align: center;
 }
 
 .form {
     padding: 4px;
+}
+
+input.valid {
+    border-color: inherit;
+}
+
+input.invalid {
+    border-color: red;
+}
+
+input:focus {
+    border-color: inherit;
 }

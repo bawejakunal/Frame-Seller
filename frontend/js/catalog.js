@@ -53,7 +53,6 @@ function stripe_checkout(product_id) {
                     setTimeout(function(){ $("#snackbar").attr("class",""); }, 3000);
                 //}
             }, function (data) {
-                console.log(data);
                 $("#snackbar").text("Order processing failed");
                 $("#snackbar").attr("class","show");
 
@@ -114,13 +113,14 @@ function fillProduct(data) {
             photoSection.innerHTML += '<div class="row">';
             for (var j = 0; j < 3; j++) {
                 index++;
-                var stripeString = "<div class=\"product alert alert-info col-sm-4\">\
+                var stripeString = "<div class=\"col-sm-4\">\
+                    <div class='product alert alert-info '>\
                      <img src=\"" + JSONArray[index].url + "\" class=\"img-thumbnail img-responsive\" alt=\"Image not found\">\
                      <div class=\"caption\">\
                     <p>" + JSONArray[index].description + "</p>\
                     </div>\
                      <script src=\"https://checkout.stripe.com/checkout.js\"></script>\
-                     <button align=\"center\" class=\"btn btn-success\" id=\"customButton\" onclick=\"processPayment(" + JSONArray[index].price + "," + JSONArray[index].id + ");\">Pay $ " + JSONArray[index].price + "</button>";
+                     <button align=\"center\" class=\"btn btn-success\" id=\"customButton\" onclick=\"processPayment(" + JSONArray[index].price + "," + JSONArray[index].id + ");\">Pay $ " + JSONArray[index].price + "</button></div>";
 
                 $("#photoSection").append(stripeString);
             }
@@ -134,12 +134,13 @@ function fillProduct(data) {
         }
         for (var k = 0; k < incompleteRows; k++) {
             index++;
-            var stripeString = "<div class=\"product alert alert-info col-sm-4\">\
+            var stripeString = "<div class=\"col-sm-4\">\
+                                <div class='product alert alert-info'>\
                                  <img src=\"" + JSONArray[index].url + "\" class=\"img-thumbnail img-responsive\" alt=\"Image not found\">\
                                  <div class=\"caption\">\
                                 <p>" + JSONArray[index].description + "</p>\
                                 </div>\
-                                 <button align=\"center\" class=\"btn btn-success\" id=\"customButton\" onclick=\"processPayment(" + JSONArray[index].price + "," + JSONArray[index].id + ");\">Pay $ " + JSONArray[index].price + "</button>";
+                                 <button align=\"center\" class=\"btn btn-success\" id=\"customButton\" onclick=\"processPayment(" + JSONArray[index].price + "," + JSONArray[index].id + ");\">Pay $ " + JSONArray[index].price + "</button></div>";
             $("#photoSection").append(stripeString);
         }
         photoSection.innerHTML += '</div>';

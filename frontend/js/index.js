@@ -1,3 +1,6 @@
+var authTokenEndpoint = "http://localhost:8000/stripe_demo/api-token-auth/";
+var signUpEndpoint = "http://localhost:8000/stripe_demo/signup/";
+
 function login() {
     username = $("#loginemail");
     password = $("#loginpassword");
@@ -6,40 +9,30 @@ function login() {
     bool2 = check(password);
 
     if (bool1 && bool2) {
+        parameters = {
+            'username': username.val(),
+            'password': password.val(),
+        };
         var promise = new Promise(function (success, failure) {
-            parameters = {
-                'username': username.val(),
-                'password': password.val(),
-            };
-            //console.log(parameters);
-            var request = $.post("http://localhost:8000/stripe_demo/api-token-auth/", parameters, function (data) {
-                //console.log(data);
-            })
-                .done(function (data, textStatus, request) {
-                    //console.log(data);
-                    //console.log(request.getAllResponseHeaders());
+            $.ajax({
+                url: authTokenEndpoint,
+                type: 'POST',
+                contentType: "application/json",
+                data: JSON.stringify(parameters),
+                success: function (data) {
                     success(data);
-                })
-                .fail(function (data, textStatus, request) {
-                    //console.log(data);
-                    //console.log(data.getAllResponseHeaders())
+                },
+                error: function (data) {
                     failure(data.responseText);
-                })
-        });
-        promise.then(function (data) {
-            console.log(data);
-            var jwttoken = data["token"];
-            var jwtpayload = jwttoken.split(".")[1];
-            var json = JSON.parse(window.atob(jwtpayload));
-            var exptime = json["exp"];
-            var d = new Date();
-            d.setTime(parseInt(exptime*1000));
-            var expires = "expires=" + d.toUTCString();
-            console.log(expires);
-            document.cookie = "jwttoken=" + jwttoken + ";" + expires + ";path=/";
-            window.location.href = "catalog.html"
-        }, function (data) {
-            alert(data);
+                }
+            });
+
+            promise.then(function (data) {
+                setTokenCookie(data["token"]);
+                window.location.href = "catalog.html"
+            }, function (data) {
+                showSnackbar(data);
+            });
         });
     }
 }
@@ -58,16 +51,15 @@ function signUp() {
     var bool5 = check(repeatpassword);
 
     if (bool1 && bool2 && bool3 && bool4 && bool5) {
+        parameters = {
+            'first_name': firstname.val(),
+            'last_name': lastname.val(),
+            'email': email.val(),
+            'password': password.val()
+        };
         var promise = new Promise(function (success, failure) {
-            parameters = {
-                'first_name': firstname.val(),
-                'last_name': lastname.val(),
-                'email': email.val(),
-                'password': password.val()
-            };
-            console.log(parameters);
             $.ajax({
-                url: 'http://localhost:8000/stripe_demo/signup/',
+                url: signUpEndpoint,
                 type: 'POST',
                 contentType: "application/json",
                 data: JSON.stringify(parameters),
@@ -75,18 +67,25 @@ function signUp() {
                     success(data);
                 },
                 error: function (data) {
-                    console.log(data);
                     failure(data);
                 }
             });
         });
 
         promise.then(function (data) {
-            alert("User registered successfully. You can now login");
+            console.log(data);
+            if (data["success"] == true) {
+                showSnackbar("User registered successfully. You can now login");
+            }
             clearSignUpForm();
         }, function (data) {
             var json = JSON.parse(data);
-            alert(json["error"]);
+            if (Object.keys(json["error"]).length == 1) {
+                var errorKey = Object.keys(json["error"])[0];
+                showSnackbar(json["error"][errorKey]);
+            } else {
+                showSnackbar("An error occured with your sign up. Please check your credentials.");
+            }
         });
     }
 }
@@ -108,7 +107,6 @@ function check(element) {
     } else {
         element.removeClass("invalid");
         bool = true;
-
     }
 
     if (element.attr('id') == "surepeatpassword" && element.val() !== "") {

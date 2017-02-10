@@ -1,19 +1,19 @@
-function logoutUser(){
+function logoutUser() {
     document.cookie = "jwttoken=;expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     return true;
 }
 
-function getDateFromString(d){
+function getDateFromString(d) {
     var date = new Date(d);
     var mins = date.getMinutes();
-    if(mins.length==1){
-        mins = "0"+mins.toString();
+    if (mins.length == 1) {
+        mins = "0" + mins.toString();
     }
-    var returnString = (date.getMonth()+1)+"/"+date.getDate()+"/"+date.getFullYear()+"  "+date.getHours()+":"+mins;
+    var returnString = (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear() + "  " + date.getHours() + ":" + mins;
     return returnString;
 }
 
-function checkToken(){
+function checkToken() {
     var jwttoken = getCookie("jwttoken");
     console.log("jwt token: " + jwttoken);
     if (!jwttoken) {
@@ -36,4 +36,25 @@ function getCookie(cname) {
         }
     }
     return "";
+}
+
+function showSnackbar(text) {
+    $("#snackbar").text(text);
+    $("#snackbar").attr("class", "show");
+
+    // After 3 seconds, remove the show class from DIV
+    setTimeout(function () {
+        $("#snackbar").attr("class", "");
+    }, 3000);
+}
+
+function setTokenCookie(jwttoken) {
+    var jwtpayload = jwttoken.split(".")[1];
+    var json = JSON.parse(window.atob(jwtpayload));
+    var exptime = json["exp"];
+    var d = new Date();
+    d.setTime(parseInt(exptime * 1000));
+    var expires = "expires=" + d.toUTCString();
+    console.log(expires);
+    document.cookie = "jwttoken=" + jwttoken + ";" + expires + ";path=/";
 }
