@@ -86,22 +86,22 @@ def charge_customer(order_id, product_id, stripe_token):
             order = Order.objects.get(pk=order_id)
             order.paymentstatus = Order.PAID
             order.save()
-            print "Order", order.id, "paid"
+            print("Order" + str(order.id) + " paid")
         elif charge["paid"] is False:
             order = Order.objects.get(pk=order_id)
             order.paymentstatus = Order.FAILED
             order.save()
         return charge
     except stripe.error.InvalidRequestError as error:
-        print error
+        print(error)
     except stripe.error.APIConnectionError as error:
-        print error
+        print(error)
     except stripe.error.AuthenticationError as error:
-        print error
+        print(error)
     except stripe.error.RateLimitError as error:
-        print error
+        print(error)
     except Exception as error:
-        print error
+        print(error)
     return None
 
 
@@ -133,7 +133,7 @@ def order(request):
             data['orderdate'] = datetime.now()
             data['paymentstatus'] = "UNPAID"
         except KeyError as error:
-            print error
+            print(error)
 
         serializer = OrderSerializer(data=data)
         if serializer.is_valid():
@@ -146,14 +146,14 @@ def order(request):
                                reject(Exception('Payment Failed')\
                                 if charge_customer(order_id, data['product'],
                                                    data['token']) is None else
-                                      resolve('Payment Successful')))
+                                      resolve('Payment Processed')))
 
             """
             Process payment in promise and update db
             """
-            _p.then(lambda result: print(result)).\
+            _promise.then(lambda result: print(result)).\
             catch(lambda error: print(error))
-            
+
             return Response({'success':True}, status=status.HTTP_202_ACCEPTED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
