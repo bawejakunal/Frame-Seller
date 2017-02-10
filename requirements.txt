@@ -5,4 +5,4 @@ Django==1.10.4
 djangorestframework==3.5.3
 djangorestframework-jwt==1.9.0
 django-cors-headers==2.0.1
-promise==1.0.1
+async-promises==1.1.1

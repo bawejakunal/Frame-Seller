@@ -8,6 +8,7 @@ Stripe Demo Business Logic
 import os
 import json
 from datetime import datetime
+from __future__ import print_function
 
 #django modules
 from django.utils.datastructures import MultiValueDictKeyError
@@ -28,9 +29,9 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 #stripe sdk
 from stripe_demo.models import Product, Order
 from stripe_demo.serializers import (ProductSerializer, OrderSerializer,
-                                     OrderDetailSerializer, UserSerializer)
+                                     OrderDetailSerializer)
 import stripe
-from promise import Promise
+from async_promises import Promise
 
 @api_view(['GET'])
 @authentication_classes((SessionAuthentication, BasicAuthentication, JSONWebTokenAuthentication))
@@ -80,7 +81,7 @@ def charge_customer(order_id, product_id, stripe_token):
             currency="usd",
             metadata={"order_id": order_id},
             source=stripe_token)
-    
+
         if charge["paid"] is True:
             order = Order.objects.get(pk=order_id)
             order.paymentstatus = Order.PAID
@@ -90,7 +91,7 @@ def charge_customer(order_id, product_id, stripe_token):
             order = Order.objects.get(pk=order_id)
             order.paymentstatus = Order.FAILED
             order.save()
-            print "Order", order.id, "failed"
+        return charge
     except stripe.error.InvalidRequestError as error:
         print error
     except stripe.error.APIConnectionError as error:
@@ -101,6 +102,7 @@ def charge_customer(order_id, product_id, stripe_token):
         print error
     except Exception as error:
         print error
+    return None
 
 
 @api_view(['GET', 'POST'])
@@ -136,10 +138,23 @@ def order(request):
         serializer = OrderSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            #TODO: promise magic here
-            charge_customer(serializer.data['id'], data['product'],
-                            data['token'])
-            return Response({'success':True}, status=status.HTTP_201_CREATED)
+            """
+            Promise magic is here
+            """
+            order_id = serializer.data['id']
+            _promise = Promise(lambda resolve, reject:
+                               reject(Exception('Payment Failed')\
+                                if charge_customer(order_id, data['product'],
+                                                   data['token']) is None else
+                                      resolve('Payment Successful')))
+
+            """
+            Process payment in promise and update db
+            """
+            _p.then(lambda result: print(result)).\
+            catch(lambda error: print(error))
+            
+            return Response({'success':True}, status=status.HTTP_202_ACCEPTED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
