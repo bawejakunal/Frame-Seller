@@ -19,15 +19,6 @@ body {
     margin-top: 40px;
 }
 
-.row{
-    overflow: hidden;
-}
-
-[class*="col-"]{
-    margin-bottom: -99999px;
-    padding-bottom: 99999px;
-}
-
 /* The snackbar - position it at the bottom and in the middle of the screen */
 #snackbar {
     visibility: hidden; /* Hidden by default. Visible on click */

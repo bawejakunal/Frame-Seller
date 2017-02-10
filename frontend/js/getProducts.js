@@ -41,9 +41,9 @@ function stripe_checkout(product_id) {
                     success: function (data) {
                         success(data);
                     },
-                    fail: function (data) {
+                    error: function (data) {
                         failure(data.responseText);
-                    },
+                    }
                 });
             });
             promise.then(function (data) {

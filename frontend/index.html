@@ -107,17 +107,13 @@
                         type: 'POST',
                         contentType: "application/json",
                         data: JSON.stringify(parameters),
-                        beforeSend: function (xhr) {
-                            xhr.setRequestHeader('Authorization', 'JWT ' + jwttoken);
-                        },
                         success: function (data) {
-                            console.log(data);
                             success(data);
                         },
-                        fail: function (data) {
+                        error: function (data) {
                             console.log(data);
                             failure(data);
-                        },
+                        }
                     });
                 });
 
