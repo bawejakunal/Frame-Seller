@@ -149,6 +149,10 @@ def signup(request):
     """
     try:
         data = request.data
+        if 'first_name' not in data or data['first_name'].strip() == "":
+            raise ValueError('First Name is a required field')
+        elif 'last_name' not in data or data['last_name'].strip() == "":
+            raise ValueError('Last Name is a required field')
         data['username'] = data['email']
         serializer = UserSerializer(data=data)
 
@@ -161,7 +165,7 @@ def signup(request):
         return Response({'success': False, 'error': serializer.errors},
                         status=status.HTTP_400_BAD_REQUEST)
 
-    except (KeyError, TypeError, MultiValueDictKeyError) as detail:
-        error = {'detail': [detail]}
+    except (KeyError, TypeError, ValueError, MultiValueDictKeyError) as detail:
+        error = {'detail': [str(detail)]}
         return Response({'success': False, 'error': error},
                         status=status.HTTP_400_BAD_REQUEST)
