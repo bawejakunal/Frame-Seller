@@ -126,6 +126,7 @@ def order(request):
         orders = Order.objects.filter(user=request.user.id).\
                 select_related('product')
         serializer = OrderDetailSerializer(orders, many=True)
+        print(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'POST':
