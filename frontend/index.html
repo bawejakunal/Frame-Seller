@@ -107,12 +107,12 @@
                         type: 'POST',
                         contentType: "application/json",
                         data: JSON.stringify(parameters),
-                        success: function (data) {
+                        success: function (data, textStatus, request) {
                             success(data);
                         },
-                        error: function (data) {
-                            console.log(data);
-                            failure(data);
+                        error: function (data, textStatus, request) {
+                            console.log(data.responseText);
+                            failure(data.responseText);
                         }
                     });
                 });
@@ -122,7 +122,13 @@
                     clearSignUpForm();
                 }, function (data) {
                     var json = JSON.parse(data);
-                    alert(json["error"]);
+                    if (Object.keys(json["error"]).length == 1) {
+                        var errorKey = Object.keys(json["error"])[0];
+                        console.log(errorKey);
+                        alert(json["error"][errorKey]);
+                    } else {
+                        alert("An error occured with your sign up. Please check your credentials.");
+                    }
                 });
             }
         }
