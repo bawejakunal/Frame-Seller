@@ -27,3 +27,9 @@
 5. Submit order & stripe token to backend: stripe_demo/order/ [POST]
 
 ## Screenshots
+![Homepage](screenshots/home.png "Homepage")
+![Catalog] (screenshots/catalog.png "Catalog")
+![Card Popup](screenshots/card_popup.png "Card Popup")
+![Payment submitted](screenshots/payment_submitted.png "Payment submitted")
+![Orders] (screenshots/orders.png "Orders by user")
+![Stripe Oder Meta] (screenshots/stripe_order_meta.png "Stripe Metadata")
