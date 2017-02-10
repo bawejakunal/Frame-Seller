@@ -8,6 +8,9 @@
 3. Kunal Baweja (kb2896)
 4. Siddharth Shah (sas2387)
 
+## Architecture
+![Architecture Diagram](screenshots/Architecture.jpg "Architecture Diagram")
+
 ## Tech Stack
 1. Python (Django REST Framework)
 2. HTML5, CSS, Javascript
