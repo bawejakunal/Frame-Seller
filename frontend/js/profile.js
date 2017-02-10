@@ -4,7 +4,6 @@ function fillCustomerName(jwttoken) {
     var token = jwttoken.split('.')[1];
     var decodedToken = atob(token);
     var tokenjson = JSON.parse(decodedToken);
-    console.log(tokenjson["first_name"] + " " + tokenjson["last_name"]);
     $("#customername").text("Hello, " + tokenjson["first_name"] + " " + tokenjson["last_name"]);
 }
 

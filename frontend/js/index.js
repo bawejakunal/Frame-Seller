@@ -67,13 +67,12 @@ function signUp() {
                     success(data);
                 },
                 error: function (data) {
-                    failure(data);
+                    failure(data.responseText);
                 }
             });
         });
 
         promise.then(function (data) {
-            console.log(data);
             if (data["success"] == true) {
                 showSnackbar("User registered successfully. You can now login");
             }
@@ -100,7 +99,6 @@ function clearSignUpForm() {
 
 function check(element) {
     var bool;
-    console.log(element.val());
     if (element.val() == "") {
         element.addClass("invalid");
         bool = false;
