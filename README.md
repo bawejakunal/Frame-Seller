@@ -40,8 +40,14 @@
 ### Client Side
 Stripe.js was used to integrate payment popup on client side'
 ### Server Side
-Server end uses the Charge API to communicate with the Stripe service and store the order meta data on Stripe and the order status in the database
-
+Server end uses the Charge API to communicate with the Stripe service and store the order **meta data** on Stripe and the order status in the database
+```python
+charge = stripe.Charge.create(
+            amount=int(product.price*100),
+            currency="usd",
+            metadata={"order_id": order_id},
+            source=stripe_token);
+```
 ## Screenshots
 ![Homepage](screenshots/home.png "Homepage")
 
@@ -54,3 +60,7 @@ Server end uses the Charge API to communicate with the Stripe service and store 
 ![Orders](screenshots/orders.png "Orders by user")
 
 ![Stripe Oder Meta](screenshots/stripe_order_meta.png "Stripe Metadata")
+
+## Further Improvements
+1. Use AngularJS in future assignments
+2. As suggested by Prof. Donald Ferguson, segregate the microservices further into Order, Payment and User.
