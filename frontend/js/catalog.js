@@ -2,6 +2,12 @@ window.addEventListener('popstate', function () {
     handler.close();
 });
 
+/**
+ * Adds two numbers
+ * @param {Number} a
+ * @param {Number} b
+ * @return {Number} sum
+ */
 function processPayment(price, productID) {
     var handler = stripe_checkout(productID);
     handler.open({
