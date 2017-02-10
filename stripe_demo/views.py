@@ -78,12 +78,12 @@ def charge_customer(order_id, product_id, stripe_token):
             metadata={"order_id": order_id},
             source=stripe_token)
     
-        if charge.succeeded:
+        if charge["paid"] is True:
             order = Order.objects.get(pk=order_id)
             order.paymentstatus = Order.PAID
             order.save()
             print "Order", order.id, "paid"
-        elif charge.failed:
+        elif charge["paid"] is False:
             order = Order.objects.get(pk=order_id)
             order.paymentstatus = Order.FAILED
             order.save()
