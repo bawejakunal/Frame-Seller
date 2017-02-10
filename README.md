@@ -3,10 +3,10 @@
 ## A Team Has No Name
 
 ### Team Members
-1. Abhijeet Mehrotra
-2. Akshay Nagpal
-3. Kunal Baweja
-4. Siddharth Shah
+1. Abhijeet Mehrotra (am4586)
+2. Akshay Nagpal (an2756)
+3. Kunal Baweja (kb2896)
+4. Siddharth Shah (sas2387)
 
 ## Tech Stack
 1. Python (Django REST Framework)
@@ -33,10 +33,19 @@
   <dd>Submit order & stripe token to backend</dd>
 </dl>
 
+## Communication with the Stripe Service
+### Client Side
+Stripe.js was used to integrate payment popup on client side'
+### Service Side
 ## Screenshots
 ![Homepage](screenshots/home.png "Homepage")
+
 ![Catalog] (screenshots/catalog.png "Catalog")
+
 ![Card Popup](screenshots/card_popup.png "Card Popup")
+
 ![Payment submitted](screenshots/payment_submitted.png "Payment submitted")
+
 ![Orders] (screenshots/orders.png "Orders by user")
+
 ![Stripe Oder Meta] (screenshots/stripe_order_meta.png "Stripe Metadata")
