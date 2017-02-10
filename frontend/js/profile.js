@@ -1,5 +1,3 @@
-var orderEndpoint = "http://localhost:8000/stripe_demo/order/";
-
 function fillCustomerName(jwttoken) {
     var token = jwttoken.split('.')[1];
     var decodedToken = atob(token);

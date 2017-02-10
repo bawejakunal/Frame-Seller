@@ -1,6 +1,3 @@
-var authTokenEndpoint = "http://localhost:8000/stripe_demo/api-token-auth/";
-var signUpEndpoint = "http://localhost:8000/stripe_demo/signup/";
-
 function login() {
     username = $("#loginemail");
     password = $("#loginpassword");

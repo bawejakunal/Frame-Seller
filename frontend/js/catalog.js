@@ -1,6 +1,3 @@
-var orderEndpoint = "http://localhost:8000/stripe_demo/order/";
-var productEndPoint = "http://localhost:8000/stripe_demo/product/";
-
 window.addEventListener('popstate', function () {
     handler.close();
 });
