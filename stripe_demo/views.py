@@ -71,24 +71,33 @@ def charge_customer(order_id, product_id, stripe_token):
     charge the customer using one time token
     """
     product = Product.objects.get(pk=product_id)
-    charge = stripe.Charge.create(
-        amount=int(product.price*100),
-        currency="usd",
-        metadata={"order_id": order_id},
-        source=stripe_token)
+    try:
+        charge = stripe.Charge.create(
+            amount=int(product.price*100),
+            currency="usd",
+            metadata={"order_id": order_id},
+            source=stripe_token)
     
-    if charge.succeeded:
-        order = Order.objects.get(pk=order_id)
-        order.paymentstatus = Order.PAID
-        order.save()
-        print "Order", order.id, "paid"
-    elif charge.failed:
-        order = Order.objects.get(pk=order_id)
-        order.paymentstatus = Order.FAILED
-        order.save()
-        print "Order", order.id, "failed"
-
-
+        if charge.succeeded:
+            order = Order.objects.get(pk=order_id)
+            order.paymentstatus = Order.PAID
+            order.save()
+            print "Order", order.id, "paid"
+        elif charge.failed:
+            order = Order.objects.get(pk=order_id)
+            order.paymentstatus = Order.FAILED
+            order.save()
+            print "Order", order.id, "failed"
+    except stripe.error.InvalidRequestError as error:
+        print error
+    except stripe.error.APIConnectionError as error:
+        print error
+    except stripe.error.AuthenticationError as error:
+        print error
+    except stripe.error.RateLimitError as error:
+        print error
+    except Exception as error:
+        print error
 
 
 @api_view(['GET', 'POST'])
@@ -125,7 +134,8 @@ def order(request):
         if serializer.is_valid():
             serializer.save()
             #TODO: promise magic here
-            charge_customer(serializer.data['id'], data['product'], data['token'])
+            charge_customer(serializer.data['id'], data['product'],
+                            data['token'])
             return Response({'success':True}, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
