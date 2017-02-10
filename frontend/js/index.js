@@ -33,7 +33,6 @@ function login() {
             window.location.href = "catalog.html"
         }, function (data) {
             var response = JSON.parse(data);
-            console.log(response["non_field_errors"][0]);
             showSnackbar(response["non_field_errors"][0]);
         });
     }

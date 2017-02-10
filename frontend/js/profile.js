@@ -39,7 +39,7 @@ function fillOrders(data) {
     var numOrders = data.length;
     for (var i = 0; i < numOrders; i++) {
         try {
-            var paymentinfo = getPaymentInfoTag(data[i].product.paymentstatus);
+            var paymentinfo = getPaymentInfoTag(data[i].paymentstatus);
             orderSection.innerHTML +=
                 '<div class="well well-lg">\
                      <div class="row">\
