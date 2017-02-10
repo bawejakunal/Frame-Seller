@@ -11,6 +11,9 @@ from datetime import datetime
 
 #django modules
 from django.utils.datastructures import MultiValueDictKeyError
+from django.http import HttpResponse
+from django.contrib.auth.models import User
+from django.db import IntegrityError
 
 #rest api development framework
 from rest_framework import status
@@ -149,23 +152,36 @@ def signup(request):
     """
     try:
         data = request.data
-        if 'first_name' not in data or data['first_name'].strip() == "":
-            raise ValueError('First Name is a required field')
-        elif 'last_name' not in data or data['last_name'].strip() == "":
-            raise ValueError('Last Name is a required field')
-        data['username'] = data['email']
-        serializer = UserSerializer(data=data)
+        email = data["email"].strip().strip("'").strip('"')
+        password = data["password"].strip().strip("'").strip('"')
+        first_name = data["first_name"].strip().strip("'").strip('"')
+        last_name = data["last_name"].strip().strip("'").strip('"')
+        username = email
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'success':True}, status=status.HTTP_201_CREATED)
+        if email == "":
+            raise ValueError("Email")
+        if password == "":
+            raise ValueError("Password")
+        if first_name == "":
+            raise ValueError("First Name")
+        if last_name == "":
+            raise ValueError("Last Name")
 
-        #control reaches here if user not saved
-        error = serializer.errors
-        return Response({'success': False, 'error': serializer.errors},
-                        status=status.HTTP_400_BAD_REQUEST)
+        user = User.objects.create_user(username, email, password)
+        user.first_name = first_name
+        user.last_name = last_name
+        user.save()
 
-    except (KeyError, TypeError, ValueError, MultiValueDictKeyError) as detail:
-        error = {'detail': [str(detail)]}
-        return Response({'success': False, 'error': error},
-                        status=status.HTTP_400_BAD_REQUEST)
+        return HttpResponse(json.dumps({"success":True}),
+                            content_type="application/json")
+
+    except (KeyError, TypeError, ValueError, MultiValueDictKeyError) as error:
+        error = str(error).strip("'").strip('"')
+        error += " is a required field"
+
+    except IntegrityError:
+        error = "User already exists!"
+
+    return HttpResponse(json.dumps({"success":False, "error": error}),
+                        status=status.HTTP_400_BAD_REQUEST,
+                        content_type="application/json")
