@@ -9,33 +9,31 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="js/helper.js"></script>
     <script src="js/profile.js"></script>
-    <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/profile.css">
 </head>
 <body>
-<nav class = "navbar navbar-inverse" role = "navigation">
+<nav class="navbar navbar-inverse" role="navigation">
     <div class="container-fluid">
-    <div class="navbar-header">
-              <a class="navbar-brand" href="index.html">Frame Seller</a>
-            </div>
-            <ul class="nav navbar-nav">
-              <li><a href="catalog.html">Catalog</a></li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-              <li class="active"><a href="#">Profile</a></li>
-              <li><a href="index.html" onclick="logoutUser();">Logout</a></li>
-            </ul>
-          </div>
-</nav>
-    <div class="container" id="customernamediv">
-      <div class="page-header">
-        <h3 id="customername">First Name Last Name</h3>
-          <h3>Your orders</h3>
-      </div>
+        <div class="navbar-header">
+            <a class="navbar-brand" href="index.html">Frame Seller</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li><a href="catalog.html">Catalog</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li class="active"><a href="#">Profile</a></li>
+            <li><a href="index.html" onclick="logoutUser();">Logout</a></li>
+        </ul>
     </div>
+</nav>
+<div class="container" id="customernamediv">
+    <div class="page-header">
+        <h3 id="customername"></h3>
+        <h3>Your orders</h3>
+    </div>
+</div>
 <script>
-
-    $(document).ready(function() {
+    $(document).ready(function () {
             var token = checkToken();
             fillCustomerName(token);
             getOrdersForUser(token);
@@ -45,5 +43,6 @@
 
 <div id="orders" name="orders">
 </div>
+<div id="snackbar"></div>
 </body>
 </html>
