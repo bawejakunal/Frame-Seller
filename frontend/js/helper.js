@@ -1,8 +1,17 @@
+/**
+ * Deletes the JWT token cookie and returns true
+ * @returns {boolean}
+ */
 function logoutUser() {
     document.cookie = "jwttoken=;expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     return true;
 }
 
+/**
+ * Returns formatted data mm/dd/yyyy from date object
+ * @param d
+ * @returns {string}
+ */
 function getDateFromString(d) {
     var date = new Date(d);
     var mins = date.getMinutes();
@@ -13,6 +22,10 @@ function getDateFromString(d) {
     return returnString;
 }
 
+/**
+ * Check token checks whether the JWT token is valid and redirects to index.html if not
+ * @returns {string}
+ */
 function checkToken() {
     var jwttoken = getCookie("jwttoken");
     console.log("jwt token: " + jwttoken);
@@ -23,6 +36,11 @@ function checkToken() {
     }
 }
 
+/**
+ * Retrives the cookie for the given string name
+ * @param cname
+ * @returns {string}
+ */
 function getCookie(cname) {
     var name = cname + "=";
     var ca = document.cookie.split(';');
@@ -38,6 +56,10 @@ function getCookie(cname) {
     return "";
 }
 
+/**
+ * Shows the snackbar for 3 seconds for given div of id "snackbar"
+ * @param text
+ */
 function showSnackbar(text) {
     $("#snackbar").text(text);
     $("#snackbar").attr("class", "show");
@@ -48,6 +70,10 @@ function showSnackbar(text) {
     }, 3000);
 }
 
+/**
+ * Set the given jwttoken in cookie for the specified expiration time
+ * @param jwttoken
+ */
 function setTokenCookie(jwttoken) {
     var jwtpayload = jwttoken.split(".")[1];
     var json = JSON.parse(window.atob(jwtpayload));

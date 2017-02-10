@@ -3,10 +3,9 @@ window.addEventListener('popstate', function () {
 });
 
 /**
- * Adds two numbers
- * @param {Number} a
- * @param {Number} b
- * @return {Number} sum
+ * Processes payment through handler for stripe checkout
+ * @param price
+ * @param productID
  */
 function processPayment(price, productID) {
     var handler = stripe_checkout(productID);
@@ -18,6 +17,12 @@ function processPayment(price, productID) {
     });
 }
 
+/**
+ * Returns handler for stripe checkout with specified product id
+ * and send to backend server
+ * @param product_id
+ * @returns {Object}
+ */
 function stripe_checkout(product_id) {
     var handler = StripeCheckout.configure({
         key: 'pk_test_sMAdKGvXXhzIt0h42tSNt4if',
@@ -85,6 +90,10 @@ function getProducts(jwttoken) {
     });
 }
 
+/**
+ * Fills the HTML DOM with the product data JSON array
+ * @param data
+ */
 function fillProduct(data) {
     JSONArray = data;
     var numProducts = JSONArray.length;
