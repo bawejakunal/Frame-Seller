@@ -75,18 +75,35 @@ TEMPLATES = [
 WSGI_APPLICATION = 'stripe_demo.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/1.10/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'stripedemo',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': '127.0.0.1',
+"""
+Database
+http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create-deploy-python-rds.html
+"""
+if 'RDS_HOSTNAME' in os.environ:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': os.environ['RDS_DB_NAME'],
+            'USER': os.environ['RDS_USERNAME'],
+            'PASSWORD': os.environ['RDS_PASSWORD'],
+            'HOST': os.environ['RDS_HOSTNAME'],
+            'PORT': os.environ['RDS_PORT'],
+        }
     }
-}
+
+else:
+    """
+    https://docs.djangoproject.com/en/1.10/ref/settings/#databases
+    """
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'stripedemo',
+            'USER': 'root',
+            'PASSWORD': '',
+            'HOST': '127.0.0.1',
+        }
+    }
 
 
 # Password validation

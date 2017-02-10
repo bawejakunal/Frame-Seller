@@ -27,6 +27,7 @@ from stripe_demo.models import Product, Order
 from stripe_demo.serializers import (ProductSerializer, OrderSerializer,
                                      OrderDetailSerializer, UserSerializer)
 import stripe
+from promise import Promise
 
 @api_view(['GET'])
 @authentication_classes((SessionAuthentication, BasicAuthentication, JSONWebTokenAuthentication))
@@ -65,6 +66,31 @@ def load_key(keyfile):
 stripe.api_key = load_key("stripe_demo/key.json")
 
 
+def charge_customer(order_id, product_id, stripe_token):
+    """
+    charge the customer using one time token
+    """
+    product = Product.objects.get(pk=product_id)
+    charge = stripe.Charge.create(
+        amount=int(product.price*100),
+        currency="usd",
+        metadata={"order_id": order_id},
+        source=stripe_token)
+    
+    if charge.succeeded:
+        order = Order.objects.get(pk=order_id)
+        order.paymentstatus = Order.PAID
+        order.save()
+        print "Order", order.id, "paid"
+    elif charge.failed:
+        order = Order.objects.get(pk=order_id)
+        order.paymentstatus = Order.FAILED
+        order.save()
+        print "Order", order.id, "failed"
+
+
+
+
 @api_view(['GET', 'POST'])
 @authentication_classes((SessionAuthentication, BasicAuthentication,
                          JSONWebTokenAuthentication))
@@ -86,7 +112,6 @@ def order(request):
         serializer = OrderDetailSerializer(orders, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    #TODO: Stripe Payment using token
     elif request.method == 'POST':
         try:
             data = request.data
@@ -99,6 +124,8 @@ def order(request):
         serializer = OrderSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
+            #TODO: promise magic here
+            charge_customer(serializer.data.id, data['product'], data['token'])
             return Response({'success':True}, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
