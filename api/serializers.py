@@ -3,8 +3,7 @@ djangorestframerwork serializer of objects
 """
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from stripe_demo.models import Product, Order
-
+from api.models import Product, Order
 
 class UserSerializer(serializers.ModelSerializer):
     """
@@ -15,7 +14,8 @@ class UserSerializer(serializers.ModelSerializer):
         User metadata
         """
         model = User
-        fields = ('id', 'password', 'username', 'email', 'first_name', 'last_name')
+        fields = ('id', 'password', 'username', 'email', 'first_name',
+                  'last_name')
         extra_kwargs = {
             'password': {'write_only': True}
         }

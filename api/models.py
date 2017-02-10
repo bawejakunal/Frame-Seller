@@ -15,7 +15,6 @@ class Product(models.Model):
     def __str__(self):
         return self.description
 
-
 class Order(models.Model):
     """
     Model for Orders

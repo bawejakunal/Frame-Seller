@@ -27,9 +27,9 @@ from rest_framework.response import Response
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 #stripe sdk
-from stripe_demo.models import Product, Order
-from stripe_demo.serializers import (ProductSerializer, OrderSerializer,
-                                     OrderDetailSerializer)
+from api.models import Product, Order
+from api.serializers import (ProductSerializer, OrderSerializer,
+                             OrderDetailSerializer)
 import stripe
 from async_promises import Promise
 
@@ -67,7 +67,7 @@ def load_key(keyfile):
     return keydata
 
 #set api key for stripe requests
-stripe.api_key = load_key("stripe_demo/key.json")
+stripe.api_key = load_key("api/key.json")
 
 
 def charge_customer(order_id, product_id, stripe_token):
@@ -126,7 +126,6 @@ def order(request):
         orders = Order.objects.filter(user=request.user.id).\
                 select_related('product')
         serializer = OrderDetailSerializer(orders, many=True)
-        print(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     elif request.method == 'POST':
