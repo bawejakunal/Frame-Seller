@@ -32,7 +32,9 @@ function login() {
             setTokenCookie(data["token"]);
             window.location.href = "catalog.html"
         }, function (data) {
-            showSnackbar(data["non_field_errors"]);
+            var response = JSON.parse(data);
+            console.log(response["non_field_errors"][0]);
+            showSnackbar(response["non_field_errors"][0]);
         });
     }
 }
