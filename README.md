@@ -80,7 +80,7 @@
   
   #####Response: Success
   
-  ```json
+  ```javascript
 [
   {
     "id": 14,
