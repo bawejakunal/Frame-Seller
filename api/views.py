@@ -67,7 +67,8 @@ def load_key(keyfile):
     return keydata
 
 #set api key for stripe requests
-stripe.api_key = load_key("api/key.json")
+# stripe.api_key = load_key("api/key.json")
+stripe.api_key = os.environ['STRIPE_API_KEY']
 
 
 def charge_customer(order_id, product_id, stripe_token):
