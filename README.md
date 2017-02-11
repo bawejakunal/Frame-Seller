@@ -17,7 +17,8 @@
 ### Auth service     
 
 **POST api/api-token-auth/**   
-Request parameters
+Request parameters    
+
 ```json
   {
    "username": "dummy@user.com",
@@ -25,13 +26,13 @@ Request parameters
 }
 ```
 
- Response: 200 Success
+ Response: 200 Success    
  
 ```json
 {"token":"JWT_TOKEN_HERE"}
 ```
 
-Response: 400 Failure
+Response: 400 Failure    
 
 ```json
 {"detail":"authorization failure"}
@@ -39,7 +40,7 @@ Response: 400 Failure
 
 ### SignUp service
 **POST api/signup/**   
-Request parameters  
+Request parameters    
 
 ```json
      parameters = {
@@ -50,13 +51,13 @@ Request parameters
             };
 ```
 
-Response: 201 Success  
+Response: 201 Success      
 
 ```json
     {"success":true}
 ```
 
-Response: 400 Failure
+Response: 400 Failure    
 
 ```json
 {
@@ -92,7 +93,7 @@ Response: 200 Success
 
 **GET api/order/**    
 
-Response: 200 Success
+Response: 200 Success    
 
 ```json
 [
@@ -136,8 +137,8 @@ Request parameters
 }
 ```
 
-Response: 201 Success
-  
+Response: 201 Success      
+
 ```json
 {
   "success": true
