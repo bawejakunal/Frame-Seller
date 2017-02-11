@@ -12,6 +12,58 @@
 1. **S3 frontend**: http://s3-us-west-2.amazonaws.com/stripe6998/index.html
 2. **Elastic Beanstalk (API URL)**: http://stripedeploy.pmi6pbp3mg.us-west-2.elasticbeanstalk.com/api/
 
+## API endpoints
+### Auth service
+<dl>
+  <dt>POST api/api-token-auth/</dt>
+  
+  ```json
+  {
+   "username": "dummy@user.com",
+   "password": "password"
+}
+   ```
+  #####Response: Success
+   ```json
+{"token":"JWT_TOKEN_HERE"}
+```
+#####Response: Failure
+```json
+{"detail":"authorization failure"}
+```
+  ### Login service
+  <dt>POST api/signup/</dt>
+  <dd>Sign Up service</dd>
+  
+  #####Request parameter
+  ```json
+  parameters = {
+                'first_name': "foo",
+                'last_name': "bar",
+                'email': "foobar@gmail.com",
+                'password': "password"
+            };
+  ```
+  #####Response: Success
+  ```json
+    {"success":true}
+```
+#####Response: Failure
+```json
+{
+   "success": false,
+   "error": "failure message here"
+}
+```
+  
+  <dt>GET api/product/</dt>
+  <dd>Fetch product catalog service</dd>
+  <dt>GET api/order/</dt>
+  <dd>Get orders of logged in user</dd>
+  <dt>POST api/order/</dt>
+  <dd>Submit order &amp; stripe token to backend</dd>
+</dl>
+
 ## Architecture
 ![Architecture Diagram](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/Architecture.jpg?token=AEfjci-OnBMNofT_MGshD_k4ilopAdSkks5Yp6fwwA%3D%3D "Architecture Diagram")
 
@@ -25,20 +77,6 @@
 1. Front end static files hosted on S3 bucket
 2. Database hosted on Amazon RDS
 3. Backend server hosted on Elastic Beanstalk (Load Balancer + EC2 instance)
-
-## API endpoints
-<dl>
-  <dt>POST api/api-token-auth/</dt>
-  <dd>Login service</dd>
-  <dt>POST api/signup/</dt>
-  <dd>Sign Up service</dd>
-  <dt>GET api/product/</dt>
-  <dd>Fetch product catalog service</dd>
-  <dt>GET api/order/</dt>
-  <dd>Get orders of logged in user</dd>
-  <dt>POST api/order/</dt>
-  <dd>Submit order &amp; stripe token to backend</dd>
-</dl>
 
 ## Communication with the Stripe Service
 ### Client Side
