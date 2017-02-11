@@ -1,6 +1,6 @@
 # Stripe Demo
 
-##Team Name: Infinite Monkeys
+##Team Name: MicroManiacs
 
 ### Team Members
 1. Abhijeet Mehrotra (am4586)
