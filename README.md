@@ -16,44 +16,48 @@
 **Note: Calls autheticated by the token in case of invalid / expired token return 403.**
 ### Auth service     
 
-  **POST api/api-token-auth/**   
-  Request parameters
-  ```json
+**POST api/api-token-auth/**   
+Request parameters    
+
+```json
   {
    "username": "dummy@user.com",
    "password": "password"
 }
-   ```
- Response: 200 Success
-   ```json
+```
+
+ Response: 200 Success    
+ 
+```json
 {"token":"JWT_TOKEN_HERE"}
 ```
 
-Response: 400 Failure
+Response: 400 Failure    
 
 ```json
 {"detail":"authorization failure"}
 ```
+
 ### SignUp service
-   **POST api/signup/** 
-  
-  Request parameters
-  
-  ```json
+**POST api/signup/**   
+Request parameters    
+
+```json
      parameters = {
                 "first_name": "foo",
                 "last_name": "bar",
                 "email": "foobar@gmail.com",
                 "password": "password"
             };
-  ```
-Response: 201 Success
-  
-  ```json
+```
+
+Response: 201 Success      
+
+```json
     {"success":true}
 ```
 
-Response: 400 Failure
+Response: 400 Failure    
 
 ```json
 {
@@ -61,11 +65,14 @@ Response: 400 Failure
    "error": "failure message here"
 }
 ```
+
 ### Fetch product catalog service
+
 **GET api/product/**    
- Response: 200 Success
- 
-  ```json
+
+Response: 200 Success
+
+```json
   [
   {
     "id": 1,
@@ -80,12 +87,15 @@ Response: 400 Failure
     "url": "https://c1.staticflickr.com/6/5763/20977162524_c8931fe2d3_k.jpg"
   }
 ]
-  ```
+```
+
 ### Fetch orders of logged in user
+
 **GET api/order/**    
-Response: 200 Success
-  
-  ```json
+
+Response: 200 Success    
+
+```json
 [
   {
     "id": 14,
@@ -115,21 +125,26 @@ Response: 200 Success
 ```
 
 ### Submit order &amp; stripe token to backend ###
+
 **POST api/order/**  
+
 Request parameters    
-  ```json
+
+```json
 {
     "token": "STRIPE_CLIENT_TOKEN",
     "product": "PRODUCT_ID"
 }
-   ```
-Response: 201 Success
-  
-   ```json
+```
+
+Response: 201 Success      
+
+```json
 {
   "success": true
 }
 ```
+
 Response: 400 Bad request: In case of missing parameters.    
 
 ## Architecture ##
