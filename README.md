@@ -17,25 +17,25 @@
 <dl>
   <dt>POST api/api-token-auth/</dt>
   
-  ```json
+  ```python
   {
    "username": "dummy@user.com",
    "password": "password"
 }
    ```
   #####Response: Success
-   ```json
+   ```python
 {"token":"JWT_TOKEN_HERE"}
 ```
 #####Response: Failure
-```json
+```python
 {"detail":"authorization failure"}
 ```
   ### SignUp service
   <dt>POST api/signup/</dt>
   
   #####Request parameter
-  ```json
+  ```python
   parameters = {
                 'first_name': "foo",
                 'last_name': "bar",
@@ -44,11 +44,11 @@
             };
   ```
   #####Response: Success
-  ```json
+  ```python
     {"success":true}
 ```
 #####Response: Failure
-```json
+```python
 {
    "success": false,
    "error": "failure message here"
@@ -59,7 +59,7 @@
   
  #####Response: Success
  
-  ```json
+  ```python
   [
   {
     "id": 1,
@@ -75,12 +75,13 @@
   }
 ]
   ```
+  
   ###Fetch orders of logged in user
   <dt>GET api/order/</dt>
   
   #####Response: Success
   
-  ```javascript
+  ```python
 [
   {
     "id": 14,
@@ -112,14 +113,14 @@
   ### Submit order &amp; stripe token to backend
   <dt>POST api/order/</dt>
   
-  ```json
+  ```python
 {
     "token": "STRIPE_CLIENT_TOKEN",
     "product": "PRODUCT_ID"
 }
    ```
   #####Response: Success
-   ```json
+   ```python
 {
   "success": true
 }
