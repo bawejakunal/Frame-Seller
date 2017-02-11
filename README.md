@@ -14,28 +14,27 @@
 
 ## API endpoints
 ### Auth service
-<dl>
-  <dt>POST api/api-token-auth/</dt>
+  ####POST api/api-token-auth/
   
-  ```python
+  ```json
   {
    "username": "dummy@user.com",
    "password": "password"
 }
    ```
   #####Response: Success
-   ```python
+   ```json
 {"token":"JWT_TOKEN_HERE"}
 ```
 #####Response: Failure
-```python
+```json
 {"detail":"authorization failure"}
 ```
   ### SignUp service
-  <dt>POST api/signup/</dt>
+  ####POST api/signup/
   
   #####Request parameter
-  ```python
+  ```json
   parameters = {
                 'first_name': "foo",
                 'last_name': "bar",
@@ -44,22 +43,22 @@
             };
   ```
   #####Response: Success
-  ```python
+  ```json
     {"success":true}
 ```
 #####Response: Failure
-```python
+```json
 {
    "success": false,
    "error": "failure message here"
 }
 ```
   ### Fetch product catalog service
-  <dt>GET api/product/</dt>
+  ####GET api/product/
   
  #####Response: Success
  
-  ```python
+  ```json
   [
   {
     "id": 1,
@@ -75,13 +74,12 @@
   }
 ]
   ```
-  
   ###Fetch orders of logged in user
-  <dt>GET api/order/</dt>
+  #### GET api/order/
   
   #####Response: Success
   
-  ```python
+  ```json
 [
   {
     "id": 14,
@@ -111,21 +109,21 @@
 ```
 
   ### Submit order &amp; stripe token to backend
-  <dt>POST api/order/</dt>
+  ####POST api/order/
   
-  ```python
+  ```json
 {
     "token": "STRIPE_CLIENT_TOKEN",
     "product": "PRODUCT_ID"
 }
    ```
   #####Response: Success
-   ```python
+   ```json
 {
   "success": true
 }
 ```
-</dl>
+
 
 ## Architecture
 ![Architecture Diagram](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/Architecture.jpg?token=AEfjci-OnBMNofT_MGshD_k4ilopAdSkks5Yp6fwwA%3D%3D "Architecture Diagram")
