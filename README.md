@@ -14,7 +14,8 @@
 
 ## API endpoints
 ### Auth service      
-  POST api/api-token-auth/    
+  **POST api/api-token-auth/**   
+  Request parameters
   ```json
   {
    "username": "dummy@user.com",
@@ -33,9 +34,9 @@ Response: Failure
 ```
 
   ### SignUp service
-  #### POST api/signup/ ####
+  **POST api/signup/** 
   
-  Request parameter
+  Request parameters
   
   ```json
   parameters = {
