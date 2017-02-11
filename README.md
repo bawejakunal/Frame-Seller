@@ -31,9 +31,8 @@
 ```json
 {"detail":"authorization failure"}
 ```
-  ### Login service
+  ### SignUp service
   <dt>POST api/signup/</dt>
-  <dd>Sign Up service</dd>
   
   #####Request parameter
   ```json
@@ -55,13 +54,76 @@
    "error": "failure message here"
 }
 ```
-  
+  ### Fetch product catalog service
   <dt>GET api/product/</dt>
-  <dd>Fetch product catalog service</dd>
+  
+ #####Response: Success
+ 
+  ```json
+  [
+  {
+    "id": 1,
+    "price": 100,
+    "description": "Brooklyn Bridge",
+    "url": "https://c1.staticflickr.com/1/728/31226388014_5558604d0f_k.jpg"
+  },
+  {
+    "id": 2,
+    "price": 150,
+    "description": "Singapore Grand Prix",
+    "url": "https://c1.staticflickr.com/6/5763/20977162524_c8931fe2d3_k.jpg"
+  }
+]
+  ```
+  ###Fetch orders of logged in user
   <dt>GET api/order/</dt>
-  <dd>Get orders of logged in user</dd>
+  
+  #####Response: Success
+  
+  ```json
+[
+  {
+    "id": 14,
+    "user": 5,
+    "orderdate": "2017-02-11T02:40:24.333429Z",
+    "paymentstatus": "PAID",
+    "product": {
+      "id": 1,
+      "price": 100,
+      "description": "Brooklyn Bridge",
+      "url": "https://c1.staticflickr.com/1/728/31226388014_5558604d0f_k.jpg"
+    }
+  },
+  {
+    "id": 15,
+    "user": 5,
+    "orderdate": "2017-02-11T02:40:56.373584Z",
+    "paymentstatus": "PAID",
+    "product": {
+      "id": 2,
+      "price": 150,
+      "description": "Singapore Grand Prix",
+      "url": "https://c1.staticflickr.com/6/5763/20977162524_c8931fe2d3_k.jpg"
+    }
+  }
+]
+```
+
+  ### Submit order &amp; stripe token to backend
   <dt>POST api/order/</dt>
-  <dd>Submit order &amp; stripe token to backend</dd>
+  
+  ```json
+{
+    "token": "STRIPE_CLIENT_TOKEN",
+    "product": "PRODUCT_ID"
+}
+   ```
+  #####Response: Success
+   ```json
+{
+  "success": true
+}
+```
 </dl>
 
 ## Architecture
