@@ -40,7 +40,7 @@ Response: 400 Failure
   Request parameters
   
   ```json
-   parameters = {
+    parameters = {
                 'first_name': 'foo',
                 'last_name': 'bar',
                 'email': 'foobar@gmail.com',
