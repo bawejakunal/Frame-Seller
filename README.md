@@ -41,10 +41,10 @@ Response: 400 Failure
   
   ```json
      parameters = {
-                'first_name': 'foo',
-                'last_name': 'bar',
-                'email': 'foobar@gmail.com',
-                'password': 'password'
+                "first_name": "foo",
+                "last_name": "bar",
+                "email": "foobar@gmail.com",
+                "password": "password"
             };
   ```
 Response: 201 Success
