@@ -1,6 +1,6 @@
 # Stripe Demo
 
-##Team Name: Micro-Maniacs
+##Team Name: 10000Monkeys
 
 ### Team Members
 1. Abhijeet Mehrotra (am4586)
