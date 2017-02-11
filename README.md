@@ -39,9 +39,9 @@ Response: Failure
   
   ```json
   parameters = {
-                'first_name': "foo",
-                'last_name': "bar",
-                'email': "foobar@gmail.com",
+                'first_name': 'foo',
+                'last_name': 'bar',
+                'email': 'foobar@gmail.com',
                 'password': "password"
             };
   ```
@@ -59,8 +59,8 @@ Response: Failure
    "error": "failure message here"
 }
 ```
-### Fetch product catalog service ###
-** GET api/product/ **    
+### Fetch product catalog service
+**GET api/product/**    
  Response: Success
  
   ```json
@@ -113,8 +113,8 @@ Response: Success
 ```
 
 ### Submit order &amp; stripe token to backend ###
-** POST api/order/ **
-  
+**POST api/order/**  
+Request parameters    
   ```json
 {
     "token": "STRIPE_CLIENT_TOKEN",
