@@ -105,6 +105,6 @@ charge = stripe.Charge.create(
 
 
 ## Further Improvements
-1. Use AngularJS in future assignments
-2. As suggested by Prof. Donald Ferguson, segregate the microservices further into Order, Payment and User.
-3. Add randomly generated `idempotency_key` in `stripe.Charge.create()` method call to implement [Stripe Idempotent Requests](https://stripe.com/docs/api/python#idempotent_requests) for retrying payment requests that fail due to network errors. 
+1. Use [AngularJS](https://angularjs.org/) in future assignments
+2. As suggested by Prof. Donald Ferguson, segregate the microservices further into Order, Payment and User services.
+3. Add randomly generated `idempotency_key` in `stripe.Charge.create()` method call to implement [Stripe Idempotent Requests](https://stripe.com/docs/api/python#idempotent_requests) for retrying payment requests that fail due to network errors.
