@@ -14,7 +14,7 @@
 
 ## API endpoints
 ### Auth service
-  ####POST api/api-token-auth/
+  #### POST api/api-token-auth/
   
   ```json
   {
@@ -26,14 +26,18 @@
    ```json
 {"token":"JWT_TOKEN_HERE"}
 ```
+
 #####Response: Failure
+
 ```json
 {"detail":"authorization failure"}
 ```
+
   ### SignUp service
   ####POST api/signup/
   
-  #####Request parameter
+  ##### Request parameter
+  
   ```json
   parameters = {
                 'first_name': "foo",
@@ -42,17 +46,22 @@
                 'password': "password"
             };
   ```
+  
   #####Response: Success
+  
   ```json
     {"success":true}
 ```
+
 #####Response: Failure
+
 ```json
 {
    "success": false,
    "error": "failure message here"
 }
 ```
+
   ### Fetch product catalog service
   ####GET api/product/
   
@@ -74,6 +83,7 @@
   }
 ]
   ```
+  
   ###Fetch orders of logged in user
   #### GET api/order/
   
@@ -117,13 +127,14 @@
     "product": "PRODUCT_ID"
 }
    ```
+   
   #####Response: Success
+  
    ```json
 {
   "success": true
 }
 ```
-
 
 ## Architecture
 ![Architecture Diagram](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/Architecture.jpg?token=AEfjci-OnBMNofT_MGshD_k4ilopAdSkks5Yp6fwwA%3D%3D "Architecture Diagram")
