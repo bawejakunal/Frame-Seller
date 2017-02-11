@@ -13,30 +13,29 @@
 2. **Elastic Beanstalk (API URL)**: http://stripedeploy.pmi6pbp3mg.us-west-2.elasticbeanstalk.com/api/
 
 ## API endpoints
-### Auth service
-  #### POST api/api-token-auth/
-  
+### Auth service      
+  POST api/api-token-auth/    
   ```json
   {
    "username": "dummy@user.com",
    "password": "password"
 }
    ```
-  #####Response: Success
+ Response: Success
    ```json
 {"token":"JWT_TOKEN_HERE"}
 ```
 
-#####Response: Failure
+Response: Failure
 
 ```json
 {"detail":"authorization failure"}
 ```
 
-  ### SignUp service ###
+  ### SignUp service
   #### POST api/signup/ ####
   
-  ##### Request parameter #####
+  Request parameter
   
   ```json
   parameters = {
@@ -47,13 +46,13 @@
             };
   ```
   
-  ##### Response: Success
+  Response: Success
   
   ```json
     {"success":true}
 ```
 
-##### Response: Failure
+Response: Failure
 
 ```json
 {
@@ -65,7 +64,7 @@
   ### Fetch product catalog service ###
   #### GET api/product/ ####
   
- ##### Response: Success #####
+ Response: Success
  
   ```json
   [
@@ -87,7 +86,7 @@
   ### Fetch orders of logged in user ###
   #### GET api/order/ ####
   
-  ##### Response: Success #####
+  Response: Success #####
   
   ```json
 [
@@ -128,7 +127,7 @@
 }
    ```
    
-  ##### Response: Success #####
+   Response: Success
   
    ```json
 {
