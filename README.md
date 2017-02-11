@@ -13,7 +13,9 @@
 2. **Elastic Beanstalk (API URL)**: http://stripedeploy.pmi6pbp3mg.us-west-2.elasticbeanstalk.com/api/
 
 ## API endpoints
-### Auth service      
+**Note: Calls autheticated by the token in case of invalid / expired token return 403.**
+### Auth service     
+
   **POST api/api-token-auth/**   
   Request parameters
   ```json
@@ -38,7 +40,7 @@ Response: 400 Failure
   Request parameters
   
   ```json
-  parameters = {
+   parameters = {
                 'first_name': 'foo',
                 'last_name': 'bar',
                 'email': 'foobar@gmail.com',
@@ -81,7 +83,7 @@ Response: 400 Failure
   ```
 ### Fetch orders of logged in user
 **GET api/order/**    
-Response: Success
+Response: 200 Success
   
   ```json
 [
@@ -121,13 +123,14 @@ Request parameters
     "product": "PRODUCT_ID"
 }
    ```
-Response: Success
+Response: 201 Success
   
    ```json
 {
   "success": true
 }
 ```
+Response: 400 Bad request: In case of missing parameters.    
 
 ## Architecture ##
 ![Architecture Diagram](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/Architecture.jpg?token=AEfjci-OnBMNofT_MGshD_k4ilopAdSkks5Yp6fwwA%3D%3D "Architecture Diagram")
