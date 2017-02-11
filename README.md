@@ -10,7 +10,7 @@
 
 ## URLs
 1. **S3 frontend**: http://s3-us-west-2.amazonaws.com/stripe6998/index.html
-2. **Elastic Beanstalk**: http://stripedeploy.pmi6pbp3mg.us-west-2.elasticbeanstalk.com/api/
+2. **Elastic Beanstalk (API URL)**: http://stripedeploy.pmi6pbp3mg.us-west-2.elasticbeanstalk.com/api/
 
 ## Architecture
 ![Architecture Diagram](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/Architecture.jpg?token=AEfjci-OnBMNofT_MGshD_k4ilopAdSkks5Yp6fwwA%3D%3D "Architecture Diagram")
@@ -69,4 +69,4 @@ charge = stripe.Charge.create(
 ## Further Improvements
 1. Use AngularJS in future assignments
 2. As suggested by Prof. Donald Ferguson, segregate the microservices further into Order, Payment and User.
-3. Add Idempotency-Key to Stripe API usage. 
+3. Add randomly generated `idempotency_key` in `stripe.Charge.create()` method call to implement [Stripe Idempotent Requests](https://stripe.com/docs/api/python#idempotent_requests) for retrying payment requests that fail due to network errors. 
