@@ -32,9 +32,8 @@ Response: Failure
 ```json
 {"detail":"authorization failure"}
 ```
-
-  ### SignUp service
-  **POST api/signup/** 
+### SignUp service
+   **POST api/signup/** 
   
   Request parameters
   
@@ -46,8 +45,7 @@ Response: Failure
                 'password': "password"
             };
   ```
-  
-  Response: Success
+Response: Success
   
   ```json
     {"success":true}
@@ -61,10 +59,8 @@ Response: Failure
    "error": "failure message here"
 }
 ```
-
-  ### Fetch product catalog service ###
-  #### GET api/product/ ####
-  
+### Fetch product catalog service ###
+** GET api/product/ **    
  Response: Success
  
   ```json
@@ -83,11 +79,9 @@ Response: Failure
   }
 ]
   ```
-  
-  ### Fetch orders of logged in user ###
-  #### GET api/order/ ####
-  
-  Response: Success #####
+### Fetch orders of logged in user
+**GET api/order/**    
+Response: Success
   
   ```json
 [
@@ -118,8 +112,8 @@ Response: Failure
 ]
 ```
 
-  ### Submit order &amp; stripe token to backend ###
-  #### POST api/order/ ####
+### Submit order &amp; stripe token to backend ###
+** POST api/order/ **
   
   ```json
 {
@@ -127,8 +121,7 @@ Response: Failure
     "product": "PRODUCT_ID"
 }
    ```
-   
-   Response: Success
+Response: Success
   
    ```json
 {
