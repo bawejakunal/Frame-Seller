@@ -1,6 +1,6 @@
 # Stripe Demo
 
-## A Team Has No Name
+## Micro-Maniacs
 
 ### Team Members
 1. Abhijeet Mehrotra (am4586)
