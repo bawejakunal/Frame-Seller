@@ -22,12 +22,12 @@
    "password": "password"
 }
    ```
- Response: Success
+ Response: 200 Success
    ```json
 {"token":"JWT_TOKEN_HERE"}
 ```
 
-Response: Failure
+Response: 400 Failure
 
 ```json
 {"detail":"authorization failure"}
@@ -45,13 +45,13 @@ Response: Failure
                 'password': "password"
             };
   ```
-Response: Success
+Response: 201 Success
   
   ```json
     {"success":true}
 ```
 
-Response: Failure
+Response: 400 Failure
 
 ```json
 {
@@ -61,7 +61,7 @@ Response: Failure
 ```
 ### Fetch product catalog service
 **GET api/product/**    
- Response: Success
+ Response: 200 Success
  
   ```json
   [
