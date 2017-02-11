@@ -1,6 +1,6 @@
-# Stripe Demo
+# Stripe Demo using Javascript Promises
 
-##Team Name: MicroManiacs
+## Team Name: Errors-as-a-Service
 
 ### Team Members
 1. Abhijeet Mehrotra (am4586)
@@ -12,52 +12,75 @@
 1. **S3 frontend**: http://s3-us-west-2.amazonaws.com/stripe6998/index.html
 2. **Elastic Beanstalk (API URL)**: http://stripedeploy.pmi6pbp3mg.us-west-2.elasticbeanstalk.com/api/
 
+## Architecture ##
+![Architecture Diagram](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/Architecture.jpg?token=AEfjci-OnBMNofT_MGshD_k4ilopAdSkks5Yp6fwwA%3D%3D "Architecture Diagram")
+
+## Tech Stack
+1. Python (Django REST Framework)
+2. HTML5, CSS, Javascript
+3. jQuery, Bootstrap
+4. MySQL (Storing Hashed passwords with Salt)
+
+## Deployment
+1. Front end static files hosted on S3 bucket
+2. Database hosted on Amazon RDS
+3. Backend server hosted on Elastic Beanstalk (Load Balancer + EC2 instance)
+
+## Communication with the Stripe Service ##
+### Client Side ###
+Stripe.js was used to integrate payment popup on client side'
+### Server Side ###
+Server end uses the Charge API to communicate with the Stripe service and store the order **meta data** on Stripe and the order status in the database
+```python
+charge = stripe.Charge.create(
+            amount=int(product.price*100),
+            currency="usd",
+            metadata={"order_id": order_id},
+            source=stripe_token);
+```
+
 ## API endpoints
-**Note: Calls autheticated by the token in case of invalid / expired token return 403.**
+**Note: Calls authenticated by the token in case of invalid / expired token return 403.**
 ### Auth service     
 
-**POST api/api-token-auth/**   
-Request parameters    
-
-```json
+  **POST api/api-token-auth/**   
+  Request parameters
+  ```json
   {
    "username": "dummy@user.com",
    "password": "password"
 }
-```
-
- Response: 200 Success    
- 
-```json
+   ```
+ Response: 200 Success
+   ```json
 {"token":"JWT_TOKEN_HERE"}
 ```
 
-Response: 400 Failure    
+Response: 400 Failure
 
 ```json
 {"detail":"authorization failure"}
 ```
-
 ### SignUp service
-**POST api/signup/**   
-Request parameters    
+   **POST api/signup/**
 
-```json
+  Request parameters
+
+  ```json
      parameters = {
                 "first_name": "foo",
                 "last_name": "bar",
                 "email": "foobar@gmail.com",
                 "password": "password"
             };
-```
+  ```
+Response: 201 Success
 
-Response: 201 Success      
-
-```json
+  ```json
     {"success":true}
 ```
 
-Response: 400 Failure    
+Response: 400 Failure
 
 ```json
 {
@@ -65,14 +88,11 @@ Response: 400 Failure
    "error": "failure message here"
 }
 ```
-
 ### Fetch product catalog service
-
 **GET api/product/**    
+ Response: 200 Success
 
-Response: 200 Success
-
-```json
+  ```json
   [
   {
     "id": 1,
@@ -87,15 +107,12 @@ Response: 200 Success
     "url": "https://c1.staticflickr.com/6/5763/20977162524_c8931fe2d3_k.jpg"
   }
 ]
-```
-
+  ```
 ### Fetch orders of logged in user
-
 **GET api/order/**    
+Response: 200 Success
 
-Response: 200 Success    
-
-```json
+  ```json
 [
   {
     "id": 14,
@@ -125,55 +142,24 @@ Response: 200 Success
 ```
 
 ### Submit order &amp; stripe token to backend ###
-
 **POST api/order/**  
-
 Request parameters    
-
-```json
+  ```json
 {
     "token": "STRIPE_CLIENT_TOKEN",
     "product": "PRODUCT_ID"
 }
-```
+   ```
+Response: 201 Success
 
-Response: 201 Success      
-
-```json
+   ```json
 {
   "success": true
 }
 ```
+Response: 400 Bad request: In case of missing parameters.
 
-Response: 400 Bad request: In case of missing parameters.    
-
-## Architecture ##
-![Architecture Diagram](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/Architecture.jpg?token=AEfjci-OnBMNofT_MGshD_k4ilopAdSkks5Yp6fwwA%3D%3D "Architecture Diagram")
-
-## Tech Stack
-1. Python (Django REST Framework)
-2. HTML5, CSS, Javascript
-3. jQuery, Bootstrap
-4. MySQL
-
-## Deployment
-1. Front end static files hosted on S3 bucket
-2. Database hosted on Amazon RDS
-3. Backend server hosted on Elastic Beanstalk (Load Balancer + EC2 instance)
-
-## Communication with the Stripe Service ##
-### Client Side ###
-Stripe.js was used to integrate payment popup on client side'
-### Server Side ###
-Server end uses the Charge API to communicate with the Stripe service and store the order **meta data** on Stripe and the order status in the database
-```python
-charge = stripe.Charge.create(
-            amount=int(product.price*100),
-            currency="usd",
-            metadata={"order_id": order_id},
-            source=stripe_token);
-```
-## Screenshots 
+## Screenshots
 ![Homepage](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/home.png?token=AEfjcjQ9VMv2yIekNWJe5cetgrbk856Rks5Yp6qQwA%3D%3D "Homepage")
 
 ![Catalog](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/card_popup.png?token=AEfjcvJmBo945Nja1luvW5o3EFUZdVOTks5Yp6gLwA%3D%3D "Catalog")
