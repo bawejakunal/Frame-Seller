@@ -33,10 +33,10 @@
 {"detail":"authorization failure"}
 ```
 
-  ### SignUp service
-  ####POST api/signup/
+  ### SignUp service ###
+  #### POST api/signup/ ####
   
-  ##### Request parameter
+  ##### Request parameter #####
   
   ```json
   parameters = {
@@ -47,13 +47,13 @@
             };
   ```
   
-  #####Response: Success
+  ##### Response: Success
   
   ```json
     {"success":true}
 ```
 
-#####Response: Failure
+##### Response: Failure
 
 ```json
 {
@@ -62,10 +62,10 @@
 }
 ```
 
-  ### Fetch product catalog service
-  ####GET api/product/
+  ### Fetch product catalog service ###
+  #### GET api/product/ ####
   
- #####Response: Success
+ ##### Response: Success #####
  
   ```json
   [
@@ -84,10 +84,10 @@
 ]
   ```
   
-  ###Fetch orders of logged in user
-  #### GET api/order/
+  ### Fetch orders of logged in user ###
+  #### GET api/order/ ####
   
-  #####Response: Success
+  ##### Response: Success #####
   
   ```json
 [
@@ -118,8 +118,8 @@
 ]
 ```
 
-  ### Submit order &amp; stripe token to backend
-  ####POST api/order/
+  ### Submit order &amp; stripe token to backend ###
+  #### POST api/order/ ####
   
   ```json
 {
@@ -128,7 +128,7 @@
 }
    ```
    
-  #####Response: Success
+  ##### Response: Success #####
   
    ```json
 {
@@ -136,7 +136,7 @@
 }
 ```
 
-## Architecture
+## Architecture ##
 ![Architecture Diagram](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/Architecture.jpg?token=AEfjci-OnBMNofT_MGshD_k4ilopAdSkks5Yp6fwwA%3D%3D "Architecture Diagram")
 
 ## Tech Stack
@@ -150,10 +150,10 @@
 2. Database hosted on Amazon RDS
 3. Backend server hosted on Elastic Beanstalk (Load Balancer + EC2 instance)
 
-## Communication with the Stripe Service
-### Client Side
+## Communication with the Stripe Service ##
+### Client Side ###
 Stripe.js was used to integrate payment popup on client side'
-### Server Side
+### Server Side ###
 Server end uses the Charge API to communicate with the Stripe service and store the order **meta data** on Stripe and the order status in the database
 ```python
 charge = stripe.Charge.create(
@@ -162,7 +162,7 @@ charge = stripe.Charge.create(
             metadata={"order_id": order_id},
             source=stripe_token);
 ```
-## Screenshots
+## Screenshots 
 ![Homepage](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/home.png?token=AEfjcjQ9VMv2yIekNWJe5cetgrbk856Rks5Yp6qQwA%3D%3D "Homepage")
 
 ![Catalog](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/card_popup.png?token=AEfjcvJmBo945Nja1luvW5o3EFUZdVOTks5Yp6gLwA%3D%3D "Catalog")
