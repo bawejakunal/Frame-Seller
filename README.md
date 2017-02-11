@@ -8,8 +8,12 @@
 3. Kunal Baweja (kb2896)
 4. Siddharth Shah (sas2387)
 
+## URLs
+1. **S3 frontend**: http://s3-us-west-2.amazonaws.com/stripe6998/index.html
+2. **Elastic Beanstalk**: http://stripedeploy.pmi6pbp3mg.us-west-2.elasticbeanstalk.com/api/
+
 ## Architecture
-![Architecture Diagram](screenshots/Architecture.jpg "Architecture Diagram")
+![Architecture Diagram](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/Architecture.jpg?token=AEfjci-OnBMNofT_MGshD_k4ilopAdSkks5Yp6fwwA%3D%3D "Architecture Diagram")
 
 ## Tech Stack
 1. Python (Django REST Framework)
@@ -24,15 +28,15 @@
 
 ## API endpoints
 <dl>
-  <dt>POST stripe_demo/api-token-auth/</dt>
+  <dt>POST api/api-token-auth/</dt>
   <dd>Login service</dd>
-  <dt>POST stripe_demo/signup/</dt>
+  <dt>POST api/signup/</dt>
   <dd>Sign Up service</dd>
-  <dt>GET stripe_demo/product/</dt>
+  <dt>GET api/product/</dt>
   <dd>Fetch product catalog service</dd>
-  <dt>GET stripe_demo/order/</dt>
+  <dt>GET api/order/</dt>
   <dd>Get orders of logged in user</dd>
-  <dt>POST stripe_demo/order/</dt>
+  <dt>POST api/order/</dt>
   <dd>Submit order &amp; stripe token to backend</dd>
 </dl>
 
@@ -49,18 +53,20 @@ charge = stripe.Charge.create(
             source=stripe_token);
 ```
 ## Screenshots
-![Homepage](screenshots/home.png "Homepage")
+![Homepage](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/home.png?token=AEfjcjQ9VMv2yIekNWJe5cetgrbk856Rks5Yp6qQwA%3D%3D "Homepage")
 
-![Catalog](screenshots/catalog.png "Catalog")
+![Catalog](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/card_popup.png?token=AEfjcvJmBo945Nja1luvW5o3EFUZdVOTks5Yp6gLwA%3D%3D "Catalog")
 
-![Card Popup](screenshots/card_popup.png "Card Popup")
+![Card Popup](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/card_popup.png?token=AEfjcj_5Y3tZOmL6VHWmy5Rw9fxFKj1Aks5Yp6s9wA%3D%3D "Card Popup")
 
-![Payment submitted](screenshots/payment_submitted.png "Payment submitted")
+![Payment submitted](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/payment_submitted.png?token=AEfjcuVDduoWWE_6YJ-WqK6GiiBtPrIfks5Yp6r7wA%3D%3D "Payment submitted")
 
-![Orders](screenshots/orders.png "Orders by user")
+![Orders](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/orders.png?token=AEfjcn3LhHthr4Ahlv7TUCTd4r6143HKks5Yp6rOwA%3D%3D "Orders by user")
 
-![Stripe Oder Meta](screenshots/stripe_order_meta.png "Stripe Metadata")
+![Stripe Oder Meta](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/stripe_order_meta.png?token=AEfjcqrMeDc4srLO5PE9fCWJVPQQ61SKks5Yp6sRwA%3D%3D "Stripe Metadata")
+
 
 ## Further Improvements
 1. Use AngularJS in future assignments
 2. As suggested by Prof. Donald Ferguson, segregate the microservices further into Order, Payment and User.
+3. Add Idempotency-Key to Stripe API usage. 

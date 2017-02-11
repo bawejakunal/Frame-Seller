@@ -28,7 +28,6 @@ function getDateFromString(d) {
  */
 function checkToken() {
     var jwttoken = getCookie("jwttoken");
-    console.log("jwt token: " + jwttoken);
     if (!jwttoken) {
         window.location.href = "index.html";
     } else {
