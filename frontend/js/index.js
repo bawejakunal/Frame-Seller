@@ -109,7 +109,9 @@ function login() {
  */
     function check(element) {
         var bool;
-        var re = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+        var re_email = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+        var re_password = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,20}$/;
+
         if (element.val() == "") {
             element.addClass("invalid");
             bool = false;
@@ -118,10 +120,16 @@ function login() {
             bool = true;
         }
 
-        if (element.attr('id') == "suemail" &&  !re.test(element.val())){
+        if (element.attr('id') == "suemail" &&  !re_email.test(element.val())){
             element.addClass("invalid");
             bool = false;
             showSnackbar("Email id should be of format user@domain.com");
+        } else if (element.attr('id') == "supassword"){
+            bool = re_password.test(element.val());
+            if(!bool){
+                element.addClass("invalid");
+                showSnackbar("Password must have 1 Special, Numeric, Uppercase and Lowercase Character and of length 8 to 20");
+            }
         } else if (element.attr('id') == "surepeatpassword" && element.val() !== "") {
             if ($("#supassword").val() !== element.val()) {
                 alert("Passwords do not match");
