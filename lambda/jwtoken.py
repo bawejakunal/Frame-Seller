@@ -4,9 +4,9 @@ module to generate jwt token
 
 import time
 import datetime
-import jwt
-from jwt.exceptions import MissingRequiredClaimError
-from jwt import InvalidTokenError, DecodeError
+from lib import jwt
+from lib.jwt.exceptions import MissingRequiredClaimError
+from lib.jwt import InvalidTokenError, DecodeError
 
 ALGORITHM = 'HS256'
 SECRET = 'SECRET'

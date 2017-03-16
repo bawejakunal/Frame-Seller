@@ -4,7 +4,6 @@ Authorization Lambda function
 
 from __future__ import print_function
 
-import json
 from signup import create_customer
 from login import login_customer
 from error import error

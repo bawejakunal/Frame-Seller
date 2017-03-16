@@ -4,8 +4,7 @@ Create JWT Token for valid user login
 
 from __future__ import print_function
 
-from token import generate_jwt
-import datetime
+from jwtoken import create_jwt
 import boto3
 from error import error
 from botocore.exceptions import ClientError
@@ -65,4 +64,4 @@ def login_customer(body):
         return error(401, 'Invalid credentials')
 
     #valid customer obtained now generate jwt token
-    return generate_jwt(customer_info)
+    return create_jwt(customer_info)
