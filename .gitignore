@@ -4,6 +4,8 @@
 .ebextensions
 db.sqlite3
 key.json
+*.zip
+
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
