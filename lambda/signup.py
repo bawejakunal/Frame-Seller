@@ -6,16 +6,16 @@ import boto3
 from botocore.exceptions import ClientError
 from error import error
 
-def create_customer(event):
+def create_customer(body):
     """
     Create customer entry in table
     """
 
     #validate required entries
-    if ('firstname' not in event) or\
-        ('lastname' not in event) or\
-        ('email' not in event) or\
-        ('password' not in event):
+    if ('firstname' not in body) or\
+        ('lastname' not in body) or\
+        ('email' not in body) or\
+        ('password' not in body):
         return error(400, 'Missing parameters')
 
     #get the Customer table
@@ -24,11 +24,11 @@ def create_customer(event):
     try:
         response = user_table.put_item(
             Item={
-                'email' : event['email'].strip(), #primary key in 
+                'email' : body['email'].strip(), #primary key in 
                 'info' : {
-                    'firstname' : event['firstname'].strip(),
-                    'lastname' : event['lastname'].strip(),
-                    'password' : event['password'].strip(), #TODO: hash, salt
+                    'firstname' : body['firstname'].strip(),
+                    'lastname' : body['lastname'].strip(),
+                    'password' : body['password'].strip(), #TODO: hash, salt
                     'active': True,
                     'verified' : True #TODO: email verification
                 }

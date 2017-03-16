@@ -4,8 +4,8 @@ Create JWT Token for valid user login
 
 from __future__ import print_function
 
+from token import generate_jwt
 import datetime
-import re
 import boto3
 from error import error
 from botocore.exceptions import ClientError
@@ -51,17 +51,18 @@ def validate_user(email, password):
         return customer_info
 
 
-def login_customer(event):
+def login_customer(body):
     """
     Import boto3
     """
-    if ('email' not in event) or\
-        ('password' not in event):
+    if ('email' not in body) or\
+        ('password' not in body):
         return error(401, 'Invalid credentials')
 
-    customer_info = validate_user(event['email'], event['password'])
+    customer_info = validate_user(body['email'], body['password'])
 
     if not customer_info:
         return error(401, 'Invalid credentials')
 
-    return customer_info
+    #valid customer obtained now generate jwt token
+    return generate_jwt(customer_info)

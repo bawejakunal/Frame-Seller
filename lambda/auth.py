@@ -11,13 +11,14 @@ from error import error
 
 def auth_handler(event, context):
     print(event)
-    if 'operation' not in event:
+    body = event['body-json']
+    if 'operation' not in body:
         return error(400, 'No operation specified')
 
-    operation = event['operation']
+    operation = body['operation']
     if operation == 'signup':
-        return create_customer(event)
+        return create_customer(body)
     elif operation == 'login':
-        return login_customer(event)
+        return login_customer(body)
     else:
         return error(400, 'Invalid operation')
