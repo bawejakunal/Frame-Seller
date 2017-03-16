@@ -6,6 +6,7 @@ from __future__ import print_function
 
 import json
 from signup import create_customer
+from login import login_customer
 from error import error
 
 def auth_handler(event, context):
@@ -16,5 +17,7 @@ def auth_handler(event, context):
     operation = event['operation']
     if operation == 'signup':
         return create_customer(event)
+    elif operation == 'login':
+        return login_customer(event)
     else:
         return error(400, 'Invalid operation')

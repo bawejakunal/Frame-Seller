@@ -26,8 +26,8 @@ def create_customer(event):
             Item={
                 'email' : event['email'].strip(), #primary key in 
                 'info' : {
-                    'first' : event['firstname'].strip(),
-                    'last' : event['lastname'].strip(),
+                    'firstname' : event['firstname'].strip(),
+                    'lastname' : event['lastname'].strip(),
                     'password' : event['password'].strip(), #TODO: hash, salt
                     'active': True,
                     'verified' : True #TODO: email verification
