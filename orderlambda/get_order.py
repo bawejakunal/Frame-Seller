@@ -15,12 +15,18 @@ pay_status = { 0 : "UNPAID", 1 :"PAID", 2 : "FAILED" }
 def get_payment_status(payment_code):
     return pay_status[payment_code]
     
-def hateoas_constraints(userid, event, orderid = None):
+def hateoas_constraints(userid, event, mul_order, orderid = None):
     if orderid:
-        links = [ { "rel":"self", "href": "https://"+event["headers"]["Host"]+"/"+event["requestContext"]["stage"]+"/"+ event["path"] }]
+        if mul_order:
+            links = [ { "rel":"self", "href": "https://"+event["headers"]["Host"]+"/"+event["requestContext"]["stage"]+ event["path"]+str(orderid) }]
+        else:
+            links = [ { "rel":"self", "href": "https://"+event["headers"]["Host"]+"/"+event["requestContext"]["stage"]+ event["path"] }]
     else:
-        links = [ { "rel":"orders.list", "href": "https://"+event["headers"]["Host"]+"/"+event["requestContext"]["stage"]+"/"+ event["path"] }]
-    return links 
+        links = [ { "rel":"orders.list", "href": "https://"+event["headers"]["Host"]+"/"+event["requestContext"]["stage"]+ event["path"] }]
+    return links
+    
+def hateoas_product(producturl):
+    return { "rel":"order.product", "href": producturl}
 
 def respond(err, res=None):
     return {
@@ -62,27 +68,33 @@ def order_handler(event, context):
     # return all orders
     if "orderid" not in path_parameters:
         order_list = []
-        #try:
-        conn = pymysql.connect(host=rds_host, port=rds_port, user=rds_username, passwd=rds_password, db=rds_dbname, connect_timeout=5, cursorclass=pymysql.cursors.DictCursor)
-        #except:
-            #print("ERROR: Unexpected error: Could not connect to MySql instance.")
-            #sys.exit()
-    
-        with conn.cursor() as cur:
-            cur.execute("select id, product_id, user_id, paymentstatus, orderdate from "+ os.environ['tablename_order'] + " where user_id = " + userid)
-            for order in cur:
-                orderdatetime = order["orderdate"]
-                order["orderdate"] = orderdatetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
-                order["paymentstatus"] = get_payment_status(order["paymentstatus"])
-                order["links"] = hateoas_constraints(userid, event, order["id"])
-                order_list.append(order)
-
-        cur.close()
-        conn.close()
-        response_json["orders"] = order_list
-        response_json["links"] = hateoas_constraints(userid, event)
-        return respond(None, response_json)
-    
+        try:
+            conn = pymysql.connect(host=rds_host, port=rds_port, user=rds_username, passwd=rds_password, db=rds_dbname, connect_timeout=5, cursorclass=pymysql.cursors.DictCursor)
+        except:
+            err = "{ \"error\" : \"System is facing some issues. Please try again later.\"}"
+            return respond(err)
+        try:
+            with conn.cursor() as cur:
+                cur.execute("select id, product_id, product_url, user_id, paymentstatus, orderdate from "+ os.environ['tablename_order'] + " where user_id = " + userid)
+                for order in cur:
+                    orderdatetime = order["orderdate"]
+                    order["orderdate"] = orderdatetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+                    order["paymentstatus"] = get_payment_status(order["paymentstatus"])
+                    order["links"] = hateoas_constraints(userid, event, True , order["id"])
+                    order["links"].append(hateoas_product(order["product_url"]))
+                    del order['product_url']
+                    order_list.append(order)
+                    
+            cur.close()
+            conn.close()
+            response_json["orders"] = order_list
+            response_json["links"] = hateoas_constraints(userid, event, True)
+            return respond(None, response_json)
+        except:
+            cur.close()
+            conn.close()
+            err = "{ \"error\" : \" Invalid order\" }"
+            return respond(err)
     # if there is orderid in path parameters, return that particular order
     else:
         orderid = path_parameters["orderid"]
@@ -94,14 +106,27 @@ def order_handler(event, context):
         except:
             print("ERROR: Unexpected error: Could not connect to MySql instance.")
             sys.exit()
-        with conn.cursor() as cur:
-            cur.execute("select id, product_id, user_id, paymentstatus, orderdate from " + os.environ['tablename_order'] + " where user_id = " + userid + " AND id = " + orderid)
-            for row in cur:
-                order = row
-                orderdatetime = order["orderdate"]
-                order["orderdate"] = orderdatetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
-                order["paymentstatus"] = get_payment_status(order["paymentstatus"])
-                order["links"] = hateoas_constraints(userid, event, order["id"])
-
-        return respond(None, order)
-   
+        try:
+            with conn.cursor() as cur:
+                cur.execute("select id, product_id, user_id, product_url, paymentstatus, orderdate from " + os.environ['tablename_order'] + " where user_id = " + userid + " AND id = " + orderid)
+                if cur.rowcount == 0:
+                    cur.close()
+                    conn.close()
+                    err = "{ \"error\" : \" Invalid order\"}"
+                    return respond(err)
+                for row in cur:
+                    order = row
+                    orderdatetime = order["orderdate"]
+                    order["orderdate"] = orderdatetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+                    order["paymentstatus"] = get_payment_status(order["paymentstatus"])
+                    order["links"] = hateoas_constraints(userid, event, False, order["id"])
+                    order["links"].append(hateoas_product(order["product_url"]))
+                    del order['product_url']
+            cur.close()
+            conn.close()
+            return respond(None, order)
+        except:
+            cur.close()
+            conn.close()
+            err = "{ \"error\" : \" Invalid order\"}"
+            return respond(err)
