@@ -5,6 +5,7 @@ User module to signup user
 import boto3
 from botocore.exceptions import ClientError
 from error import error
+import uuid
 
 def create_customer(body):
     """
@@ -24,23 +25,24 @@ def create_customer(body):
     try:
         response = user_table.put_item(
             Item={
-                'email' : body['email'].strip(), #primary key in 
-                'info' : {
+                'uid': str(uuid.uuid4()), #unique id of user
+                'email': body['email'].strip(),
+                'password' : body['password'],
+                'info' : { #TODO: hash, salt
                     'firstname' : body['firstname'].strip(),
                     'lastname' : body['lastname'].strip(),
-                    'password' : body['password'].strip(), #TODO: hash, salt
                     'active': True,
                     'verified' : True #TODO: email verification
                 }
             },
-            ConditionExpression="attribute_not_exists(email)"
+            ConditionExpression="attribute_not_exists(uid) AND attribute_not_exists(email)"
         )
 
     except ClientError as err:
         if err.response['Error']['Code'] == 'ConditionalCheckFailedException':
             return error(400, 'User already exists')
         else:
-            print(err)
+            print(err.response)
         return error(500, 'Error creating user entry')
 
     else:

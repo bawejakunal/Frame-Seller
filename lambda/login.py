@@ -32,19 +32,25 @@ def validate_user(email, password):
         if 'Item' not in response:
             return error(404, 'Customer does not exist')
 
-        _info = response['Item']['info']
+        #user retrieved from database
+        _item = response['Item']
+        _info = _item['info']
 
+        #user not verified then unauthorize
         if not _info['verified']:
-            return error(400, 'Customer not verified')
+            return error(401, 'Customer not verified')
 
+        #user deacivated then unauthorize
         if not _info['active']:
-            return error(400, 'Customer de-activated')
+            return error(401, 'Customer de-activated')
 
-        if _info['password'] == password:
+        #TODO: hash passwords
+        if _item['password'] == password:
             customer_info = {
+                'uid': _item['uid'],
                 'firstname': _info['firstname'],
                 'lastname': _info['lastname'],
-                'email': response['Item']['email']
+                'email': _item['email']
             }
 
         return customer_info
@@ -52,7 +58,7 @@ def validate_user(email, password):
 
 def login_customer(body):
     """
-    Import boto3
+    Customer authentication
     """
     if ('email' not in body) or\
         ('password' not in body):

@@ -23,7 +23,7 @@ def policy_builder(event, context):
     payload = verify_jwt(token)
     
     #if control reaches here then valid JWT token
-    principalId = payload['email']
+    principalId = payload['uid']
 
     '''
     You can send a 401 Unauthorized response to the client by failing like so:
