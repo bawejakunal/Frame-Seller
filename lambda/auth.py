@@ -10,17 +10,21 @@ from error import error
 from policy import policy_builder
 
 def auth_handler(event, context):
-    print(event)
 
     #check if request is for authorization
     if 'authorizationToken' in event:
         return policy_builder(event, context)
 
-    body = event['body-json']
-    if 'operation' not in body:
-        return error(400, 'No operation specified')
+    #signup or login operation
+    if 'operation' not in event:
+        return error(500, 'No operation specified')
 
-    operation = body['operation']
+    if 'body-json' not in event:
+        return error(400, 'Malformed request')
+
+    operation = event['operation']
+    body = event['body-json']
+
     if operation == 'signup':
         return create_customer(body)
     elif operation == 'login':
