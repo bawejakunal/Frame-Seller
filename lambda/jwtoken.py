@@ -7,8 +7,6 @@ from calendar import timegm
 import datetime
 from error import error
 from lib import jwt
-from lib.jwt.exceptions import MissingRequiredClaimError
-from lib.jwt import InvalidTokenError, DecodeError
 
 try:
     ALGORITHM = os.environ['JWT_ALGORITHM']
@@ -29,4 +27,21 @@ def create_jwt(payload):
 
     return {'token':token}
 
-def verify_jwt(body)
+def verify_jwt(token):
+    """
+    verify jwt
+    """
+
+    options = {
+        'verify_signature': True,
+        'verify_exp': True,
+        'require_exp': True
+    }
+
+    try:
+        payload = jwt.decode(token, SECRET, options=options)
+        return payload
+    except jwt.ExpiredSignatureError as err:
+        return error(401, 'Expired authorization token')
+    except (jwt.InvalidTokenError, jwt.MissingRequiredClaimError) as err:
+        return error(401, 'Invalid access token')
