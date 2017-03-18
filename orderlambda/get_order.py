@@ -28,6 +28,9 @@ def hateoas_constraints(userid, event, mul_order, orderid = None):
 def hateoas_product(producturl):
     return { "rel":"order.product", "href": producturl}
 
+def hateoas_user(userid, event):
+    return { "rel":"order.user", "href": "https://"+event["headers"]["Host"]+"/"+event["requestContext"]["stage"]+ "/user/" + userid}
+
 def respond(err, res=None):
     return {
         'statusCode': '400' if err else '200',
@@ -82,6 +85,9 @@ def order_handler(event, context):
                     order["paymentstatus"] = get_payment_status(order["paymentstatus"])
                     order["links"] = hateoas_constraints(userid, event, True , order["id"])
                     order["links"].append(hateoas_product(order["product_url"]))
+                    order["links"].append(hateoas_user(userid, event))
+                    del order['product_id']
+                    del order['user_id']
                     del order['product_url']
                     order_list.append(order)
                 
@@ -121,6 +127,9 @@ def order_handler(event, context):
                     order["paymentstatus"] = get_payment_status(order["paymentstatus"])
                     order["links"] = hateoas_constraints(userid, event, False, order["id"])
                     order["links"].append(hateoas_product(order["product_url"]))
+                    order["links"].append(hateoas_user(userid, event))
+                    del order['product_id']
+                    del order['user_id']
                     del order['product_url']
             cur.close()
             conn.close()
