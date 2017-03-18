@@ -20,11 +20,9 @@ function login() {
                 contentType: "application/json",
                 data: JSON.stringify(parameters),
                 success: function (data) {
-                    alert("Success");
                     success(data);
                 },
                 error: function (data) {
-                    console.log(data);
                     failure(data.responseText);
                 }
             })
@@ -35,7 +33,7 @@ function login() {
             window.location.href = "catalog.html"
         }, function (data) {
             var response = JSON.parse(data);
-            showSnackbar(response["non_field_errors"][0]);
+            showSnackbar(response["message"]);
         });
     }
 }
@@ -69,11 +67,9 @@ function login() {
                     contentType: "application/json",
                     data: JSON.stringify(parameters),
                     success: function (data) {
-                        console.log("Success");
                         success(data);
                     },
                     error: function (data) {
-                        console.log("Error");
                         failure(data.responseText);
                     }
                 });
@@ -86,12 +82,7 @@ function login() {
                 clearSignUpForm();
             }, function (data) {
                 var json = JSON.parse(data);
-                if (Object.keys(json["error"]).length == 1) {
-                    var errorKey = Object.keys(json["error"])[0];
-                    showSnackbar(json["error"][errorKey]);
-                } else {
-                    showSnackbar("An error occured with your sign up. Please check your credentials.");
-                }
+                showSnackbar(json["message"]);
             });
         }
     }

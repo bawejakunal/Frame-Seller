@@ -37,6 +37,7 @@ def respond(err, res=None):
         'body': err if err else json.dumps(res),
         'headers': {
             'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
         },
     }
 

@@ -6,7 +6,7 @@ function fillCustomerName(jwttoken) {
     var token = jwttoken.split('.')[1];
     var decodedToken = atob(token);
     var tokenjson = JSON.parse(decodedToken);
-    $("#customername").text("Hello, " + tokenjson["first_name"] + " " + tokenjson["last_name"]);
+    $("#customername").text("Hello, " + tokenjson["firstname"] + " " + tokenjson["lastname"]);
 }
 /**
  * GET request to orderEndpoint to get orders json for logged in user.
@@ -30,7 +30,7 @@ function getOrdersForUser(jwttoken) {
     });
     promise.then(function (data) {
         if (data.length != 0) {
-            fillOrders(data);
+            fillOrders(data, jwttoken);
         } else {
             showSnackbar("You have no orders as of now");
         }
@@ -42,32 +42,61 @@ function getOrdersForUser(jwttoken) {
  * render orders json on HTML DOM.
  * @param data
  */
-function fillOrders(data) {
+function fillOrders(orderdata, jwttoken) {
+    orders = orderdata["orders"]
     var orderSection = document.getElementById('orders');
-    var numOrders = data.length;
+    var numOrders = orders.length;
     for (var i = 0; i < numOrders; i++) {
-        try {
-            var paymentinfo = getPaymentInfoTag(data[i].paymentstatus);
-            orderSection.innerHTML +=
-                '<div class="well well-lg">\
-                     <div class="row">\
-                           <div class="col-sm-2">\
-                               <img class="img-thumbnail img-responsive" src="' + data[i].product.url + '">\
-                            <div class="caption"><p>' + data[i].product.description + '</p></div>\
-                        </div>\
-                        <div class="col-sm-5">\
-                            <strong>Date Placed on:&nbsp; </strong> ' + getDateFromString(data[i].orderdate) + '<br><br>\
-                            <strong>Price:</strong> $ ' + data[i].product.price + '\
-                        </div>\
-                        <div class="col-sm-5">\
-                            ' + paymentinfo + '\
-                        </div>\
-                </div>\
-             </div>';
+        for(var j=0; j <orders[i].links.length; j++){
+            if(orders[i].links[j].rel == "order.product"){
+                product_url = orders[i].links[j].href;
+                console.log(product_url);
+            }
         }
-        catch (err) {
-            console.log(err);
-        }
+
+        var promise = new Promise(function (success, failure) {
+            $.ajax({
+                url: product_url,
+                type: 'GET',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('Authorization', 'JWT ' + jwttoken);
+                },
+                success: function (data) {
+                    success(data,orders[i]);
+                },
+                error: function (data) {
+                    failure(data.responseText);
+                }
+            });
+        });
+        promise.then(function (data, order) {
+            console.log(data);
+            try {
+                var paymentinfo = getPaymentInfoTag(order.paymentstatus);
+                orderSection.innerHTML +=
+                    '<div class="well well-lg">\
+                         <div class="row">\
+                               <div class="col-sm-2">\
+                                   <img class="img-thumbnail img-responsive" src="' + data.url + '">\
+                                <div class="caption"><p>' + data.description + '</p></div>\
+                            </div>\
+                            <div class="col-sm-5">\
+                                <strong>Date Placed on:&nbsp; </strong> ' + getDateFromString(order.orderdate) + '<br><br>\
+                                <strong>Price:</strong> $ ' + data.price + '\
+                            </div>\
+                            <div class="col-sm-5">\
+                                ' + paymentinfo + '\
+                            </div>\
+                    </div>\
+                 </div>';
+            }
+            catch (err) {
+                console.log(err);
+            }
+        }, function (data) {
+            showSnackbar("Failed to fetch orders. Please try again later.");
+        });
+
     }
 }
 /**

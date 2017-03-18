@@ -64,6 +64,8 @@ function stripe_checkout(product_id) {
 
 
 function getProducts(jwttoken) {
+    console.log("abc");
+    console.log(jwttoken);
     var promise = new Promise(function (success, failure) {
         $.ajax({
             url: productEndPoint,
