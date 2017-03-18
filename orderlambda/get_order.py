@@ -49,7 +49,7 @@ def order_handler(event, context):
     '''
     #print("Received event: " + json.dumps(event, indent=2))
     response_json = {}
-
+    print(event)
     method = event["httpMethod"]
     
     if method not in valid_operations:
@@ -63,10 +63,10 @@ def order_handler(event, context):
     rds_port = int(os.environ['dbport'])
     
     path_parameters = event["pathParameters"]
-    userid = path_parameters["userid"]
+    userid = event["requestContext"]["authorizer"]["principalId"]
     
     # return all orders
-    if "orderid" not in path_parameters:
+    if path_parameters is None:
         order_list = []
         try:
             conn = pymysql.connect(host=rds_host, port=rds_port, user=rds_username, passwd=rds_password, db=rds_dbname, connect_timeout=5, cursorclass=pymysql.cursors.DictCursor)
@@ -75,7 +75,7 @@ def order_handler(event, context):
             return respond(err)
         try:
             with conn.cursor() as cur:
-                cur.execute("select id, product_id, product_url, user_id, paymentstatus, orderdate from "+ os.environ['tablename_order'] + " where user_id = " + userid)
+                cur.execute("select id, product_id, product_url, user_id, paymentstatus, orderdate from "+ os.environ['tablename_order'] + " where user_id = '" + userid+"'")
                 for order in cur:
                     orderdatetime = order["orderdate"]
                     order["orderdate"] = orderdatetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
@@ -84,7 +84,7 @@ def order_handler(event, context):
                     order["links"].append(hateoas_product(order["product_url"]))
                     del order['product_url']
                     order_list.append(order)
-                    
+                
             cur.close()
             conn.close()
             response_json["orders"] = order_list
@@ -96,7 +96,7 @@ def order_handler(event, context):
             err = "{ \"error\" : \" Invalid order\" }"
             return respond(err)
     # if there is orderid in path parameters, return that particular order
-    else:
+    elif path_parameters is not None and "orderid" in path_parameters:
         orderid = path_parameters["orderid"]
         # get order from db having that orderid
         order = None
@@ -108,7 +108,7 @@ def order_handler(event, context):
             sys.exit()
         try:
             with conn.cursor() as cur:
-                cur.execute("select id, product_id, user_id, product_url, paymentstatus, orderdate from " + os.environ['tablename_order'] + " where user_id = " + userid + " AND id = " + orderid)
+                cur.execute("select id, product_id, user_id, product_url, paymentstatus, orderdate from " + os.environ['tablename_order'] + " where user_id = '" + userid + "' AND id = " + orderid)
                 if cur.rowcount == 0:
                     cur.close()
                     conn.close()
@@ -130,3 +130,6 @@ def order_handler(event, context):
             conn.close()
             err = "{ \"error\" : \" Invalid order\"}"
             return respond(err)
+    else:
+        err = "{ \"error\" : \" Invalid request\"}"
+        return respond(err)
