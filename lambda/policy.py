@@ -5,6 +5,7 @@ from __future__ import print_function
 
 import re
 from jwtoken import verify_jwt
+from error import error
 
 def policy_builder(event, context):
     print("Client token: " + event['authorizationToken'])
@@ -22,7 +23,13 @@ def policy_builder(event, context):
     token = event['authorizationToken'].split()[1]
     payload = verify_jwt(token)
     
-    #if control reaches here then valid JWT token
+    """
+    verify_jwt returns None for invalid token, reject that as unauthorized
+    """
+    if payload is None:
+        return error(401, 'User not authorized')
+
+    #valid jwt token if control reaches here
     principalId = payload['uid']
 
     '''
@@ -62,11 +69,11 @@ def policy_builder(event, context):
     # new! -- add additional key-value pairs associated with the authenticated principal
     # these are made available by APIGW like so: $context.authorizer.<key>
     # additional context is cached
-    context = {
-        'key': 'value',  # $context.authorizer.key -> value
-        'number': 1,
-        'bool': True
-    }
+
+    #pass rest of user info in context
+    del payload['uid']
+    context = payload
+
     # context['arr'] = ['foo'] <- this is invalid, APIGW will not accept it
     # context['obj'] = {'foo':'bar'} <- also invalid
 
