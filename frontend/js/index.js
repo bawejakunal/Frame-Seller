@@ -10,7 +10,7 @@ function login() {
 
     if (bool1 && bool2) {
         parameters = {
-            'username': username.val(),
+            'email': username.val(),
             'password': password.val(),
         };
         var promise = new Promise(function (success, failure) {
@@ -20,9 +20,11 @@ function login() {
                 contentType: "application/json",
                 data: JSON.stringify(parameters),
                 success: function (data) {
+                    alert("Success");
                     success(data);
                 },
                 error: function (data) {
+                    console.log(data);
                     failure(data.responseText);
                 }
             })
@@ -55,8 +57,8 @@ function login() {
 
         if (bool1 && bool2 && bool3 && bool4 && bool5) {
             parameters = {
-                'first_name': firstname.val(),
-                'last_name': lastname.val(),
+                'firstname': firstname.val(),
+                'lastname': lastname.val(),
                 'email': email.val(),
                 'password': password.val()
             };
@@ -67,9 +69,11 @@ function login() {
                     contentType: "application/json",
                     data: JSON.stringify(parameters),
                     success: function (data) {
+                        console.log("Success");
                         success(data);
                     },
                     error: function (data) {
+                        console.log("Error");
                         failure(data.responseText);
                     }
                 });
