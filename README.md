@@ -13,7 +13,7 @@
 2. **Elastic Beanstalk (API URL)**: http://stripedeploy.pmi6pbp3mg.us-west-2.elasticbeanstalk.com/api/
 
 ## Architecture ##
-![Architecture Diagram](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/Architecture.jpg?token=AEfjci-OnBMNofT_MGshD_k4ilopAdSkks5Yp6fwwA%3D%3D "Architecture Diagram")
+![Architecture Diagram](./screenshots/Architecture.jpg "Architecture Diagram")
 
 ## Tech Stack
 1. Python (Django REST Framework)
