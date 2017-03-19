@@ -7,7 +7,7 @@ from botocore.exceptions import ClientError
 def verify_customer(body):
     if ('uemail' not in body) or\
         ('vtoken' not in body):
-        return error(401, 'Invalid credentials')
+        return error(401, 'email or token not found')
 
     customer_table = boto3.resource('dynamodb').Table('Customer')
     try:
