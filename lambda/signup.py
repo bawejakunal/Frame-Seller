@@ -37,6 +37,54 @@ def create_customer(body):
             },
             ConditionExpression="attribute_not_exists(uid) AND attribute_not_exists(email)"
         )
+        # email config BEGIN
+        email_client = boto3.client('ses')
+
+        email_response = email_client.send_email(
+            Source='akshay2626@gmail.com',
+            Destination={
+                'ToAddresses': [
+                    body['email'].strip(),
+                ],
+                'BccAddresses': [
+                ],
+                'CcAddresses': [
+                ],
+            },
+            Message={
+                'Subject': {
+                    'Data': 'Frameseller Email Verification',
+                    'Charset': 'UTF-8'
+                },
+                'Body': {
+                    'Text': {
+                        'Data': 'https://xyz.com/?token=hbsdhvjcbsdj&email='+body['email'].strip(),
+                        'Charset': 'UTF-8'
+                    },
+                    'Html': {
+                        'Data': '<html><a href="https://xyz.com/?token=hbsdhvjcbsdj&email='+body['email'].strip()+'"/></html>',
+                        'Charset': 'UTF-8'
+                    }
+                }
+            },
+            ReplyToAddresses=[
+                'akshay2626@gmail.com',
+            ],
+            ReturnPath='akshay2626@gmail.com',
+            SourceArn='string',
+            ReturnPathArn='string',
+            Tags=[
+                {
+                    'Name': 'signup_email',
+                    'Value': 'some_value'
+                },
+            ],
+            ConfigurationSetName='conf_set'
+        )
+
+        print email_response
+
+        # email config END
 
     except ClientError as err:
         if err.response['Error']['Code'] == 'ConditionalCheckFailedException':
