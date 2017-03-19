@@ -13,6 +13,7 @@ def create_customer(body):
     Create customer entry in table
     """
 
+
     #validate required entries
     if ('firstname' not in body) or\
         ('lastname' not in body) or\
@@ -20,6 +21,7 @@ def create_customer(body):
         ('password' not in body):
         return error(400, 'Missing parameters')
 
+    verification_token = os.urandom(16).encode('hex');
     #get the Customer table
     user_table = boto3.resource('dynamodb').Table('Customer')
     
@@ -33,7 +35,10 @@ def create_customer(body):
                     'firstname' : body['firstname'].strip(),
                     'lastname' : body['lastname'].strip(),
                     'active': True,
-                    'verified' : True #TODO: email verification
+                    'verified' : False #TODO: email verification
+                },
+                'verification':{
+                    'token' : verification_token
                 }
             },
             ConditionExpression="attribute_not_exists(uid) AND attribute_not_exists(email)"
@@ -52,7 +57,7 @@ def create_customer(body):
             email_client = boto3.client('ses',
                                         aws_access_key_id=os.environ['LOCAL_AWS_ACCESS_KEY'],
                                         aws_secret_access_key=os.environ['LOCAL_AWS_SECRET_KEY'],)
-            verification_token = os.urandom(16).encode('hex');
+
             s3url = 'https://xyz.com/'
             verification_url = s3url+'?vtoken='+verification_token+'&uemail='+body['email'].strip()
 

@@ -6,8 +6,10 @@ from __future__ import print_function
 
 from signup import create_customer
 from login import login_customer
+from verify import verify_customer
 from error import error
 from policy import policy_builder
+
 
 def auth_handler(event, context):
 
@@ -29,5 +31,7 @@ def auth_handler(event, context):
         return create_customer(body)
     elif operation == 'login':
         return login_customer(body)
+    elif operation == 'verify':
+        return verify_customer(body)
     else:
         return error(400, 'Invalid operation')
