@@ -46,58 +46,71 @@ function fillOrders(orderdata, jwttoken) {
     orders = orderdata["orders"]
     var orderSection = document.getElementById('orders');
     var numOrders = orders.length;
+    var producturls = new Set();
+    var allproductinfo = {};
     for (var i = 0; i < numOrders; i++) {
-        for(var j=0; j <orders[i].links.length; j++){
-            if(orders[i].links[j].rel == "order.product"){
-                product_url = orders[i].links[j].href;
-                console.log(product_url);
+        for (var j = 0; j < orders[i].links.length; j++) {
+            if (orders[i].links[j].rel == "order.product") {
+                producturls.add(orders[i].links[j].href);
             }
         }
+    }
 
-        var promise = new Promise(function (success, failure) {
-            $.ajax({
-                url: product_url,
-                type: 'GET',
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader('Authorization', 'JWT ' + jwttoken);
-                },
-                success: function (data) {
-                    success(data,orders[i]);
-                },
-                error: function (data) {
-                    failure(data.responseText);
+    var getAllProductsPromise = new Promise(function (success1, failure1) {
+        var productfetchcount = 0;
+        producturls.forEach(function(producturl) {
+            var getSingleProductPromise = new Promise(function (success2, failure2) {
+                $.ajax({
+                    url: producturl,
+                    type: 'GET',
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader('Authorization', 'JWT ' + jwttoken);
+                    },
+                    success: function (data) {
+                        success2(data);
+                    },
+                    error: function (data) {
+                        failure2(data.responseText);
+                    }
+                });
+            });
+
+            getSingleProductPromise.then(function (data) {
+                allproductinfo[data.id] = data;
+                productfetchcount++;
+                if(productfetchcount == producturls.size){
+                    success1();
                 }
+            }, function (data){
+                console.log("Failure for single product");
             });
         });
-        promise.then(function (data, order) {
-            console.log(data);
-            try {
-                var paymentinfo = getPaymentInfoTag(order.paymentstatus);
-                orderSection.innerHTML +=
-                    '<div class="well well-lg">\
-                         <div class="row">\
-                               <div class="col-sm-2">\
-                                   <img class="img-thumbnail img-responsive" src="' + data.url + '">\
-                                <div class="caption"><p>' + data.description + '</p></div>\
-                            </div>\
-                            <div class="col-sm-5">\
-                                <strong>Date Placed on:&nbsp; </strong> ' + getDateFromString(order.orderdate) + '<br><br>\
-                                <strong>Price:</strong> $ ' + data.price + '\
-                            </div>\
-                            <div class="col-sm-5">\
-                                ' + paymentinfo + '\
-                            </div>\
-                    </div>\
-                 </div>';
-            }
-            catch (err) {
-                console.log(err);
-            }
-        }, function (data) {
-            showSnackbar("Failed to fetch orders. Please try again later.");
-        });
+    });
 
-    }
+    getAllProductsPromise.then(function () {
+        for(var k=0; k < numOrders; k++) {
+            var paymentinfo = getPaymentInfoTag(orders[k].paymentstatus);
+            var productinfo = allproductinfo[orders[k].product_id];
+            orderSection.innerHTML +=
+                '<div class="well well-lg">\
+                     <div class="row">\
+                           <div class="col-sm-2">\
+                               <img class="img-thumbnail img-responsive" src="' + productinfo.url + '">\
+                        <div class="caption"><p>' + productinfo.description + '</p></div>\
+                    </div>\
+                    <div class="col-sm-5">\
+                        <strong>Date Placed on:&nbsp; </strong> ' + getDateFromString(orders[k].orderdate) + '<br><br>\
+                        <strong>Price:</strong> $ ' + productinfo.price + '\
+                    </div>\
+                    <div class="col-sm-5">\
+                        ' + paymentinfo + '\
+                    </div>\
+                </div>\
+             </div>';
+        }
+    }, function () {
+            showSnackbar("Failed to fetch products. Please try again later.");
+    });
 }
 /**
  * decide color of container based on payment status.
