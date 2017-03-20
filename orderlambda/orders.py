@@ -6,7 +6,7 @@ import sys
 import os
 import pymysql
 
-print('Loading function')
+print('Loading orders function')
 
 pay_status = {0: "UNPAID", 1: "PAID", 2: "FAILED"}
 RESPONSE_OK = '200'
