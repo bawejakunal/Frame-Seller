@@ -6,6 +6,14 @@ from lib import stripe
 
 stripe.api_key = os.environ['STRIPE_API_KEY']
 
+class Status:
+    """
+    Describe payment status
+    """
+    UNPAID = 0
+    PAID = 1
+    FAILED = 2
+
 def create_charge(order_data):
     try:
         charge = stripe.Charge.create(
@@ -16,10 +24,10 @@ def create_charge(order_data):
 
         if charge['paid'] is True:
             #set order status as paid
-            pass
+            print('Charged customer successfully')
         else:
             #set order status as failed payment
-            pass
+            print('Customer charge failed')
 
         #update order status here
 
