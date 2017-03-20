@@ -18,7 +18,7 @@ def create_charge(order_data):
     try:
         charge = stripe.Charge.create(
             amount=int(order_data['price']*100),
-            currency=order_data['currecy'],
+            currency=order_data['currency'],
             metadata=order_data['metadata'],
             source=order_data['stripe_token'])
 
@@ -28,8 +28,6 @@ def create_charge(order_data):
         else:
             #set order status as failed payment
             print('Customer charge failed')
-
-        #update order status here
 
     except stripe.error.InvalidRequestError as error:
         print(error)
@@ -44,4 +42,5 @@ def create_charge(order_data):
         print(error)
         charge = None
     finally:
+        #update order status here
         return charge

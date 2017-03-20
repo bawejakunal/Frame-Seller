@@ -1,10 +1,11 @@
 """
 Call orders lambda service
 """
-import boto3
+from datetime import datetime
 import json
+import boto3
 
-def order(event, context):
+def order(event):
     """
     extract info from event and pass on to order microservice
     """
@@ -24,3 +25,20 @@ def order(event, context):
         Payload=json.dumps(payload))
 
     return response
+
+
+def create_order(event, status):
+    """
+    create new order
+    """
+    event['body']['orderdate'] = datetime.now()
+    event['body']['paymentstatus'] = status
+    #call order microservice with POST request
+    response = order(event)
+    data = json.loads(response['Payload'].read())
+
+    return data
+
+
+def update_order():
+    pass
