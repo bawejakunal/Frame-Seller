@@ -10,7 +10,7 @@ function login() {
 
     if (bool1 && bool2) {
         parameters = {
-            'username': username.val(),
+            'email': username.val(),
             'password': password.val(),
         };
         var promise = new Promise(function (success, failure) {
@@ -33,7 +33,7 @@ function login() {
             window.location.href = "catalog.html"
         }, function (data) {
             var response = JSON.parse(data);
-            showSnackbar(response["non_field_errors"][0]);
+            showSnackbar(response["message"]);
         });
     }
 }
@@ -55,8 +55,8 @@ function login() {
 
         if (bool1 && bool2 && bool3 && bool4 && bool5) {
             parameters = {
-                'first_name': firstname.val(),
-                'last_name': lastname.val(),
+                'firstname': firstname.val(),
+                'lastname': lastname.val(),
                 'email': email.val(),
                 'password': password.val()
             };
@@ -82,12 +82,7 @@ function login() {
                 clearSignUpForm();
             }, function (data) {
                 var json = JSON.parse(data);
-                if (Object.keys(json["error"]).length == 1) {
-                    var errorKey = Object.keys(json["error"])[0];
-                    showSnackbar(json["error"][errorKey]);
-                } else {
-                    showSnackbar("An error occured with your sign up. Please check your credentials.");
-                }
+                showSnackbar(json["message"]);
             });
         }
     }

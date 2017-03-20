@@ -40,7 +40,7 @@ def validate_user(email, password):
         if not _info['verified']:
             return error(401, 'Customer not verified')
 
-        #user deacivated then unauthorize
+        #user deactivated then unauthorize
         if not _info['active']:
             return error(401, 'Customer de-activated')
 
