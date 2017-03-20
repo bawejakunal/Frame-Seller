@@ -25,9 +25,11 @@ def policy_builder(event, context):
     
     """
     verify_jwt returns None for invalid token, reject that as unauthorized
+    AWS expects unauthorizing by raising exception with the 'Unauthorized'
+    message: http://docs.aws.amazon.com/apigateway/latest/developerguide/use-custom-authorizer.html
     """
     if payload is None:
-        return error(401, 'User not authorized')
+        raise Exception('Unauthorized')
 
     #valid jwt token if control reaches here
     principalId = payload['uid']
