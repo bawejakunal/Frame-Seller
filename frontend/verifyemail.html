@@ -19,6 +19,7 @@
         var vToken = getUrlVars()['vtoken'];
         console.log(userEmail);
         console.log(vToken);
+        verifyUserEmail(userEmail,vToken);
         }
     );
 </script>
@@ -29,10 +30,7 @@
         </div>
     </div>
 </nav>
-<div class="container" id="customernamediv">
-    <div class="page-header">
-        <h3>Congrats! Your email has been verified successfully.</h3>
-    </div>
+<div class="container" id="verifymessage">
 </div>
 <script>
 </script>

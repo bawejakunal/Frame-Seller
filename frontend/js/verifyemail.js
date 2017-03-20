@@ -14,3 +14,31 @@ function getUrlVars()
     return vars;
 }
 
+function verifyUserEmail(email,token){
+    parameters = {
+        'uemail': email,
+        'vtoken': token,
+    };
+    var promise = new Promise(function (success, failure) {
+        $.ajax({
+            url: verifyCustomerEndPoint,
+            type: 'POST',
+            contentType: "application/json",
+            data: JSON.stringify(parameters),
+            success: function (data) {
+                success(data);
+            },
+            error: function (data) {
+                failure(data.responseText);
+            }
+        })
+    });
+
+    promise.then(function (data) {
+        document.getElementById("verifymessage").innerHTML = '<div class="page-header"><h3>Congrats! Your email has been verified successfully.</h3></div>';
+    }, function (data) {
+        var response = JSON.parse(data);
+        console.log(data);
+        document.getElementById("verifymessage").innerHTML = '<div class="page-header"><h3>There was an error in verifying your account!</h3></div>';
+    });
+}

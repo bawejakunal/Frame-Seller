@@ -8,4 +8,5 @@ var authTokenEndpoint = baseURL+"authorize/login/";
 var signUpEndpoint = baseURL+"authorize/signup/";
 var orderEndpoint = baseURL+"orders/";
 var productEndPoint = baseURL+"products/";
+var verifyCustomerEndPoint = baseURL+"authorize/verify/";
 
