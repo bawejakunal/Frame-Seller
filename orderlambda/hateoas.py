@@ -12,6 +12,7 @@ def hateoas_constraints(userid, mul_order, host, stage, path, orderid=None):
 def hateoas_product(producturl):
     return {"rel": "order.product", "href": producturl}
 
-
+"""
 def hateoas_user(userid, host, stage):
     return {"rel": "order.user", "href": "https://" + host + "/" + stage + "/user/" + userid}
+"""

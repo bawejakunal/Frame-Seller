@@ -1,10 +1,9 @@
 from __future__ import print_function
 
-import boto3
 import os
 import pymysql
 from responses import Response, respond
-from hateoas import hateoas_constraints, hateoas_product, hateoas_user
+from hateoas import hateoas_constraints, hateoas_product#, hateoas_user
 
 pay_status = {0: "UNPAID", 1: "PAID", 2: "FAILED"}
 
@@ -23,13 +22,13 @@ def get_mysql_connection():
                             db=rds_dbname, connect_timeout=5,
                             cursorclass=pymysql.cursors.DictCursor)
 
-def get_json(order, userid, host, stage, path):
+def get_json(order, userid, host, stage, path, mul_order):
     orderdatetime = order["orderdate"]
     order["orderdate"] = orderdatetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
     order["paymentstatus"] = get_payment_status(order["paymentstatus"])
-    order["links"] = hateoas_constraints(userid, True, host, stage, path, order["id"])
+    order["links"] = hateoas_constraints(userid, mul_order, host, stage, path, order["id"])
     order["links"].append(hateoas_product(order["product_url"]))
-    order["links"].append(hateoas_user(userid, host, stage))
+    #order["links"].append(hateoas_user(userid, host, stage))
     del order['user_id']
     del order['product_url']
     return order
@@ -74,7 +73,7 @@ def get_order_details(event):
                 cur.execute(get_order_query(userid))
 
                 for order in cur:
-                    order = get_json(order, userid, host, stage, path)
+                    order = get_json(order, userid, host, stage, path, True)
                     order_list.append(order)
 
             response_json["orders"] = order_list
@@ -118,7 +117,7 @@ def get_order_details(event):
                     error_code = Response.FORBIDDEN
                     response_json = {"error": "Not authorized to access this order"}
                 for row in cur:
-                    response_json = get_json(row, userid, host, stage, path)
+                    response_json = get_json(row, userid, host, stage, path, False)
         except:
             err = True
             #Not setting error_code and using default Response.INT_SER_ERR = '500'

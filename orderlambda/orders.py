@@ -1,8 +1,8 @@
 from __future__ import print_function
 
-import boto3
 from responses import Response, respond
 from get_orders import get_order_details
+from post_orders import post_order_details
 
 print('Loading orders function')
 
@@ -29,7 +29,7 @@ def order_handler(event, context):
     elif method == "POST":
         # Handle post request
         print(event)
-        respond(event, RESPONSE_INT_SER_ERR)
+        respond(event, Response.OK)
         """product = Product.objects.get(pk=product_id)
         try:
             charge = stripe.Charge.create(
