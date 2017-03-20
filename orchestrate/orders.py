@@ -23,4 +23,4 @@ def order(event, context):
         LogType='None',
         Payload=json.dumps(payload))
 
-    return json.loads(response["Payload"].read())
+    return response
