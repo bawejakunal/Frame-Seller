@@ -8,16 +8,15 @@ import pymysql
 
 print('Loading function')
 
-valid_operations = ["GET"]
-
 pay_status = {0: "UNPAID", 1: "PAID", 2: "FAILED"}
-
+RESPONSE_OK = '200'
+RESPONSE_BAD = '400'
+RESPONSE_INT_SER_ERR = '500'
 
 def get_payment_status(payment_code):
     return pay_status[payment_code]
 
-
-def hateoas_constraints(userid, event, mul_order, host, stage, path, orderid=None):
+def hateoas_constraints(userid, mul_order, host, stage, path, orderid=None):
     if orderid:
         if mul_order:
             links = [{"rel": "self", "href": "https://" + host + "/" + stage + path + str(orderid)}]
@@ -32,14 +31,24 @@ def hateoas_product(producturl):
     return {"rel": "order.product", "href": producturl}
 
 
-def hateoas_user(userid, event, host, stage):
+def hateoas_user(userid, host, stage):
     return {"rel": "order.user", "href": "https://" + host + "/" + stage + "/user/" + userid}
+    
+def get_order_json(order, userid, host, stage, path):
+    orderdatetime = order["orderdate"]
+    order["orderdate"] = orderdatetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+    order["paymentstatus"] = get_payment_status(order["paymentstatus"])
+    order["links"] = hateoas_constraints(userid, True, host, stage, path, order["id"])
+    order["links"].append(hateoas_product(order["product_url"]))
+    order["links"].append(hateoas_user(userid, host, stage))
+    del order['user_id']
+    del order['product_url']
+    return order
 
-
-def respond(err, res):
+def respond(resp, resp_code):
     return {
-        'statusCode': '400' if err else '200',
-        'body': json.dumps(res),
+        'statusCode': resp_code,
+        'body': json.dumps(resp),
         'headers': {
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*'
@@ -56,6 +65,8 @@ def order_handler(event, context):
         /POST Request:
             /orders -> Creates order with the given body JSON and returns 201 : Order created
     '''
+    valid_operations = ["GET", "POST", "PUT"]
+    
     response_json = {}
     err = False
     method = event["httpMethod"]
@@ -64,8 +75,8 @@ def order_handler(event, context):
     path = event["path"]
 
     if method not in valid_operations:
-        err = "{ \"error\" : \"Not supported method\" }"
-        return respond(err)
+        response_json = { "error" : "Bad Request" }
+        return respond(response_json, RESPONSE_BAD)
 
     rds_dbname = os.environ['dbname']
     rds_username = os.environ['dbusername']
@@ -79,30 +90,25 @@ def order_handler(event, context):
     if method == "GET":
         # execute the GET order code
 
-        # return all orders
+        
         if path_parameters is None:
+            # return all orders
             order_list = []
+            
             try:
                 conn = pymysql.connect(host=rds_host, port=rds_port, user=rds_username, passwd=rds_password,
                                        db=rds_dbname, connect_timeout=5, cursorclass=pymysql.cursors.DictCursor)
             except:
-                err = True
                 response_json = {"error": "System is facing some issues. Please try again later."}
-                return respond(err, response_json)
+                return respond(response_json, RESPONSE_INT_SER_ERR)
+                
             try:
                 with conn.cursor() as cur:
                     cur.execute(
                         "select id, product_id, product_url, user_id, paymentstatus, orderdate from " + os.environ[
                             'tablename_order'] + " where user_id = '" + userid + "'")
                     for order in cur:
-                        orderdatetime = order["orderdate"]
-                        order["orderdate"] = orderdatetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
-                        order["paymentstatus"] = get_payment_status(order["paymentstatus"])
-                        order["links"] = hateoas_constraints(userid, event, True, host, stage, path, order["id"])
-                        order["links"].append(hateoas_product(order["product_url"]))
-                        order["links"].append(hateoas_user(userid, event, host, stage))
-                        del order['user_id']
-                        del order['product_url']
+                        order = get_order_json(order, userid, host, stage, path)
                         order_list.append(order)
 
                 response_json["orders"] = order_list
@@ -113,10 +119,10 @@ def order_handler(event, context):
             finally:
                 cur.close()
                 conn.close()
-                resp = respond(err, response_json)
-                print("Response")
-                print(resp)
-                return resp
+                if err: 
+                    return respond(response_json, RESPONSE_INT_SER_ERR)
+                else:
+                    return respond(response_json, RESPONSE_OK)
 
         # if there is orderid in path parameters, return that particular order
         elif path_parameters is not None and "orderid" in path_parameters:
@@ -128,9 +134,9 @@ def order_handler(event, context):
                 conn = pymysql.connect(host=rds_host, port=rds_port, user=rds_username, passwd=rds_password,
                                        db=rds_dbname, connect_timeout=5, cursorclass=pymysql.cursors.DictCursor)
             except:
-                err = True
                 response_json = {"error": "System is facing some issues. Please try again later."}
-                return respond(err, response_json)
+                return respond(response_json, RESPONSE_INT_SER_ERR)
+    
             try:
                 with conn.cursor() as cur:
                     cur.execute(
@@ -140,15 +146,7 @@ def order_handler(event, context):
                         err = True
                         response_json = {"error": "Invalid request"}
                     for row in cur:
-                        order = row
-                        orderdatetime = order["orderdate"]
-                        order["orderdate"] = orderdatetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
-                        order["paymentstatus"] = get_payment_status(order["paymentstatus"])
-                        order["links"] = hateoas_constraints(userid, event, False, host, stage, path, order["id"])
-                        order["links"].append(hateoas_product(order["product_url"]))
-                        order["links"].append(hateoas_user(userid, event, host, stage))
-                        del order['user_id']
-                        del order['product_url']
+                        order = get_order_json(row, userid, host, stage, path)
 
                 response_json = order
             except:
@@ -157,11 +155,23 @@ def order_handler(event, context):
             finally:
                 cur.close()
                 conn.close()
-                return respond(err, response_json)
+                if err:
+                    return responsd(response_json, RESPONSE_INT_SER_ERR)
+                else:
+                    return respond(response_json, RESPONSE_OK)
 
     elif method == "POST":
         # Handle post request
+        print(event)
+        respond(event, RESPONSE_INT_SER_ERR)
+        """product = Product.objects.get(pk=product_id)
+        try:
+            charge = stripe.Charge.create(
+                amount=int(product.price*100),
+                currency="usd",
+                metadata={"order_id": order_id},
+                source=stripe_token)"""
         pass
-    else:
-        err = "{ \"error\" : \" Invalid request\"}"
-        return respond(err)
+    elif method == "PUT":
+        # Handle put request
+        
