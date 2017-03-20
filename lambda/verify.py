@@ -20,17 +20,33 @@ def verify_customer(body):
         print(err)
         return error(500, 'Unable to fetch customer information')
     else:
-        customer_info = None
         if 'Item' not in response:
             return error(404, 'Customer does not exist')
         # user retrieved from database
         _item = response['Item']
         _verification = _item['verification']
-        if _verification['token'] == body['vtoken']:
-            verifiction_response = {
-                'success': True,
-                'message': 'Congrats! Your email has been verified successfully.'
-            }
-            return verifiction_response
+        if _item['info']['verified'] == True:
+            return error(400, 'Email already verified!')
+        elif _verification['token'] == body['vtoken']:
+            try:
+                updateResponse = customer_table.update_item(
+                    Key={
+                        'email': body['uemail']
+                    },
+                    UpdateExpression="set info.verified = :x",
+                    ExpressionAttributeValues={
+                        ':x':True
+                    },
+                    ReturnValues="UPDATED_NEW"
+                )
+            except ClientError as err:
+                print(err)
+                return error(500, 'Unable to update customer verified information')
+            else:
+                verifiction_response = {
+                    'success': True,
+                    'message': 'Congrats! Your email has been verified successfully.'
+                }
+                return verifiction_response
         else:
             return error(401, 'Email verification failed!')
