@@ -5,7 +5,7 @@ Lamdba Orchestrator
 from __future__ import print_function
 import json
 import orders
-# import purchase
+import purchase
 from respond import respond, error
 
 def handler(event, context):
@@ -25,12 +25,12 @@ def handler(event, context):
             return error(500, 'Error processing order request')
 
     elif event['resource'].startswith('/purchase'):
-        return respond(202, 'Order Accepted')
-        # data = purchase.buy_product(event, context)
-        # if int(data['statusCode']) == 200:
-        #     return respond(202, 'Order Accepted')
-        # else:
-        #     return respond(data['statusCode'], data['body'])
+        # return respond(202, 'Order Accepted')
+        data = purchase.buy_product(event, context)
+        if int(data['statusCode']) == 200:
+            return respond(202, 'Order Accepted')
+        else:
+            return respond(data['statusCode'], data['body'])
 
     else:
-        return respond(500, {"message": "Unknown operation"})
+        return error(500, "Unknown operation")

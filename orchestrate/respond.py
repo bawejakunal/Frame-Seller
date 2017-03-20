@@ -1,7 +1,6 @@
 """
 error processing module
 """
-
 import json
 
 def respond(code=500, result=None):

@@ -12,6 +12,7 @@ def buy_product(event, context):
     Create order entry with unpaid status
     """
     data = create_order(event, Status.UNPAID)
+    print(data)
 
     #if order accepted successfully
     #create payment asynchronously

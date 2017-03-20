@@ -4,6 +4,7 @@ Call orders lambda service
 from datetime import datetime
 import json
 import boto3
+from calendar import timegm
 
 def order(event):
     """
@@ -31,8 +32,14 @@ def create_order(event, status):
     """
     create new order
     """
-    event['body']['orderdate'] = datetime.now()
+
+    #convert unicode to dict
+    event['body'] = json.loads(event['body'])
+
+    #add order metadata
+    event['body']['orderdate'] = timegm(datetime.now().timetuple())
     event['body']['paymentstatus'] = status
+
     #call order microservice with POST request
     response = order(event)
     data = json.loads(response['Payload'].read())
