@@ -12,20 +12,20 @@ def buy_product(event, context):
     Create order entry with unpaid status
     """
     data = create_order(event, Status.UNPAID)
-    print(data)
 
     #if order accepted successfully
     #create payment asynchronously
     #return 202 accepted response to user
     if int(data['statusCode']) == 200:
         order_data = json.loads(data['body'])
+        print('Order Created:', order_data)
         promise = Promise(lambda resolve, reject:
                           reject(Exception('Payment Failed')\
                             if create_charge(order_data) is None else \
                             resolve('Payment Processed')))
 
-        #process payment asynchronously
-        promise.then(lambda result: print(result)).\
-        catch(lambda error: print(error))
+        # process payment asynchronously
+        # promise.then(lambda result: print(result)).\
+        # catch(lambda error: print(error))
 
     return data

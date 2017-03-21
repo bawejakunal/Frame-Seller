@@ -16,6 +16,7 @@ class Status:
 
 def create_charge(order_data):
     try:
+        #TODO: validate price ?
         charge = stripe.Charge.create(
             amount=int(order_data['price']*100),
             currency=order_data['currency'],
