@@ -2,11 +2,11 @@
 User module to signup user
 """
 import os
-
+import uuid
 import boto3
 from botocore.exceptions import ClientError
 from error import error
-import uuid
+from verify import send_email
 
 def create_customer(body):
     """
@@ -21,10 +21,11 @@ def create_customer(body):
         ('password' not in body):
         return error(400, 'Missing parameters')
 
-    verification_token = os.urandom(16).encode('hex');
+    verification_token = os.urandom(16).encode('hex')
+
     #get the Customer table
     user_table = boto3.resource('dynamodb').Table('Customer')
-    
+
     try:
         response = user_table.put_item(
             Item={
@@ -35,7 +36,7 @@ def create_customer(body):
                     'firstname' : body['firstname'].strip(),
                     'lastname' : body['lastname'].strip(),
                     'active': True,
-                    'verified' : False #TODO: email verification
+                    'verified' : False
                 },
                 'verification':{
                     'token' : verification_token
@@ -53,49 +54,8 @@ def create_customer(body):
 
     else:
         # email config BEGIN
-        try:
-            email_client = boto3.client('ses',
-                                        aws_access_key_id=os.environ['LOCAL_AWS_ACCESS_KEY'],
-                                        aws_secret_access_key=os.environ['LOCAL_AWS_SECRET_KEY'],)
-
-            s3url = 'https://xyz.com/'
-            verification_url = s3url+'?vtoken='+verification_token+'&uemail='+body['email'].strip()
-
-            email_response = email_client.send_email(
-                Source='akshay2626@gmail.com',
-                Destination={
-                    'ToAddresses': [
-                        body['email'].strip(),
-                    ],
-                    'BccAddresses': [
-                    ],
-                    'CcAddresses': [
-                    ],
-                },
-                Message={
-                    'Subject': {
-                        'Data': 'Frameseller Email Verification',
-                        'Charset': 'UTF-8'
-                    },
-                    'Body': {
-                        'Text': {
-                            'Data': 'Use this url to verify:'+verification_url,
-                            'Charset': 'UTF-8'
-                        },
-                        'Html': {
-                            'Data': 'Use <a href="'+verification_url+'">this</a> url to verify.',
-                            'Charset': 'UTF-8'
-                        }
-                    }
-                },
-                ReplyToAddresses=[
-                    'akshay2626@gmail.com',
-                ],
-            )
-        except ClientError as email_err:
-            print email_err.response
-            return error(500, 'Error sending email')
-        # email config END
+        email = body['email'].strip()
+        send_email(email, verification_token)
 
         return {
             'success': True,
