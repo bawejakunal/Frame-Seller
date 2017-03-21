@@ -42,7 +42,7 @@ def post_order_details(event):
                             product_resturl, product["price"], userid))
 
         orderid = int(cur.lastrowid)
-        orderurl = "href": "https://" + event["host"] + "/" + event["stage"] + "/orders/" + str(orderid)
+        orderurl = { "href" : "https://" + event["host"] + "/" + event["stage"] + "/orders/" + str(orderid) }
         cur.connection.commit()
 
         response_json = { "orderid" : orderid, "orderurl" : orderurl }
