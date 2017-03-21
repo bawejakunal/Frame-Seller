@@ -25,12 +25,15 @@ def handler(event, context):
             return error(500, 'Error processing order request')
 
     elif event['resource'].startswith('/purchase'):
-        # return respond(202, 'Order Accepted')
-        data = purchase.buy_product(event, context)
+        status = None
+        data = purchase.buy_product(event)
+        body = json.loads(data['body'])
+
         if int(data['statusCode']) == 200:
-            return respond(202, 'Order Accepted')
+            status = 202
         else:
-            return respond(data['statusCode'], data['body'])
+            status = data['statusCode']
+        return respond(status, body)
 
     else:
         return error(500, "Unknown operation")
