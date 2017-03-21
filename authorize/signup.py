@@ -4,9 +4,9 @@ User module to signup user
 import os
 import uuid
 import boto3
-from botocore.exceptions import ClientError
 from error import error
 from verify import send_email
+from dao import Dao, AlreadyExistException, UnknownDbException
 
 def create_customer(body):
     """
@@ -23,35 +23,29 @@ def create_customer(body):
 
     verification_token = os.urandom(16).encode('hex')
 
-    #get the Customer table
-    user_table = boto3.resource('dynamodb').Table('Customer')
-
     try:
-        response = user_table.put_item(
-            Item={
-                'uid': str(uuid.uuid4()), #unique id of user
-                'email': body['email'].strip(),
-                'password' : body['password'],
-                'info' : { #TODO: hash, salt
-                    'firstname' : body['firstname'].strip(),
-                    'lastname' : body['lastname'].strip(),
-                    'active': True,
-                    'verified' : False
-                },
-                'verification':{
-                    'token' : verification_token
-                }
+        user = {
+            'uid': str(uuid.uuid4()),
+            'email': body['email'].strip(),
+            'password': body['password'],
+            'info': {
+                'firstname': body['firstname'].strip(),
+                'lastname': body['lastname'].strip(),
+                'active': True,
+                'verified': False
             },
-            ConditionExpression="attribute_not_exists(uid) AND attribute_not_exists(email)"
-        )
+            'verification':{
+                'token': verification_token
+            }
+        }
 
-    except ClientError as err:
-        if err.response['Error']['Code'] == 'ConditionalCheckFailedException':
-            return error(400, 'User already exists')
-        else:
-            print(err.response)
+        #add user entry to database through data abstraction
+        Dao.put_item(user)
+
+    except AlreadyExistException as err:
+        return error(400, 'User already exists')
+    except UnknownDbException as err:
         return error(500, 'Error creating user entry')
-
     else:
         # email config BEGIN
         email = body['email'].strip()
