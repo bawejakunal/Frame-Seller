@@ -3,6 +3,7 @@ Payment processing
 """
 import os
 import stripe
+from order import update
 
 stripe.api_key = os.environ['STRIPE_API_KEY']
 
@@ -55,7 +56,16 @@ def create_charge(event):
         order_data['paymentstatus'] = Status.FAILED
     finally:
         #update order here
-        print('TODO: Update order status')
         print(order_data)
+        payload = {
+            'httpMethod': 'PUT', #operation update order
+            'data': {
+                'orderid': order_data['orderid'],
+                'paymentstatus': order_data['paymentstatus']
+            }
+        }
+
+        #send to order lambda
+        update(payload)
 
     return charge
