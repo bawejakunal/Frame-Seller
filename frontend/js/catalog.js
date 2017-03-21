@@ -1,19 +1,22 @@
 window.addEventListener('popstate', function () {
     handler.close();
 });
+var products = null;
 
 /**
  * Processes payment through handler for stripe checkout
  * @param price
  * @param productID
  */
-function processPayment(price, productID) {
-    var handler = stripe_checkout(productID);
+function processPayment(product_index) {
+    product = products[product_index];
+    console.log(product);
+    var handler = stripe_checkout(product);
     handler.open({
         name: 'Frame Seller',
         description: 'Buy Photo Frame',
         zipCode: true,
-        amount: price * 100
+        amount: product.price * 100
     });
 }
 
@@ -23,7 +26,7 @@ function processPayment(price, productID) {
  * @param product_id
  * @returns {Object}
  */
-function stripe_checkout(product_id) {
+function stripe_checkout(product) {
     var handler = StripeCheckout.configure({
         key: 'pk_test_sMAdKGvXXhzIt0h42tSNt4if',
         image: 'https://stripe.com/img/documentation/checkout/marketplace.png',
@@ -31,9 +34,9 @@ function stripe_checkout(product_id) {
         token: function (token) {
             var jwttoken = getCookie("jwttoken");
             var promise = new Promise(function (success, failure) {
-                var orderdetails = {'product': product_id, 'token': token.id};
+                var orderdetails = {'product': product, 'stripe_token': token.id};
                 $.ajax({
-                    url: orderEndpoint,
+                    url: purchaseEndPoint,
                     type: 'POST',
                     contentType: "application/json",
                     data: JSON.stringify(orderdetails),
@@ -49,11 +52,7 @@ function stripe_checkout(product_id) {
                 });
             });
             promise.then(function (data) {
-                if (data["success"] == true) {
-                    showSnackbar("Your order has been submitted for processing");
-                } else {
-                    showSnackbar("Couldn't process your order. Please try again");
-                }
+                showSnackbar("Processing your order. Thank you.");
             }, function (data) {
                 showSnackbar("Couldn't process your order. Please try again");
             });
@@ -97,7 +96,8 @@ function getProducts(jwttoken) {
  * @param data
  */
 function fillProduct(data) {
-    JSONArray = data;
+    JSONArray = data.products;
+    products = data.products;
     var numProducts = JSONArray.length;
     var fullRows = Math.floor(numProducts / 3);
     var incompleteRows = Math.floor(numProducts % 3);
@@ -118,7 +118,7 @@ function fillProduct(data) {
                      alt=\"Image not found\"> <div class=\"caption\"> <p>" + JSONArray[index].description + "</p>\
                     </div> <script src=\"https://checkout.stripe.com/checkout.js\"></script>\
                      <button align=\"center\" class=\"btn btn-success\" id=\"customButton\"\
-                     onclick=\"processPayment(" + JSONArray[index].price + "," + JSONArray[index].id + ");\">Pay $ "
+                     onclick=\"processPayment(" + index + ");\">Pay $ "
                     + JSONArray[index].price + "</button></div>";
 
                 $("#photoSection").append(stripeString);
@@ -139,7 +139,7 @@ function fillProduct(data) {
                                  alt=\"Image not found\"> <div class=\"caption\">\
                                 <p>" + JSONArray[index].description + "</p> </div> <button align=\"center\"\
                                 class=\"btn btn-success\" id=\"customButton\" onclick=\"processPayment("
-                                + JSONArray[index].price + "," + JSONArray[index].id + ");\">Pay $ "
+                                + index + ");\">Pay $ "
                                 + JSONArray[index].price + "</button></div>";
             $("#photoSection").append(stripeString);
         }
