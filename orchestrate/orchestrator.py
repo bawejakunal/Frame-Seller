@@ -29,7 +29,9 @@ def handler(event, context):
         data = purchase.buy_product(event)
         body = json.loads(data['body'])
 
-        if int(data['statusCode']) == 200:
+        #return accepted with order url once
+        #payment/order accepted for processing
+        if int(data['statusCode']) == 202:
             status = 202
         else:
             status = data['statusCode']

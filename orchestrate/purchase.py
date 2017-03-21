@@ -4,7 +4,7 @@ purchase order
 from __future__ import print_function
 import json
 from orders import create_order
-from payment import Status
+from payment import Status, process_payment
 
 def buy_product(event):
     """
@@ -21,7 +21,12 @@ def buy_product(event):
         order_data['stripe_token'] = body['stripe_token']
         order_data['price'] = body['product']['price']
 
-        #TODO: invoke async lambda or push to SNS for
-        #payment processing
+        # async payment processing via adapter lambda
+        response = process_payment(order_data)
+
+        #overwrite data statusCode as 202
+        #File aws lambda bug, it should be statusCode NOT StatusCode
+        #wasted 10 mins of my life here :(
+        data['statusCode'] = response['StatusCode']
 
     return data
