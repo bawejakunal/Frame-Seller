@@ -7,7 +7,7 @@ def put_order_details(event):
 	err = False
 	error_code = Response.INT_SER_ERR
 
-	data = event["data"]:
+	data = event["data"]
 	if "orderid" not in data or "paymentstatus" not in data:
 		response_json = { "message" : "Bad Request" }
 		return respond(response_json, Response.BAD)
