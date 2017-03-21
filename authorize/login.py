@@ -8,52 +8,44 @@ from jwtoken import create_jwt
 import boto3
 from error import error
 from botocore.exceptions import ClientError
+from dao import Dao, UnknownDbException
 
 def validate_user(email, password):
     """
     Fetch only user infor from database
     """
-
-    #Customer table
-    customer_table = boto3.resource('dynamodb').Table('Customer')
-
     try:
-        response = customer_table.get_item(
-            Key={
-                'email': email
-            }
-        )
-    except ClientError as err:
-        print(err)
-        return error(500, 'Unable to fetch customer information')
-    else:
-        customer_info = None
+        #get user from databse by 'email' key, value as email
+        customer = Dao.get_item('email', email)
 
-        if 'Item' not in response:
+        #no customer found
+        if customer is None:
             return error(404, 'Customer does not exist')
 
         #user retrieved from database
-        _item = response['Item']
-        _info = _item['info']
+        _info = customer['info']
 
         #user not verified then unauthorize
         if not _info['verified']:
             return error(401, 'Customer not verified')
 
-        #user deacivated then unauthorize
+        #user deactivated then unauthorize
         if not _info['active']:
             return error(401, 'Customer de-activated')
 
         #TODO: hash passwords
-        if _item['password'] == password:
+        if customer['password'] == password:
             customer_info = {
-                'uid': _item['uid'],
+                'uid': customer['uid'],
                 'firstname': _info['firstname'],
                 'lastname': _info['lastname'],
-                'email': _item['email']
+                'email': customer['email']
             }
 
         return customer_info
+
+    except UnknownDbException as err:
+        return error(500, 'Unable to fetch customer information')
 
 
 def login_customer(body):
