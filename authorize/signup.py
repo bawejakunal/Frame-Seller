@@ -24,6 +24,7 @@ def create_customer(body):
     verification_token = os.urandom(16).encode('hex')
 
     try:
+        #construct user item to insert in database
         user = {
             'uid': str(uuid.uuid4()),
             'email': body['email'].strip(),

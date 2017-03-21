@@ -18,12 +18,6 @@ class UnknownDbException(Exception):
     pass
 
 
-class DoesNotExistException(Exception):
-    """
-    Entry not found in database
-    """
-    pass
-
 class Dao(object):
     """
     access user table from here
@@ -46,5 +40,34 @@ class Dao(object):
                 raise UnknownDbException('Unknown error creating entry')
 
     @classmethod
-    def get_item(cls):
-        pass
+    def get_item(cls, key, value):
+        """
+        get item from database by key
+        return None if no matching item found
+        """
+        try:
+            response = cls.table.get_item(Key={key: value})
+
+            #no result with matching key
+            if 'Item' not in response:
+                return None
+
+            item = response['Item']
+            return item
+
+        except ClientError as err:
+            print(err)
+            raise UnknownDbException('Unable to fetch item')
+
+    @classmethod
+    def update_item(cls, key, keyval, attr, value):
+        try:
+            response = cls.table.update_item(
+                Key={key: keyval},
+                UpdateExpression="set %s = :x" % attr,
+                ExpressionAttributeValues={':x':value},
+                ReturnValues="UPDATED_NEW")
+            return response
+        except ClientError as err:
+            print(err)
+            raise UnknownDbException('Unable to update database')
