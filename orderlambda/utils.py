@@ -45,6 +45,10 @@ def create_order_query():
         + " (`orderdate`, `token`, `paymentstatus`, `product_id`, `product_url`, `product_price`, `user_id`) VALUES \
         (%s, %s, %s, %s, %s, %s, %s)")
 
+def get_update_query(orderid, paymentstatus):
+    return ("UPDATE " + os.environ['tablename_order'] + "SET paymentstatus = "
+            + paymentstatus + " WHERE id = "+orderid)
+
 
 
 

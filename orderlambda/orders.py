@@ -3,6 +3,7 @@ from __future__ import print_function
 from utils import Response, respond, get_mysql_connection
 from get_orders import get_order_details
 from post_orders import post_order_details
+from put_orders import put_order_details
 
 print('Loading orders function')
 
@@ -25,20 +26,10 @@ def order_handler(event, context):
     if method == "GET":
         # execute the GET order code
         return get_order_details(event)
-
     elif method == "POST":
         # Handle post request
-        print(event)
-        respond(event, Response.OK)
         return post_order_details(event)
-        """product = Product.objects.get(pk=product_id)
-        try:
-            charge = stripe.Charge.create(
-                amount=int(product.price*100),
-                currency="usd",
-                metadata={"order_id": order_id},
-                source=stripe_token)"""
-        pass
     elif method == "PUT":
         # Handle put request
+        return put_order_details(event)
         pass
