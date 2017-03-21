@@ -1,6 +1,6 @@
 from __future__ import print_function
 
-from responses import Response, respond
+from utils import Response, respond, get_mysql_connection
 from get_orders import get_order_details
 from post_orders import post_order_details
 
@@ -20,7 +20,7 @@ def order_handler(event, context):
 
     if method not in valid_operations:
         response_json = { "error" : "Bad Request" }
-        return respond(response_json, RESPONSE_BAD)
+        return respond(response_json, Response.BAD)
 
     if method == "GET":
         # execute the GET order code
@@ -30,6 +30,7 @@ def order_handler(event, context):
         # Handle post request
         print(event)
         respond(event, Response.OK)
+        return post_order_details(event)
         """product = Product.objects.get(pk=product_id)
         try:
             charge = stripe.Charge.create(

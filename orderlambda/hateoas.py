@@ -1,5 +1,6 @@
-def hateoas_constraints(userid, mul_order, host, stage, path, orderid=None):
-    if orderid:
+def hateoas_constraints(mul_order, host, stage, path, orderid=None):
+    print(orderid)
+    if orderid is not None:
         if mul_order:
             links = [{"rel": "self", "href": "https://" + host + "/" + stage + path + str(orderid)}]
         else:
@@ -16,3 +17,4 @@ def hateoas_product(producturl):
 def hateoas_user(userid, host, stage):
     return {"rel": "order.user", "href": "https://" + host + "/" + stage + "/user/" + userid}
 """
+
