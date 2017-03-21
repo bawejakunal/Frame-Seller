@@ -1,5 +1,4 @@
 def hateoas_constraints(mul_order, host, stage, path, orderid=None):
-    print(orderid)
     if orderid is not None:
         if mul_order:
             links = [{"rel": "self", "href": "https://" + host + "/" + stage + path + str(orderid)}]
