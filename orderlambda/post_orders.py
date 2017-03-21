@@ -3,7 +3,6 @@ from __future__ import print_function
 import pymysql
 import datetime
 from utils import Response, respond, get_mysql_connection, create_order_query
-from hateoas import hateoas_constraints
 
 def post_order_details(event):
     """
@@ -43,7 +42,7 @@ def post_order_details(event):
                             product_resturl, product["price"], userid))
 
         orderid = int(cur.lastrowid)
-        orderurl = hateoas_constraints(True, event["host"], event["stage"], "/orders/", orderid)
+        orderurl = "href": "https://" + event["host"] + "/" + event["stage"] + "/orders/" + str(orderid)
         cur.connection.commit()
 
         response_json = { "orderid" : orderid, "orderurl" : orderurl }
