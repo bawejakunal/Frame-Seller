@@ -35,12 +35,10 @@ function verifyUserEmail(email,token){
     });
 
     promise.then(function (data) {
-        console.log(data);
         document.getElementById("verifymessage").innerHTML = '<div class="page-header"><h3>Congrats! Your email has been verified successfully.</h3>' +
             '<a href="index.html">Click here to login page</a></div>';
     }, function (data) {
         var response = JSON.parse(data);
-        console.log(data);
         document.getElementById("verifymessage").innerHTML = '<div class="page-header"><h3>'+response.message+'</h3></div>';
     });
 }

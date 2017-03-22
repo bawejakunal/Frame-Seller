@@ -82,7 +82,7 @@ function fillOrders(orderdata, jwttoken) {
                     success1();
                 }
             }, function (data){
-                console.log("Failure for single product");
+                // ignore if few products are not loaded
             });
         });
     });

@@ -10,7 +10,6 @@ var products = null;
  */
 function processPayment(product_index) {
     product = products[product_index];
-    console.log(product);
     var handler = stripe_checkout(product);
     handler.open({
         name: 'Frame Seller',
@@ -63,8 +62,6 @@ function stripe_checkout(product) {
 
 
 function getProducts(jwttoken) {
-    console.log("abc");
-    console.log(jwttoken);
     var promise = new Promise(function (success, failure) {
         $.ajax({
             url: productEndPoint,
@@ -146,6 +143,6 @@ function fillProduct(data) {
         photoSection.innerHTML += '</div>';
     }
     catch (err) {
-        console.log("ERROR in getProducts.js:" + err);
+        /* catching error over here */
     }
 }
