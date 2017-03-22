@@ -4,11 +4,12 @@ import boto3
 from botocore.exceptions import ClientError
 
 def send_email_handler(event, context):
+    print(event)
     """
     send verification email
     """
     if 'uemail' not in event or 'vtoken' not in event or 'verify_page' not in event:
-        return error(400,'Bad request')
+        print('400:Bad Request')
     try:
         aws_access_key_id = os.environ['LOCAL_AWS_ACCESS_KEY']
         aws_secret_access_key = os.environ['LOCAL_AWS_SECRET_KEY']
@@ -50,12 +51,12 @@ def send_email_handler(event, context):
                 'akshay2626@gmail.com',
             ],
         )
+        print('Email inserted to send queue')
         return {
             'success': True,
             'message': 'Email inserted to send queue'
         }
     except ClientError as email_err:
-        print(email_err.response)
-        return error(500, 'Error sending email')
+        print('500:Error sending email')
     
     # email config END
