@@ -14,6 +14,7 @@
     <script src="js/helper.js"></script>
     <script>
         $(document).ready(function () {
+            loadVerifyPage();
             // executes when HTML-Document is loaded and DOM is ready
             var jwttoken = getCookie("jwttoken");
             if (jwttoken) {
@@ -86,6 +87,12 @@
                             <td class="form">Repeat Password:</td>
                             <td class="form"><input type="password" name="repeatUserPassword" id="surepeatpassword"
                                                     onblur="check($('#surepeatpassword'))" required></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="hidden" name="verify_page" id="suvpage" />
+                            </td>
+                            <td></td>
                         </tr>
                         <!--<tr>
                             <td colspan="2">

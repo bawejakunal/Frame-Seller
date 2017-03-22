@@ -1,3 +1,11 @@
+function loadVerifyPage() {
+    var url = window.location.href;
+    url = url.split('#').pop().split('?').pop();
+    var pageurl = url.substring(0, url.lastIndexOf('/'));
+    pageurl = pageurl + "/verify.html";
+    document.getElementById("suvpage").value = pageurl;
+}
+
 /**
  * Check login credentials by sending them to authTokenEndpoint and receiving response inside Promise.
  */
@@ -46,19 +54,22 @@ function login() {
         email = $("#suemail");
         password = $("#supassword");
         repeatpassword = $("#surepeatpassword");
+        verify_page = $("#suvpage");
 
         var bool1 = check(firstname);
         var bool2 = check(lastname);
         var bool3 = check(email);
         var bool4 = check(password);
         var bool5 = check(repeatpassword);
+        var bool6 = check(verify_page);
 
-        if (bool1 && bool2 && bool3 && bool4 && bool5) {
+        if (bool1 && bool2 && bool3 && bool4 && bool5 && bool6) {
             parameters = {
                 'firstname': firstname.val(),
                 'lastname': lastname.val(),
                 'email': email.val(),
-                'password': password.val()
+                'password': password.val(),
+                'verify_page': verify_page.val()
             };
             var promise = new Promise(function (success, failure) {
                 $.ajax({
@@ -77,7 +88,7 @@ function login() {
 
             promise.then(function (data) {
                 if (data["success"] == true) {
-                    showSnackbar("User registered successfully. You can now login");
+                    showSnackbar("User registered successfully. You will receive verification mail shortly.");
                 }
                 clearSignUpForm();
             }, function (data) {
