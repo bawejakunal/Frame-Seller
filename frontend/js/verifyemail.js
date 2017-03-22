@@ -41,6 +41,6 @@ function verifyUserEmail(email,token){
     }, function (data) {
         var response = JSON.parse(data);
         console.log(data);
-        document.getElementById("verifymessage").innerHTML = '<div class="page-header"><h3>There was an error in verifying your account!</h3></div>';
+        document.getElementById("verifymessage").innerHTML = '<div class="page-header"><h3>'+response.message+'</h3></div>';
     });
 }
