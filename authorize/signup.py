@@ -18,7 +18,8 @@ def create_customer(body):
     if ('firstname' not in body) or\
         ('lastname' not in body) or\
         ('email' not in body) or\
-        ('password' not in body):
+        ('password' not in body) or\
+        ('verify_page' not in body):
         return error(400, 'Missing parameters')
 
     verification_token = os.urandom(16).encode('hex')
@@ -50,7 +51,8 @@ def create_customer(body):
     else:
         # email config BEGIN
         email = body['email'].strip()
-        send_email(email, verification_token)
+        verify_page = body['verify_page'].strip()
+        send_email(email, verify_page, verification_token)
 
         return {
             'success': True,

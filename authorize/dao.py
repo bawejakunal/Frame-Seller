@@ -33,6 +33,7 @@ class Dao(object):
             response = cls.table.put_item(Item=item,
                 ConditionExpression="attribute_not_exists(uid) AND attribute_not_exists(email)")
         except ClientError as err:
+            print(err)
             if (err.response['Error']['Code'] ==
                 'ConditionalCheckFailedException'):
                 raise AlreadyExistException('User Already Exists')
