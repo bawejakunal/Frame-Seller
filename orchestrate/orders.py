@@ -6,6 +6,18 @@ import json
 import boto3
 from calendar import timegm
 
+def invoke_order_lambda(payload, invoke='RequestResponse'):
+    """
+    invoke order lambda
+    """
+    response = boto3.client('lambda').invoke(
+        FunctionName='orders',
+        InvocationType=invoke,
+        LogType='None',
+        Payload=json.dumps(payload))
+
+    return response
+
 def order(event):
     """
     extract info from event and pass on to order microservice
@@ -19,12 +31,8 @@ def order(event):
         'pathParameters': event['pathParameters'],
         'body': event['body']
     }
-    response = boto3.client('lambda').invoke(
-        FunctionName='orders',
-        InvocationType='RequestResponse',
-        LogType='None',
-        Payload=json.dumps(payload))
 
+    response = invoke_order_lambda(payload, 'RequestResponse')
     return response
 
 
@@ -45,3 +53,9 @@ def create_order(event, status):
     data = json.loads(response['Payload'].read())
 
     return data
+
+def update_order(payload):
+    """
+    update order payload async
+    """
+    invoke_order_lambda(payload, 'Event')

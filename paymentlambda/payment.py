@@ -58,6 +58,7 @@ def create_charge(event):
         #update order here
         print(order_data)
         payload = {
+            'resource': '/update/order',
             'httpMethod': 'PUT', #operation update order
             'data': {
                 'orderid': order_data['orderid'],
