@@ -9,7 +9,7 @@
 4. Siddharth Shah (sas2387)
 
 ## URLs
-1. **S3 frontend**: http://s3-us-west-2.amazonaws.com/stripe6998/index.html
+1. **S3 frontend**: https://s3-us-west-2.amazonaws.com/stripe6998/index.html
 2. **Elastic Beanstalk (API URL)**: http://stripedeploy.pmi6pbp3mg.us-west-2.elasticbeanstalk.com/api/
 
 ## Architecture ##
