@@ -9,13 +9,14 @@ from error import error
 from botocore.exceptions import ClientError
 from dao import Dao, UnknownDbException
 
-def send_email(email, verification_token):
+def send_email(email, verify_page, verification_token):
     """
     send verification email
     """
     payload = {
-            "uemail": email,
-            "vtoken": verification_token
+        "uemail": email,
+        "vtoken": verification_token,
+        "verify_page": verify_page
     }
     response = boto3.client('lambda').invoke(
         FunctionName='SendEmail',
