@@ -138,7 +138,7 @@ function login() {
             }
         } else if (element.attr('id') == "surepeatpassword" && element.val() !== "") {
             if ($("#supassword").val() !== element.val()) {
-                alert("Passwords do not match");
+                showSnackbar("Passwords do not match");
                 element.addClass("invalid");
                 $("supassword").addClass("invalid");
             }
