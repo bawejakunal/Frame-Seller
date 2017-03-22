@@ -7,7 +7,7 @@ def send_email_handler(event, context):
     """
     send verification email
     """
-    if 'uemail' not in event or 'vtoken' not in event:
+    if 'uemail' not in event or 'vtoken' not in event or 'verify_page' not in event:
         return error(400,'Bad request')
     try:
         aws_access_key_id = os.environ['LOCAL_AWS_ACCESS_KEY']
@@ -15,10 +15,9 @@ def send_email_handler(event, context):
         email_client = boto3.client('ses', aws_access_key_id=aws_access_key_id,
                                     aws_secret_access_key=aws_secret_access_key
                                    )
-        s3url = 'https://xyz.com/'
+        s3url = event['verify_page'].strip().strip('/')
         
-        verification_url = (s3url + '?vtoken=' + event['vtoken'] +
-                           '&uemail='+event['uemail'])
+        verification_url = (s3url + '?vtoken=' + event['vtoken'] + '&uemail='+event['uemail'])
                            
         response = email_client.send_email(
             Source='akshay2626@gmail.com',
