@@ -6,10 +6,11 @@ def put_order_details(event):
 	response_json = {}
 	err = False
 	error_code = Response.INT_SER_ERR
-
+	print(event)
 	data = event["data"]
 	if "orderid" not in data or "paymentstatus" not in data:
 		response_json = { "message" : "Bad Request" }
+		print(response_json)
 		return respond(response_json, Response.BAD)
 	else:
 		orderid = data["orderid"]
@@ -25,7 +26,10 @@ def put_order_details(event):
 		try:
 			cur = conn.cursor()
 			query = get_update_query(orderid, paymentstatus)
-			cursor.execute(query)
+			print(query)
+			rowcount = cur.execute(query)
+			print(rowcount)
+			cur.connection.commit()
 			response_json = { "message" : "Orders updated" }
 		except Exception as error:
 			print(error)

@@ -46,8 +46,8 @@ def create_order_query():
         (%s, %s, %s, %s, %s, %s, %s)")
 
 def get_update_query(orderid, paymentstatus):
-    return ("UPDATE " + os.environ['tablename_order'] + "SET paymentstatus = "
-            + paymentstatus + " WHERE id = "+orderid)
+    return ("UPDATE " + os.environ['tablename_order'] + " SET paymentstatus = "
+            + str(paymentstatus) + " WHERE id = " + str(orderid))
 
 
 

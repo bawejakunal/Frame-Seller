@@ -1,11 +1,14 @@
 def hateoas_constraints(mul_order, host, stage, path, orderid=None):
+    host = host.strip().strip('/')
+    stage = stage.strip().strip('/')
+    path = path.strip().strip('/')
     if orderid is not None:
         if mul_order:
-            links = [{"rel": "self", "href": "https://" + host + "/" + stage + path + str(orderid)}]
+            links = [{"rel": "self", "href": "https://" + host + "/" + stage + "/" + path + "/" + str(orderid)}]
         else:
-            links = [{"rel": "self", "href": "https://" + host + "/" + stage + path}]
+            links = [{"rel": "self", "href": "https://" + host + "/" + stage + "/" + path + "/"}]
     else:
-        links = [{"rel": "orders.list", "href": "https://" + host + "/" + stage + path}]
+        links = [{"rel": "orders.list", "href": "https://" + host + "/" + stage + "/" + path + "/" }]
     return links
 
 
