@@ -13,3 +13,4 @@ key.json
 
 credentials
 .aws/
+*.zip
