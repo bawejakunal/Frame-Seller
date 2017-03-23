@@ -2,12 +2,15 @@
 User module to signup user
 """
 import os
+import re
 import uuid
 import boto3
 from error import error
 from verify import send_email
 from dao import Dao, AlreadyExistException, UnknownDbException
 
+EMAIL = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
+PASSWORD = re.compile(r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,20}$")
 def create_customer(body):
     """
     Create customer entry in table
@@ -21,6 +24,11 @@ def create_customer(body):
         ('password' not in body) or\
         ('verify_page' not in body):
         return error(400, 'Missing parameters')
+
+    #validate email and password regex
+    if (EMAIL.match(body['email']) is None) or\
+        (PASSWORD.match(body['password']) is None):
+        return error(400, 'Invalid parameter')
 
     verification_token = os.urandom(16).encode('hex')
 
