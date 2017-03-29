@@ -7,6 +7,7 @@ import json
 import orders
 import purchase
 from respond import respond, error
+from subscribe import Topic
 
 def handler(event, context):
     """
@@ -14,6 +15,20 @@ def handler(event, context):
     """
     print(event)
     try:
+        #process SNS invoke
+        if 'Records' in event:
+
+            sns = event['Records'][0]['Sns']
+            topic_arn = sns['TopicArn']
+
+            if Topic[topic_arn] == 'payment':
+                payload = json.loads(sns['Message'])
+                orders.update_order(payload)
+
+            else:
+                print('Subscribed topic not implemented')
+
+        #handle API gateway invokes
         if event['resource'].startswith('/orders'):
             try:
                 response = orders.order(event)
@@ -37,10 +52,6 @@ def handler(event, context):
             else:
                 status = data['statusCode']
             return respond(status, body)
-
-        elif event['resource'] == '/update/order':
-            print(event)
-            orders.update_order(event)
 
         else:
             return error(500, "Unknown operation")

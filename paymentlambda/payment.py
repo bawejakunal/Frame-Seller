@@ -16,6 +16,9 @@ class Status:
     FAILED = 2
 
 def create_charge(event):
+    """
+    create charge
+    """
     charge = None
     try:
         order_data = event['order']
@@ -54,19 +57,5 @@ def create_charge(event):
     except Exception as error:
         print(error)
         order_data['paymentstatus'] = Status.FAILED
-    finally:
-        #update order here
-        print(order_data)
-        payload = {
-            'resource': '/update/order',
-            'httpMethod': 'PUT', #operation update order
-            'data': {
-                'orderid': order_data['orderid'],
-                'paymentstatus': order_data['paymentstatus']
-            }
-        }
 
-        #send to order lambda
-        update(payload)
-
-    return charge
+    return order_data

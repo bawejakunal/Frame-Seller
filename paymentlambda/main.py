@@ -2,22 +2,23 @@
 handle payment processing
 """
 import json
-from payment import create_charge
+from payment import create_charge, Status
 from respond import respond, error
+from notify import publish, Topic
 
 def handler(event, context):
     """
     payment handler
     """
     if 'operation' not in event:
-        return error(400, 'No operation specified')
+        print('No operation specified')
 
     if event['operation'] == 'charge':
-        charge = create_charge(event)
-        if charge is None:
-            print('Payment Failed')
-            return error(500, 'Payment Failed')
-        else:
-            return respond(201, 'Created Payment')
+        #get charge result
+        charge_result = create_charge(event)
+
+        #publish here
+        publish(charge_result, Topic.PAYMENT)
+
     else:
-        return error(400, 'Unknown operation')
+        print('Unknown operation')
