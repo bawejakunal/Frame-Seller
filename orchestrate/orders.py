@@ -53,9 +53,3 @@ def create_order(event, status):
     data = json.loads(response['Payload'].read())
 
     return data
-
-def update_order(payload):
-    """
-    update order payload async
-    """
-    invoke_order_lambda(payload, 'Event')

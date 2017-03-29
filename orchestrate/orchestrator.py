@@ -7,7 +7,8 @@ import json
 import orders
 import purchase
 from respond import respond, error
-from subscribe import Topic
+from subscribe import Subscription
+from notify import Topic, publish
 
 def handler(event, context):
     """
@@ -15,21 +16,22 @@ def handler(event, context):
     """
     print(event)
     try:
-        #process SNS invoke
+        #process SNS messages here
         if 'Records' in event:
 
             sns = event['Records'][0]['Sns']
             topic_arn = sns['TopicArn']
 
-            if Topic[topic_arn] == 'payment':
+            #publish order update to on receiving payment
+            if Subscription[topic_arn] == 'payment':
                 payload = json.loads(sns['Message'])
-                orders.update_order(payload)
+                response = publish(payload, Topic.ORDER_UPDATE)
 
             else:
-                print('Subscribed topic not implemented')
+                print('Subscribed topic %s not implemented' % topic_arn)
 
-        #handle API gateway invokes
-        if event['resource'].startswith('/orders'):
+        #handle API gateway invokes below
+        elif event['resource'].startswith('/orders'):
             try:
                 response = orders.order(event)
                 data = json.loads(response["Payload"].read())
@@ -42,15 +44,14 @@ def handler(event, context):
 
         elif event['resource'].startswith('/purchase'):
             status = None
+
+            #create order and publish to topic
             data = purchase.buy_product(event)
             body = json.loads(data['body'])
 
             #return accepted with order url once
             #payment/order accepted for processing
-            if int(data['statusCode']) == 202:
-                status = 202
-            else:
-                status = data['statusCode']
+            status = data['statusCode']
             return respond(status, body)
 
         else:

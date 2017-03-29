@@ -4,7 +4,9 @@ purchase order
 from __future__ import print_function
 import json
 from orders import create_order
-from payment import Status, process_payment
+from payment import Status
+from notify import publish, Topic
+from botocore.exceptions import ClientError
 
 def buy_product(event):
     """
@@ -21,12 +23,15 @@ def buy_product(event):
         order_data['stripe_token'] = body['stripe_token']
         order_data['price'] = body['product']['price']
 
-        # async payment processing via adapter lambda
-        response = process_payment(order_data)
+        # publish new order
+        # topic name = 'order'
+        try:
+            response = publish(order_data, Topic.ORDER)
+            if response is not None:
+                data['statusCode'] = 202
 
-        #overwrite data statusCode as 202
-        #File aws lambda bug, it should be statusCode NOT StatusCode
-        #wasted 10 mins of my life here :(
-        data['statusCode'] = response['StatusCode']
+        except ClientError as err:
+            print(err)
+            data['statusCode'] = 500
 
     return data
