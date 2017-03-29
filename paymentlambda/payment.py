@@ -15,13 +15,14 @@ class Status:
     PAID = 1
     FAILED = 2
 
-def create_charge(event):
+def create_charge(charge_request):
     """
     create charge
     """
     charge = None
     try:
-        order_data = event['order']
+
+        order_data = charge_request
 
         metadata = {'link': order_data['orderurl']['href']}
 
