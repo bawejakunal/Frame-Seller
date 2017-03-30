@@ -2,6 +2,7 @@ import boto3
 import os
 from botocore.exceptions import ClientError
 import json
+import urllib
 
 def send_email_handler(event, context):
     # TODO implement
@@ -19,8 +20,9 @@ def send_email_handler(event, context):
     print(response["input"])
     print(type(response["input"]))
     
-    taskToken = response["taskToken"]
+    taskToken = urllib.quote_plus(response["taskToken"],"")
     input_json = json.loads(response["input"])
+    
     if input_json is None:
         print "None"
     else:
@@ -60,7 +62,7 @@ def send_email_handler(event, context):
                 },
                 'Body': {
                     'Text': {
-                        'Data': 'Use this url to verify:'+succeed_verification_url+'. If you didn\'t register,click url:'fail_verification_url,
+                        'Data': 'Use this url to verify:'+succeed_verification_url+'. If you didn\'t register,click url:'+fail_verification_url,
                         'Charset': 'UTF-8'
                     },
                     'Html': {
