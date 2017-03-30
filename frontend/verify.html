@@ -17,9 +17,13 @@
     $(document).ready(function () {
         var userEmail = getUrlVars()['uemail'];
         var vToken = getUrlVars()['vtoken'];
+        var verify = getUrlVars()['verify'];
+        var taskToken = getUrlVars()['taskToken'];
         console.log(userEmail);
         console.log(vToken);
-        verifyUserEmail(userEmail,vToken);
+        var verify = getUrlVars()['verify'];
+        var taskToken = getUrlVars()['taskToken'];
+        verifyUserEmail(userEmail,vToken, taskToken, taskToken);
         }
     );
 </script>

@@ -4,5 +4,7 @@ var signUpEndpoint = baseURL+"/authorize/signup/";
 var orderEndpoint = baseURL+"/orders/";
 var productEndPoint = baseURL+"/products/";
 var verifyCustomerEndPoint = baseURL+"/authorize/verify/";
+var verifyCustomerSucceedEndPoint = baseURL+"/authorize/emailsucceed/";
+var verifyCustomerFailEndPoint = baseURL +"/authorize/emailfail";
 var purchaseEndPoint = baseURL+"/purchase/"
 
