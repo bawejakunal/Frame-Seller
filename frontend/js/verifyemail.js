@@ -14,23 +14,22 @@ function getUrlVars()
     return vars;
 }
 
-function verifyUserEmail(email, token, taskToken, verify){
+function verifyUserEmail(email, verify, taskToken){
     var verifyurl;
-    if(verify == "succeed") {
-        verifyurl = verifyCustomerSucceedEndPoint;
+    if(verify == "accept") {
+        verifyurl = verifyCustomerAcceptEndPoint;
     } else {
-        verifyurl = verifyCustomerFailEndPoint;
+        verifyurl = verifyCustomerRejectEndPoint;
     }
 
     parameters = {
         'uemail': email,
-        'vtoken': token,
         'taskToken':taskToken,
     };
     var promise = new Promise(function (success, failure) {
         $.ajax({
             url: verifyurl,
-            type: 'GET',
+            type: 'POST',
             contentType: "application/json",
             data: JSON.stringify(parameters),
             success: function (data) {
