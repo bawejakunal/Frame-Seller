@@ -81,7 +81,7 @@ def send_email_handler(event, context):
                         'Charset': 'UTF-8'
                     },
                     'Html': {
-                        'Data': 'Use <a href="'+succeed_verification_url+'">this url</a>to verify.<br/><br/> Copy paste this url:'+succeed_verification_url,
+                        'Data': 'Use <a href="'+succeed_verification_url+'">this url</a> to verify.<br/><br/> Copy paste this url:'+succeed_verification_url,
                         'Charset': 'UTF-8'
                     }
                 }
