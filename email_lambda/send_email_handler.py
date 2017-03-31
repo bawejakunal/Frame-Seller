@@ -47,11 +47,11 @@ def send_email_handler(event, context):
         s3url = input_json['verify_page'].strip().strip('/')
         
         params = {
-            "vToken" : input_json['jwt'],
+            "vToken" : input_json['jwt']['token'],
             "taskToken" : taskToken
         }
         
-        succeed_verification_url = (s3url + '?' + urllib.urlencode(params) )
+        succeed_verification_url = (s3url + '?' + urllib.urlencode(params))
                            
         response = email_client.send_email(
             Source='akshay2626@gmail.com',
@@ -75,7 +75,7 @@ def send_email_handler(event, context):
                         'Charset': 'UTF-8'
                     },
                     'Html': {
-                        'Data': 'Use <a href="'+succeed_verification_url+'">this url </a>to verify.',
+                        'Data': 'Use <a href="'+succeed_verification_url+'">this url</a>to verify. Copy paste this url:'+succeed_verification_url,
                         'Charset': 'UTF-8'
                     }
                 }
