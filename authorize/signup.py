@@ -42,9 +42,6 @@ def create_customer(body):
                 'lastname': body['lastname'].strip(),
                 'active': True,
                 'verified': False
-            },
-            'verification':{
-                'token': verification_token
             }
         }
 
@@ -56,9 +53,6 @@ def create_customer(body):
     except UnknownDbException as err:
         return error(500, 'Error creating user entry')
     else:
-        # email = body['email'].strip()
-        # verify_page = body['verify_page'].strip()
-        # send_email(email, verify_page, verification_token)
 
         """
         publish customer to customer-create topic
