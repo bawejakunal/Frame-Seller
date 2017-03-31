@@ -15,9 +15,9 @@
 <body>
 <script>
     $(document).ready(function () {
-        var verify = getUrlVars()['vToken'];
+        var vToken = getUrlVars()['vToken'];
         var taskToken = getUrlVars()['taskToken'];
-        verifyUserEmail(verify, taskToken);
+        verifyUserEmail(vToken, taskToken);
     });
 </script>
 <nav class="navbar navbar-inverse" role="navigation">

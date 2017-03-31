@@ -15,14 +15,13 @@ function getUrlVars()
 }
 
 function verifyUserEmail(vToken, taskToken){
-
     parameters = {
-        'uemail': email,
+        'vToken': vToken,
         'taskToken':taskToken,
     };
     var promise = new Promise(function (success, failure) {
         $.ajax({
-            url: verifyurl,
+            url: verifyCustomerEndPoint,
             type: 'POST',
             contentType: "application/json",
             data: JSON.stringify(parameters),
