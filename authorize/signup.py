@@ -5,7 +5,7 @@ import os
 import re
 import uuid
 from error import error
-# from verify import send_email
+from jwtoken import create_jwt, TIME_DELTA
 from dao import Dao, AlreadyExistException, UnknownDbException
 from notify import Topic, publish
 
@@ -58,10 +58,25 @@ def create_customer(body):
         publish customer to customer-create topic
         IMPORTANT: remove hashed password before sending!
         """
-        del user['password']
-        payload = user
+        _jwt_payload = {
+            'email': user['email'],
+            'uid': user['uid']
+        }
+
+        #24 hours jwt token expiry
+        _jwt_token = create_jwt(_jwt_payload, 24 * TIME_DELTA)
+
+        #subscribed services can verify jwt token with their key
+        #send in user email verification mail from AWS Step function
+        payload = dict()
+        payload['email'] = user['email']
+        payload['jwt'] = _jwt_token
         payload['verify_page'] = body['verify_page'].strip()
+
+        #publish the payload
         response = publish(payload, Topic.CUSTOMER_CREATE)
+        print(response)
+        print(payload)
 
         return {
             'success': True,

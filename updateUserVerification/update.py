@@ -1,0 +1,40 @@
+"""
+handle user verification update
+"""
+
+from __future__ import print_function
+import urllib
+import json
+import boto3
+from respond import error, respond
+
+def handler(event, context):
+    """
+    user verification handler
+    """
+    print(context)
+    print(event)
+    if 'body' not in event:
+        return error(400, 'Bad request')
+
+    client = boto3.client('stepfunctions')
+    body = json.loads(event['body'])
+
+    task_token = urllib.unquote_plus(body['taskToken'])
+    _jwt_token = urllib.unquote_plus(body['vToken'])
+
+    payload = {
+        'operation': 'verify',
+        'body-json':{
+            'verify_token': _jwt_token
+        }
+    }
+
+    try:
+        response = client.send_task_success(taskToken=task_token,
+                                output=json.dumps(payload))
+        print(response)
+        return respond(303, None, {'Location': 'index.html'})
+    except Exception as err:
+        print(err)
+        return error(400, 'Bad request')

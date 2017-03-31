@@ -12,6 +12,10 @@ from policy import policy_builder
 
 
 def auth_handler(event, context):
+    """
+    authorizer
+    """
+    print(event)
 
     #check if request is for authorization
     if 'authorizationToken' in event:
