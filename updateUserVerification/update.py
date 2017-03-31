@@ -12,7 +12,6 @@ def handler(event, context):
     """
     user verification handler
     """
-    print(context.client_context)
     print(event)
     if 'body' not in event:
         return error(400, 'Bad request')
