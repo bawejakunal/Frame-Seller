@@ -15,16 +15,10 @@
 <body>
 <script>
     $(document).ready(function () {
-        var userEmail = getUrlVars()['uemail'];
-        //var vToken = getUrlVars()['vtoken'];
-        var verify = getUrlVars()['verify'];
+        var verify = getUrlVars()['vToken'];
         var taskToken = getUrlVars()['taskToken'];
-        console.log(userEmail);
-        //console.log(vToken);
-        //var verify = getUrlVars()['verify'];
-        verifyUserEmail(userEmail, verify, taskToken);
-        }
-    );
+        verifyUserEmail(verify, taskToken);
+    });
 </script>
 <nav class="navbar navbar-inverse" role="navigation">
     <div class="container-fluid">
