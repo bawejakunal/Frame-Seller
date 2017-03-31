@@ -14,10 +14,10 @@ function getUrlVars()
     return vars;
 }
 
-function verifyUserEmail(email,token){
+function verifyUserEmail(vToken, taskToken){
     parameters = {
-        'uemail': email,
-        'vtoken': token,
+        'vToken': vToken,
+        'taskToken':taskToken,
     };
     var promise = new Promise(function (success, failure) {
         $.ajax({
@@ -35,10 +35,9 @@ function verifyUserEmail(email,token){
     });
 
     promise.then(function (data) {
-        document.getElementById("verifymessage").innerHTML = '<div class="page-header"><h3>Congrats! Your email has been verified successfully.</h3>' +
-            '<a href="index.html">Click here to login page</a></div>';
+        window.location.href = "index.html";
     }, function (data) {
         var response = JSON.parse(data);
-        document.getElementById("verifymessage").innerHTML = '<div class="page-header"><h3>'+response.message+'</h3></div>';
+        document.getElementById("verifymessage").innerHTML = '<div class="page-header"><h3> Verification Failed </h3></div>';
     });
 }
