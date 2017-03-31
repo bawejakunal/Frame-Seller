@@ -29,9 +29,12 @@ def buy_product(event):
             response = publish(order_data, Topic.ORDER)
             if response is not None:
                 data['statusCode'] = 202
-
-        except ClientError as err:
+                data['headers'] = {
+                    'Location': order_data['orderurl']['href']
+                }
+        except (ClientError, KeyError) as err:
             print(err)
             data['statusCode'] = 500
+            data['headers'] = None
 
     return data

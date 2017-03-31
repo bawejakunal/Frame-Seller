@@ -52,7 +52,8 @@ def handler(event, context):
             #return accepted with order url once
             #payment/order accepted for processing
             status = data['statusCode']
-            return respond(status, body)
+            headers = data['headers']
+            return respond(status, body, headers)
 
         else:
             return error(500, "Unknown operation")
