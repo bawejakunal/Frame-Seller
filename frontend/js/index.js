@@ -6,6 +6,15 @@ function loadVerifyPage() {
     document.getElementById("suvpage").value = pageurl;
 }
 
+$(document).keyup(function (e) {
+    /* Enter key is used */
+    if ($("#loginpassword").is(":focus") && (e.keyCode == 13)) {
+        login();
+    } else if($("#surepeatpassword").is(":focus") && (e.keyCode == 13)){
+        signUp();
+    }
+});
+
 /**
  * Check login credentials by sending them to authTokenEndpoint and receiving response inside Promise.
  */
