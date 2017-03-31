@@ -4,10 +4,10 @@ User module to signup user
 import os
 import re
 import uuid
-import boto3
 from error import error
-from verify import send_email
+from jwtoken import create_jwt, TIME_DELTA
 from dao import Dao, AlreadyExistException, UnknownDbException
+from notify import Topic, publish
 
 EMAIL = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 PASSWORD = re.compile(r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,20}$")
@@ -15,7 +15,6 @@ def create_customer(body):
     """
     Create customer entry in table
     """
-
 
     #validate required entries
     if ('firstname' not in body) or\
@@ -43,9 +42,6 @@ def create_customer(body):
                 'lastname': body['lastname'].strip(),
                 'active': True,
                 'verified': False
-            },
-            'verification':{
-                'token': verification_token
             }
         }
 
@@ -57,10 +53,30 @@ def create_customer(body):
     except UnknownDbException as err:
         return error(500, 'Error creating user entry')
     else:
-        # email config BEGIN
-        email = body['email'].strip()
-        verify_page = body['verify_page'].strip()
-        send_email(email, verify_page, verification_token)
+
+        """
+        publish customer to customer-create topic
+        IMPORTANT: remove hashed password before sending!
+        """
+        _jwt_payload = {
+            'email': user['email'],
+            'uid': user['uid']
+        }
+
+        #24 hours jwt token expiry
+        _jwt_token = create_jwt(_jwt_payload, 24 * TIME_DELTA)
+
+        #subscribed services can verify jwt token with their key
+        #send in user email verification mail from AWS Step function
+        payload = dict()
+        payload['email'] = user['email']
+        payload['jwt'] = _jwt_token
+        payload['verify_page'] = body['verify_page'].strip()
+
+        #publish the payload
+        response = publish(payload, Topic.CUSTOMER_CREATE)
+        print(response)
+        print(payload)
 
         return {
             'success': True,

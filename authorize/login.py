@@ -5,9 +5,7 @@ Create JWT Token for valid user login
 from __future__ import print_function
 
 from jwtoken import create_jwt
-import boto3
 from error import error
-from botocore.exceptions import ClientError
 from dao import Dao, UnknownDbException
 
 def validate_user(email, password):
