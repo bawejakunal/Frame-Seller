@@ -1,0 +1,17 @@
+{
+  "Comment": "An example of the Amazon States Language using a choice state.",
+  "StartAt": "Verify Customer",
+  "States": {
+    "Verify Customer": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:us-east-1:908762746590:activity:sendEmailActivity",
+      "TimeoutSeconds":86400,
+      "Next": "Customer Verified"
+    },
+    "Customer Verified": {
+      "Type" : "Task",
+      "Resource": "arn:aws:lambda:us-east-1:908762746590:function:Authorize",
+      "End": true
+    }
+  }
+}
