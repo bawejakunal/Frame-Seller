@@ -2,12 +2,11 @@ from __future__ import print_function
 
 from utils import Response, respond, get_mysql_connection, get_update_query
 
-def put_order_details(event):
+def put_order_details(data):
 	response_json = {}
 	err = False
 	error_code = Response.INT_SER_ERR
-	print(event)
-	data = event["data"]
+	
 	if "orderid" not in data or "paymentstatus" not in data:
 		response_json = { "message" : "Bad Request" }
 		print(response_json)
