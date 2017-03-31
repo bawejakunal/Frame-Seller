@@ -3,6 +3,8 @@ import json
 from subscribe import Subscription
 import boto3
 
+emailVerifyStateMachineArn='arn:aws:states:us-east-1:908762746590:stateMachine:EmailVerify'
+
 def email_verify(event, context):
     print(event)
     """
@@ -18,9 +20,7 @@ def email_verify(event, context):
             payload = json.loads(sns['Message'])
             client = boto3.client('stepfunctions')
             response = client.start_execution(
-                stateMachineArn='arn:aws:states:us-east-1:908762746590:stateMachine:EmailVerify',
+                stateMachineArn= emailVerifyStateMachineArn,
                 input=json.dumps(payload)
             )
             print(response)
-
-                
