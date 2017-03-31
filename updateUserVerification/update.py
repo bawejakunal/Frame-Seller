@@ -12,7 +12,7 @@ def handler(event, context):
     """
     user verification handler
     """
-    print(context)
+    print(context.client_context)
     print(event)
     if 'body' not in event:
         return error(400, 'Bad request')
@@ -33,8 +33,11 @@ def handler(event, context):
     try:
         response = client.send_task_success(taskToken=task_token,
                                 output=json.dumps(payload))
-        print(response)
-        return respond(303, None, {'Location': 'index.html'})
+
+        #accepted for verification user should login to verify
+        #alternatively we can send mail
+        return respond(202, 'Verification Request Accepted')
+
     except Exception as err:
         print(err)
         return error(400, 'Bad request')
