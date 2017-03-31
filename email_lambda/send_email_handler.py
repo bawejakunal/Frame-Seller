@@ -6,6 +6,7 @@ import urllib
 
 def send_email_handler(event, context):
     # TODO implement
+    print("Event Sending Code")
     print("Event")
     print(event)
     
@@ -46,7 +47,7 @@ def send_email_handler(event, context):
         s3url = input_json['verify_page'].strip().strip('/')
         
         params = {
-            "jwt" : input_json['jwt'],
+            "vToken" : input_json['jwt'],
             "taskToken" : taskToken
         }
         
