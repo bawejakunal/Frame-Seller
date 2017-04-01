@@ -12,6 +12,7 @@ def email_verify(event, context):
     """
     #drop all other requests
     if 'Records' in event:
+
         sns = event['Records'][0]['Sns']
         topic_arn = sns['TopicArn']
 
@@ -19,6 +20,8 @@ def email_verify(event, context):
         if Subscription[topic_arn] == 'customer-create':
             payload = json.loads(sns['Message'])
             client = boto3.client('stepfunctions')
+
+            #start execution of state machine
             response = client.start_execution(
                 stateMachineArn= emailVerifyStateMachineArn,
                 input=json.dumps(payload)
