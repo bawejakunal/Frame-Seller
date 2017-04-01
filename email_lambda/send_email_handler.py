@@ -18,7 +18,10 @@ def send_email_handler(event, context):
     print(event)
     
     client = boto3.client('stepfunctions')
-    
+    """
+    poll sendEmailActivity for task
+    Generally returns {"taskToken":""} after 60 seconds
+    """
     response = client.get_activity_task(
         activityArn=EMAIL_ACTIVITY,
         workerName='sendemaillambdaworker')
@@ -26,25 +29,25 @@ def send_email_handler(event, context):
     if response is None:
         return
     
-    print("taskToken")
-    print(urllib.quote_plus(response["taskToken"],""))
-    
+    # task token is the token that would be be used to set
+    # output of the corresponding state machine activity
+
     taskToken = response["taskToken"]
     input_json = json.loads(response["input"])
     
     if taskToken == "":
         return
     
-    print(response["taskToken"])
-    print(response["input"])
-    print(type(response["input"]))
-    
     """
     send verification email
     """
     if 'jwt' not in input_json or 'verify_page' not in input_json or "email" not in input_json :
         print('400:Bad Request')
+        return
     try:
+        """
+        Sending email using someone else AWS SES using credentials
+        """
         aws_access_key_id = os.environ['LOCAL_AWS_ACCESS_KEY']
         aws_secret_access_key = os.environ['LOCAL_AWS_SECRET_KEY']
         email_client = boto3.client('ses', aws_access_key_id=aws_access_key_id,
@@ -57,8 +60,12 @@ def send_email_handler(event, context):
             "taskToken" : taskToken
         }
         
+        """
+        Encoding parameters using urlencode to escape special characters
+        """
         succeed_verification_url = (s3url + '?' + urllib.urlencode(params))
-                           
+                          
+        # Send Email Code 
         response = email_client.send_email(
             Source='akshay2626@gmail.com',
             Destination={
