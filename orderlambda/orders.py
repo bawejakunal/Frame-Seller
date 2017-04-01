@@ -19,14 +19,20 @@ def order_handler(event, context):
             /orders -> Creates order with the given body JSON and returns 201 : Order created
     '''
 
+    # If you have received an SNS notification, process here
     if "Records" in event:
+        # Read from SNS messgage
         sns = event["Records"][0]["Sns"]
-
         topic_arn = sns["TopicArn"]
+
+        # Discard all other messages
         if Subscription[topic_arn] == "order-update":
             payload = json.loads(sns["Message"])
             return put_order_details(payload)
     else:
+        """
+        For HTTP requests process here
+        """
         valid_operations = ["GET", "POST"]
         method = event["httpMethod"]
 

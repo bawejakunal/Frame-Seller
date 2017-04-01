@@ -19,6 +19,9 @@ def handler(event, context):
     client = boto3.client('stepfunctions')
     body = json.loads(event['body'])
 
+    """
+    decoding parameters (since we are sending encoded parameters)
+    """
     task_token = urllib.unquote_plus(body['taskToken'])
     _jwt_token = urllib.unquote_plus(body['vToken'])
 
@@ -28,7 +31,10 @@ def handler(event, context):
             'verify_token': _jwt_token
         }
     }
-
+    """
+    Send Task Success message to Step Function to let the statemachine
+    proceed further
+    """
     try:
         response = client.send_task_success(taskToken=task_token,
                                 output=json.dumps(payload))

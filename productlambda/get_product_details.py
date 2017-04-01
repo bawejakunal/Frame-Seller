@@ -5,7 +5,11 @@ import pymysql
 from responses import Response, respond
 from hateoas import hateoas_constraints
 
+"""
+Getting MySQL connection
+"""
 def get_mysql_connection():
+    # Reading from OS Environments for table
     rds_dbname = os.environ['dbname']
     rds_username = os.environ['dbusername']
     rds_password = os.environ['dbpassword']
@@ -32,13 +36,14 @@ def get_product_details(event):
     err = False
     error_code = Response.INT_SER_ERR
 
+    # Getting parameters
     path_parameters = event["pathParameters"]
     stage = event["requestContext"]["stage"]
     path = event["path"]
     host = event["headers"]["Host"]
 
     if path_parameters is None:
-        # return all orders
+        # If no path parameters, return all orders
         product_list = []
         try:
             conn = get_mysql_connection()
@@ -68,12 +73,11 @@ def get_product_details(event):
             else:
                 return respond(response_json, Response.OK)
 
-    # if there is orderid in path parameters, return that particular order
     elif path_parameters is not None and "productid" in path_parameters:
+        # If there is pa in path parameters, return particular order having that orderid
         pid = path_parameters["productid"]
-
-        # get product from db having that productid
-
+        
+        # Check whether pid is a valid int or give error
         try:
             pid = int(pid)
         except ValueError:

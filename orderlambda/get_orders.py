@@ -29,7 +29,7 @@ def get_order_details(event):
     response_json = {}
     err = False
     error_code = Response.INT_SER_ERR
-
+    
     path_parameters = event["pathParameters"]
     userid = event["uid"]
     stage = event["stage"]

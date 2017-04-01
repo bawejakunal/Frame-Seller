@@ -8,17 +8,21 @@ def post_order_details(event):
     """
     Future Enhancement: verify product info is correct
     """
+    # Get parameters for creating order
     userid = event["uid"]
     product = event["body"]["product"]
     p_status = int(event["body"]["paymentstatus"])
     stripe_token = event["body"]["stripe_token"]
     timestamp = event["body"]["orderdate"]
+    # Getting UNIX timestamp and creating datetime
     orderdatetime = datetime.datetime.fromtimestamp(float(timestamp))
+    # Format orderdate from datetime
     orderdate = orderdatetime.strftime('%Y-%m-%d %H:%M:%S')
     product_resturl = ""
 
     linkarray = product["links"]
 
+    # Get product URL
     for links in linkarray:
         if links["rel"] == "self":
             product_resturl = links["href"]
