@@ -1,6 +1,5 @@
 from __future__ import print_function
 
-import pymysql
 import datetime
 from utils import Response, respond, get_mysql_connection, create_order_query
 
@@ -35,8 +34,8 @@ def post_order_details(event):
         conn = get_mysql_connection()
     except Exception as error:
         print(error.message)
-        response_json = {"message": "System is facing some issues. Please try again later."}
-        return respond(response_json, Response.INT_SER_ERR)
+        msg = "System is facing some issues. Please try again later."
+        error(Response.INT_SER_ERR, msg)
 
     try:
         cur = conn.cursor()
@@ -54,14 +53,12 @@ def post_order_details(event):
         print(error.message)
         err = True
         #use default error code
-        response_json = { "message" : "System error. Please try later."}
+        msg = "System error. Please try later."
 
     finally:
         cur.close()
         conn.close()
         if err:
-            return respond(response_json, err_code)
+            error(err_code, msg)
         else:
-            return respond(response_json, Response.OK)
-
-        return respond(response_json, Response.OK)
+            return response_json

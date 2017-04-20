@@ -3,6 +3,7 @@ from __future__ import print_function
 import pymysql
 from utils import Response, respond, get_mysql_connection, get_order_query
 from hateoas import hateoas_constraints, hateoas_product#, hateoas_user
+from error import error
 
 pay_status = {0: "UNPAID", 1: "PAID", 2: "FAILED"}
 
@@ -29,23 +30,24 @@ def get_order_details(event):
     response_json = {}
     err = False
     error_code = Response.INT_SER_ERR
-    
-    path_parameters = event["pathParameters"]
-    userid = event["uid"]
-    stage = event["stage"]
-    path = event["path"]
-    host = event["host"]
+
+    print(event)
+    path_parameters = event["params"]["path"]
+    userid = event["context"]["authorizer-principal-id"]
+    stage = event["context"]["stage"]
+    path = event["context"]["resource-path"]
+    host = event["params"]["header"]["Host"]
 
 
-    if path_parameters is None:
+    if len(path_parameters.keys()) == 0:
         # If path_parameters is None, no orderid is specified and so return all orders
         order_list = []
 
         try:
             conn = get_mysql_connection()
         except:
-            response_json = {"message": "System is facing some issues. Please try again later."}
-            return respond(response_json, Response.INT_SER_ERR)
+            msg = "System is facing some issues. Please try again later."
+            error(Response.INT_SER_ERR, msg)
 
         try:
             with conn.cursor() as cur:
@@ -60,18 +62,18 @@ def get_order_details(event):
         except:
             err = True
             # Not setting error_code and using default
-            response_json = {"message": "System is facing some issues. Please try again later."}
+            msg = "System is facing some issues. Please try again later."
         finally:
             cur.close()
             conn.close()
             # Return error or valid json based on the condition.
-            if err: 
-                return respond(response_json, error_code)
+            if err:
+                error(error_code, msg)
             else:
-                return respond(response_json, Response.OK)
+                return response_json
 
     
-    elif path_parameters is not None and "orderid" in path_parameters:
+    elif len(path_parameters.keys()) != 0 and "orderid" in path_parameters:
         # If path_parameters contains orderid information, return single order
 
         orderid = path_parameters["orderid"]
@@ -81,14 +83,14 @@ def get_order_details(event):
             # Casting orderid to int to validate that orderid is correct and integer
             orderid = int(orderid)
         except ValueError:
-            response_json = {"message": "Bad Request"}
-            return respond(response_json, Response.BAD)
+            msg = "Bad Request"
+            error(Response.BAD, msg)
 
         try:
             conn = get_mysql_connection()
         except:
-            response_json = {"message": "System is facing some issues. Please try again later."}
-            return respond(response_json, Response.INT_SER_ERR)
+            msg = "System is facing some issues. Please try again later."
+            error(Response.INT_SER_ERR, msg)
 
         try:
             with conn.cursor() as cur:
@@ -103,20 +105,19 @@ def get_order_details(event):
                 if cur.rowcount == 0:
                     err = True
                     error_code = Response.FORBIDDEN
-                    response_json = {"message": "Not authorized to access this order"}
+                    msg = "Not authorized to access this order"
                 else:
                     for row in cur:
                         response_json = get_json(row, userid, host, stage, path, False)
         except:
             err = True
             #Not setting error_code and using default Response.INT_SER_ERR = '500'
-            response_json = {"message": "System is facing some issues.\
-                                Please try again later."}
+            msg = "System is facing some issues. Please try again later."
         finally:
             cur.close()
             conn.close()
             # Return error or valid json based on the condition.
             if err:
-                return respond(response_json, error_code)
+                error(error_code, msg)
             else:
-                return respond(response_json, Response.OK)
+                return response_json

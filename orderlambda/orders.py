@@ -5,6 +5,7 @@ from get_orders import get_order_details
 from post_orders import post_order_details
 from put_orders import put_order_details
 from subscribe import Subscription
+from error import error
 import json
 
 print('Loading orders function')
@@ -33,12 +34,13 @@ def order_handler(event, context):
         """
         For HTTP requests process here
         """
+
         valid_operations = ["GET", "POST"]
-        method = event["httpMethod"]
+        method = event["context"]["http-method"]
 
         if method not in valid_operations:
-            response_json = { "error" : "Bad Request" }
-            return respond(response_json, Response.BAD)
+            msg = "Bad Request"
+            error(Response.BAD,msg)
 
         if method == "GET":
             # execute the GET order code
