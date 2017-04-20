@@ -11,8 +11,8 @@ def respond(resp, resp_code):
     }
 
 class Response:
-    OK = '200'
-    BAD = '400'
-    FORBIDDEN = '403'
-    NOT_FOUND = '404'
-    INT_SER_ERR = '500'
+    OK = 200
+    BAD = 400
+    FORBIDDEN = 403
+    NOT_FOUND = 404
+    INT_SER_ERR = 500
