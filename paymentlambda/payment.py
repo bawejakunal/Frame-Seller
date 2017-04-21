@@ -23,11 +23,8 @@ def create_charge(charge_request):
     try:
 
         order_data = charge_request
-
         metadata = {'link': order_data['orderurl']['href']}
-
         stripe_token = order_data['stripe_token']
-
         price = int(order_data['price']) * 100
 
         charge = stripe.Charge.create(
@@ -53,9 +50,6 @@ def create_charge(charge_request):
         print(error)
         order_data['paymentstatus'] = Status.FAILED
     except stripe.error.RateLimitError as error:
-        print(error)
-        order_data['paymentstatus'] = Status.FAILED
-    except Exception as error:
         print(error)
         order_data['paymentstatus'] = Status.FAILED
 

@@ -31,16 +31,23 @@ def handler(event, context):
     for message in messages:
         payload = json.loads(message['Body']) #sqs message body
         payment_request = json.loads(payload['Message']) #sns embedded message
-        charge_result = create_charge(payment_request)
-        publish(charge_result, Topic.PAYMENT)
 
-        _processed = {
-            'Id': message['MessageId'],
-            'ReceiptHandle': message['ReceiptHandle']
-        }
-        processed_messages.append(_processed)
+        try:
+            charge_result = create_charge(payment_request)
+            publish(charge_result, Topic.PAYMENT)
+            _processed = {
+                'Id': message['MessageId'],
+                'ReceiptHandle': message['ReceiptHandle']
+            }
+            processed_messages.append(_processed)
 
-    #batch delete from queue
+        except Exception as err:
+            # this message will be retried upto 3 times and then
+            # inserted
+            print(err)
+
+
+    #batch delete successfully processed requests from queue
     del_response = client.delete_message_batch(
         QueueUrl=Queue.PAYMENT_URL,
         Entries=processed_messages)
