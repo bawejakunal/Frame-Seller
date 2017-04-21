@@ -30,21 +30,20 @@ def order_handler(event, context):
         if Subscription[topic_arn] == "order-update":
             payload = json.loads(sns["Message"])
             return put_order_details(payload)
-    else:
+    elif "context" in event:
         """
         For HTTP requests process here
         """
 
-        valid_operations = ["GET", "POST"]
+        valid_operations = ["GET"]
         method = event["context"]["http-method"]
 
         if method not in valid_operations:
             msg = "Bad Request"
             error(Response.BAD,msg)
 
-        if method == "GET":
-            # execute the GET order code
-            return get_order_details(event)
-        elif method == "POST":
-            # Handle post request
-            return post_order_details(event)
+        return get_order_details(event)
+    
+    elif 'detail-type' in event and event['detail-type'] == 'Scheduled Event'
+        # Poll  SQS and process orders
+        return post_order_details(event)
