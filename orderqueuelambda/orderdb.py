@@ -2,7 +2,6 @@
 Add or update order database items
 """
 import uuid
-import urlparse
 from error import error
 from dao import Dao, AlreadyExistException, UnknownDbException
 
@@ -23,11 +22,13 @@ def add_order(body):
         }
 
         #add user entry to database through data abstraction
-        response = Dao.put_item(order_data)
-        return response
+        Dao.put_item(order_data)
+
+        #return oid on successful put
+        return order_data['oid']
 
     except AlreadyExistException as err:
-        return error(400, 'User already exists')
+        return error(400, 'Order already exists')
     except UnknownDbException as err:
         return error(500, 'Error creating user entry')
 
@@ -35,8 +36,9 @@ def construct_url(event, order_id):
     """
     construct order url for polling
     """
-    url = event['proto'] + '://'
-    url += event['host']
-    url = urlparse.urljoin(url, event['stage'])
-    url = urlparse.urljoin(url, str(order_id))
-    return url
+    try:
+        url = "%s://%s/%s/%s/%s" % (event['proto'], event['host'],
+                event['stage'], 'orderqueue', str(order_id))
+        return url
+    except:
+        return ''

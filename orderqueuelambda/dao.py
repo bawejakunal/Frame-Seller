@@ -30,10 +30,8 @@ class Dao(object):
         add item to user table
         """
         try:
-            response = cls.table.put_item(Item=item,
-                ConditionExpression="attribute_not_exists(oid)",
-                ReturnValues='ALL_NEW')
-            return response
+            cls.table.put_item(Item=item,
+                ConditionExpression="attribute_not_exists(oid)") 
         except ClientError as err:
             print(err)
             if (err.response['Error']['Code'] ==
@@ -67,7 +65,7 @@ class Dao(object):
         completely overwrite the previous item
         """
         try:
-            response = cls.table.put_item(Item=item, ReturnValues='ALL_NEW')
+            response = cls.table.put_item(Item=item, ReturnValues='ALL_OLD')
             return response
         except ClientError as err:
             print(err)
