@@ -1,15 +1,38 @@
+"""
+Order queue handling lambda
+"""
+
 from __future__ import print_function
 
-import boto3
-import json
+import urlparse
+from orderdb import add_order
+from error import error
 
-def orderqueue_handler(event, context):
+def handler(event, context):
+    #signup or login operation
+    try:
+        print(event)
+        if 'operation' not in event or 'body-json' not in event:
+            return error(400, 'Invalid operation')
 
-    if 'context' in event and 'http-method' in event['context']:
-        """
-            This is an HTTP Method
-        """
-        method = event['context']['http-method']
+        operation = event['operation']
+        body = event['body-json']
 
-        # get order details from dynamo db and send it back
-        return
+        if operation == 'update':
+            pass
+
+        elif operation == 'orderqueue':
+            item = add_order(body)
+            url = body['base-url']
+            url = urlparse.urljoin(url, item['oid'])
+            return {
+                'status': 'Accepted',
+                'Location': url
+            }
+
+        else:
+            return error(400, 'Invalid operation')
+
+    except KeyError as err:
+        print(err)
+        return error(400, 'Invalid operation')
