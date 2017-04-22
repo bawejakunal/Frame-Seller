@@ -65,23 +65,25 @@ def accept(event, order):
 
     message = json.dumps(_order_json)
 
-    response = client.send_message(
-        QueueUrl=Queue.URL,
-        MessageBody=message)
+    #add to sqs
+    client.send_message(QueueUrl=Queue.URL, MessageBody=message)
 
-    return {'Location': 'http://queue.com'}
+    #add to order lambda
+    response = invoke_order_lambda(_order_json)
+    return response
 
-# def invoke_order_lambda(payload, invoke='RequestResponse'):
-#     """
-#     invoke order lambda
-#     """
-#     response = boto3.client('lambda').invoke(
-#         FunctionName='orders',
-#         InvocationType=invoke,
-#         LogType='None',
-#         Payload=json.dumps(payload))
 
-#     return response
+def invoke_order_lambda(payload, invoke='RequestResponse'):
+    """
+    invoke order lambda
+    """
+    response = boto3.client('lambda').invoke(
+        FunctionName='orderqueuelambda',
+        InvocationType=invoke,
+        LogType='None',
+        Payload=json.dumps(payload))
+
+    return response
 
 # def order(event):
 #     """
