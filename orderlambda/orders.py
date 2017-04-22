@@ -2,10 +2,12 @@ from __future__ import print_function
 
 from utils import Response, respond, get_mysql_connection
 from get_orders import get_order_details
-from post_orders import post_order_details
+from create_orders import create_order
 from put_orders import put_order_details
-from subscribe import Subscription
+from subscribe import Subscription, Queue
 from error import error
+from notify import Topic, publish
+import boto3
 import json
 
 print('Loading orders function')
@@ -44,6 +46,49 @@ def order_handler(event, context):
 
         return get_order_details(event)
     
-    elif 'detail-type' in event and event['detail-type'] == 'Scheduled Event'
-        # Poll  SQS and process orders
-        return post_order_details(event)
+    elif 'detail-type' in event and event['detail-type'] == 'Scheduled Event':
+        """
+            order handler invoked by Cloudwatch event
+            OrderSchedule
+            """
+        client = boto3.client('sqs')
+
+        response = client.receive_message(
+            QueueUrl=Queue.ORDER_QUEUE_URL,
+            AttributeNames=['All'],
+            WaitTimeSeconds=Queue.WAIT_TIME_S,
+            MaxNumberOfMessages=Queue.MAX_MESSAGES)
+
+        # ignore if no messages returned by queue
+        if 'Messages' not in response:
+            return
+
+        # process messages
+        messages = response['Messages']
+
+        for message in messages:
+            print(message)
+            payload = json.loads(message['Body'])  # sqs message body
+
+            if 'type' in payload and payload['type'] == 'create_order':
+                status, response = create_order(payload)
+
+                if status:
+                    #write code to push to SQS
+                    try:
+                        response = publish(response, Topic.ORDER)
+
+                        if response is not None:
+                            response = client.delete_message(
+                                QueueUrl=Queue.ORDER_QUEUE_URL,
+                                ReceiptHandle=message['ReceiptHandle']
+                            )
+
+                    except:
+                        print("Order creation failed, message will be visible in queue after Visibility timeout")
+
+                else:
+                    print("false")
+
+            elif 'type' in payload and payload['type'] == 'update_order':
+                pass

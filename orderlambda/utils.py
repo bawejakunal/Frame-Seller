@@ -12,6 +12,11 @@ def respond(resp, resp_code):
         }
     }
 
+class Payment:
+    UNPAID = 0
+    PAID = 1
+    FAILED = 2
+
 class Response:
     OK = 200
     UNAUTHORIZED = 401
