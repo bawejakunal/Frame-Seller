@@ -69,7 +69,11 @@ def accept(event, order):
     client.send_message(QueueUrl=Queue.URL, MessageBody=message)
 
     #add to order lambda
-    response = invoke_order_lambda(_order_json)
+    payload = {
+        'operation': 'orderqueue',
+        'body-json': _order_json,
+    }
+    response = invoke_order_lambda(payload)
     return response
 
 
