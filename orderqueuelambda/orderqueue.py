@@ -4,8 +4,7 @@ Order queue handling lambda
 
 from __future__ import print_function
 
-import urlparse
-from orderdb import add_order
+from orderdb import add_order, construct_url
 from error import error
 
 def handler(event, context):
@@ -23,13 +22,8 @@ def handler(event, context):
 
         elif operation == 'orderqueue':
             item = add_order(body)
-            url = body['base-url']
-            url = urlparse.urljoin(url, item['oid'])
-            return {
-                'status': 'Accepted',
-                'Location': url
-            }
-
+            url = construct_url(body['event'], item['oid'])
+            return {'Location': url}
         else:
             return error(400, 'Invalid operation')
 
