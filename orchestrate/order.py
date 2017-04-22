@@ -1,12 +1,13 @@
 """
 Call orders lambda service
 """
-from datetime import datetime
 import json
 import boto3
-from calendar import timegm
 
 class Queue:
+    """
+    Order SQS url
+    """
     URL = 'https://sqs.us-east-1.amazonaws.com/908762746590/Order-Queue'
 
 def validate(order):
@@ -63,11 +64,6 @@ def accept(event, order):
         'host': event['params']['header']['Host']
     }
 
-    message = json.dumps(_order_json)
-
-    #add to sqs
-    client.send_message(QueueUrl=Queue.URL, MessageBody=message)
-
     #add to order lambda
     payload = {
         'operation': 'orderqueue',
@@ -75,6 +71,13 @@ def accept(event, order):
     }
     response = invoke_order_lambda(payload)
     data = json.loads(response['Payload'].read())
+
+    #add to sqs
+    _order_json['queue-id'] = data['oid']
+    message = json.dumps(_order_json)
+    client.send_message(QueueUrl=Queue.URL, MessageBody=message)
+
+    #return orderqueue url
     return data
 
 def invoke_order_lambda(payload, invoke='RequestResponse'):
@@ -88,39 +91,3 @@ def invoke_order_lambda(payload, invoke='RequestResponse'):
         Payload=json.dumps(payload))
 
     return response
-
-# def order(event):
-#     """
-#     extract info from event and pass on to order microservice
-#     """
-#     payload = {
-#         'uid': event['requestContext']['authorizer']['principalId'],
-#         'host': event['headers']['Host'],
-#         'stage': event['requestContext']['stage'],
-#         'path': event['path'],
-#         'httpMethod': event['requestContext']['httpMethod'],
-#         'pathParameters': event['pathParameters'],
-#         'body': event['body']
-#     }
-
-#     response = invoke_order_lambda(payload, 'RequestResponse')
-#     return response
-
-
-# def create_order(event, status):
-#     """
-#     create new order
-#     """
-
-#     #convert unicode to dict
-#     event['body'] = json.loads(event['body'])
-
-#     #add order metadata
-#     event['body']['orderdate'] = timegm(datetime.now().timetuple())
-#     event['body']['paymentstatus'] = status
-
-#     #call order microservice with POST request
-#     response = order(event)
-#     data = json.loads(response['Payload'].read())
-
-#     return data
