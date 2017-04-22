@@ -70,19 +70,19 @@ def accept(event, order):
 
     #add to order lambda
     payload = {
-        'operation': 'OrderQueueLambda',
+        'operation': 'orderqueue',
         'body-json': _order_json,
     }
     response = invoke_order_lambda(payload)
-    return response
-
+    data = json.loads(response['Payload'].read())
+    return data
 
 def invoke_order_lambda(payload, invoke='RequestResponse'):
     """
     invoke order lambda
     """
     response = boto3.client('lambda').invoke(
-        FunctionName='orderqueuelambda',
+        FunctionName='OrderQueueLambda',
         InvocationType=invoke,
         LogType='None',
         Payload=json.dumps(payload))

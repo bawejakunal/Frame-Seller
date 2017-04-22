@@ -35,6 +35,7 @@ def handler(event, context):
             # add to sqs and intermediate database
             # extract order context from event
             response = accept(event, order_data)
+            print(response)
             return error(202, response) #map this to 201 accepted response
 
         else:
