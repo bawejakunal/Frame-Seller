@@ -24,7 +24,7 @@ def handler(event, context):
             order_id = add_order(body)
             url = construct_url(body['event'], order_id)
             return {
-                'queue-id': order_id,
+                'oid': order_id,
                 'Location': url
             }
         else:
