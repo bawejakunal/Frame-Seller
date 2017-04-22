@@ -23,7 +23,10 @@ def handler(event, context):
         elif operation == 'orderqueue':
             order_id = add_order(body)
             url = construct_url(body['event'], order_id)
-            return {'Location': url}
+            return {
+                'queue-id': order_id,
+                'Location': url
+            }
         else:
             return error(400, 'Invalid operation')
 
