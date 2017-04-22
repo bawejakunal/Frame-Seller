@@ -70,7 +70,7 @@ def accept(event, order):
 
     #add to order lambda
     payload = {
-        'operation': 'orderqueue',
+        'operation': 'OrderQueueLambda',
         'body-json': _order_json,
     }
     response = invoke_order_lambda(payload)
