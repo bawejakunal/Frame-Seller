@@ -2,7 +2,7 @@ from __future__ import print_function
 
 import pymysql
 import datetime
-from validator import validate_json
+from validator import validate_json_createorder
 from utils import Response, respond, get_mysql_connection, create_order_query, Payment
 from dao import Dao, AlreadyExistException, UnknownDbException
 from error import error
@@ -13,7 +13,7 @@ def create_order(payload):
     """
     # Get parameters for creating order
 
-    if not validate_json(payload):
+    if not validate_json_createorder(payload):
         return [False, 'Invalid JSON']
 
     event = payload['event']

@@ -2,6 +2,18 @@ from __future__ import print_function
 
 from utils import Response, respond, get_mysql_connection, get_update_query
 
+from validator import validate_json_updatepayment
+
+def update_order(payload):
+
+    if not validate_json_updatepayment(payload):
+        return [False, 'Invalid JSON']
+
+	#Process the updation of the order
+	return [True,""]
+
+
+
 def put_order_details(data):
 	response_json = {}
 	err = False

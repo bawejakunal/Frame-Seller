@@ -3,7 +3,7 @@ from __future__ import print_function
 from utils import Response, respond, get_mysql_connection
 from get_orders import get_order_details
 from create_orders import create_order
-from put_orders import put_order_details
+from orders_op import update_order
 from subscribe import Subscription, Queue
 from error import error
 from notify import Topic, publish
@@ -96,4 +96,7 @@ def order_handler(event, context):
                         print("Order was not created")
 
                 elif 'type' in payload and payload['type'] == 'update_order':
+
+                    status, response = update_order(sns_message)
+
                     pass

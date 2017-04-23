@@ -1,4 +1,4 @@
-def validate_json(json):
+def validate_json_createorder(json):
     print(json)
     payload_fields = ['event', 'data']
 
@@ -55,3 +55,47 @@ def validate_json(json):
             return False
 
     return True
+
+def validate_json_updatepayment(json):
+    print(json)
+
+    payload_fields = ['type', 'data']
+
+    for field in payload_fields:
+        if field not in json:
+            print(field+"not in json")
+            return False
+        if field == payload_fields[0] and not isinstance(json[field], unicode):
+            print(json[field])
+            print(type(json[field]))
+            return False
+        if field == payload_fields[1] and not isinstance(json[field], dict):
+            print(json[field])
+            print(type(json[field]))
+            return False
+
+    data_fields = ['order_url', 'user_id', 'order_id', 'payment_status', 'order_amount', 'product_url', 'stripe_token', 'order_date']
+    data_json = json['data']
+
+    for field in data_fields:
+        if field not in data_json:
+            print(field+"not in data json")
+            return False
+        if field == data_fields[0] and not isinstance(data_json[field], unicode):
+            return False
+        if field == data_fields[1] and not isinstance(data_json[field], unicode):
+            return False
+        if field == data_fields[2] and not isinstance(data_json[field], unicode):
+            return False
+        if field == data_fields[3] and not isinstance(data_json[field], int):
+            return False
+        if field == data_fields[4] and not isinstance(data_json[field], (int, long, float)):
+            return False
+        if field == data_fields[5] and not isinstance(data_json[field], unicode):
+            return False
+        if field == data_fields[6] and not isinstance(data_json[field], unicode):
+            return False
+        if field == data_fields[7] and not isinstance(data_json[field], unicode):
+            return False
+
+
