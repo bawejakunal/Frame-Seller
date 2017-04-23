@@ -34,7 +34,13 @@ def handler(event, context):
 
         try:
             charge_result = create_charge(payment_request)
-            publish(charge_result, Topic.PAYMENT)
+
+            payment_sns_message = {
+                'data': charge_result,
+                'type' : 'update_payment'
+            }
+
+            publish(payment_sns_message, Topic.PAYMENT)
             _processed = {
                 'Id': message['MessageId'],
                 'ReceiptHandle': message['ReceiptHandle']
