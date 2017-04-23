@@ -61,10 +61,8 @@ def accept(event, order):
     }
 
     #add to orderqueue lambda
-    payload = {
-        'operation': 'orderqueue',
-        'body-json': _order_json,
-    }
+    payload = event.copy()
+    payload['body-json'] = _order_json
     response = invoke_order_lambda(payload)
     data = json.loads(response['Payload'].read())
 
