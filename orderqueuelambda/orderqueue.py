@@ -25,7 +25,7 @@ def handler(event, context):
             order_id = add_order(body)
             url = construct_url(body['event'], order_id)
             return {
-                'order-id': order_id,
+                'order_id': order_id,
                 'Location': url
             }
 
