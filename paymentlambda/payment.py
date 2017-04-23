@@ -23,9 +23,9 @@ def create_charge(charge_request):
     try:
 
         order_data = charge_request
-        metadata = {'link': order_data['orderurl']['href']}
+        metadata = {'link': order_data['order_url']}
         stripe_token = order_data['stripe_token']
-        price = int(order_data['price']) * 100
+        price = int(order_data['order_amount']) * 100
 
         charge = stripe.Charge.create(
             amount=price,
