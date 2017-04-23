@@ -67,35 +67,33 @@ def order_handler(event, context):
         messages = response['Messages']
 
         for message in messages:
-            print(message)
             payload = json.loads(message['Body'])  # sqs message body
 
-            if 'Type' in payload and payload['Type'] == 'Notification': # check if the message from sqs in an SNS message
+            if 'Type' in payload and payload['Type'] == 'Notification' and 'Message' in payload: # check if the message from sqs in an SNS message
 
-                if 'Message' in payload:
-                    sns_message = json.loads(payload['Message']) # Load message from SNS
+                sns_message = json.loads(payload['Message']) # Load message from SNS
 
-                    if 'type' in sns_message and sns_message['type'] == 'create_order': # Check if the message is of type 'create_order'
 
-                        # Process Order
+                if 'type' in sns_message and sns_message['type'] == 'create_order': # Check if the message is of type 'create_order'
+                    # Process Order
 
-                        status, response = create_order(payload)
+                    status, response = create_order(sns_message)
 
-                        if status:
-                            try:
-                                response = publish(response, Topic.ORDER)
+                    if status:
+                        try:
+                            response = publish(response, Topic.ORDER)
 
-                                if response is not None:
-                                    response = client.delete_message(
-                                        QueueUrl=Queue.ORDER_QUEUE_URL,
-                                        ReceiptHandle=message['ReceiptHandle']
-                                    )
+                            if response is not None:
+                                response = client.delete_message(
+                                    QueueUrl=Queue.ORDER_QUEUE_URL,
+                                    ReceiptHandle=message['ReceiptHandle']
+                                )
 
-                            except:
-                                print("Order creation failed, message will be visible in queue after Visibility timeout")
+                        except:
+                            print("Order creation failed, message will be visible in queue after Visibility timeout")
 
-                        else:
-                            print("false")
+                    else:
+                        print("Order was not created")
 
-                    elif 'type' in payload and payload['type'] == 'update_order':
-                        pass
+                elif 'type' in payload and payload['type'] == 'update_order':
+                    pass

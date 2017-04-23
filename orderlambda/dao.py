@@ -31,7 +31,7 @@ class Dao(object):
         """
         try:
             cls.table.put_item(Item=item,
-                ConditionExpression="attribute_not_exists(order-id)")
+                ConditionExpression="attribute_not_exists(order_id)")
         except ClientError as err:
             print(err)
             if (err.response['Error']['Code'] ==

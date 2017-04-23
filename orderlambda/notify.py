@@ -14,7 +14,7 @@ class Topic(object):
     """
     List of SNS topics
     """
-    ORDER = "order"
+    ORDER = "order-created"
 
 def publish(message, topic):
     """

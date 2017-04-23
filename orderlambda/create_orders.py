@@ -12,11 +12,12 @@ def create_order(payload):
     Future Enhancement: verify product info is correct
     """
     # Get parameters for creating order
+
     if not validate_json(payload):
         return [False, 'Invalid JSON']
 
     event = payload['event']
-    order_id = payload['order-id']
+    order_id = payload['order_id']
     userid = event['principal-id']
     host = event['host']
     stage = event['stage']
