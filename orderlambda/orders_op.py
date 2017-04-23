@@ -48,18 +48,14 @@ def create_order(payload):
     try:
         # construct user item to insert in database
 
-        info = {
+        order_data = {
+            'uid':userid,
+            'order_id':order_id,
             'order_date': order_date,
             'stripe_token': stripe_token,
             'payment_status': payment_status,
             'order_amount': product['price'],
             'product_url': product_resturl
-        }
-
-        order_data = {
-            'uid':userid,
-            'order_id':order_id,
-            'info':info
         }
 
         # add user entry to database through data abstraction
@@ -79,8 +75,19 @@ def update_order(payload):
     if not validate_json_updatepayment(payload):
         return [False, 'Invalid JSON']
 
+    data = payload['data']
+
     try:
-        Dao.update_item(payload)
+        key_dict = {
+            'uid':data['uid'],
+            'order_id':data['order_id']
+        }
+
+        update_exp = "SET payment_status = :new_status"
+
+        exp_att_val_dict = {':new_status': data['payment_status']}
+
+        Dao.update_item(key_dict, update_exp, exp_att_val_dict)
         return [True, "Order Updated"]
     except:
         return [False, "Couldn't update order"]

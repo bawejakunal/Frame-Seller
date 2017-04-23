@@ -60,18 +60,15 @@ class Dao(object):
             raise UnknownDbException('Unable to fetch item')
 
     @classmethod
-    def update_item(cls, item):
+    def update_item(cls, key_dict, update_exp, exp_att_val_dict):
         """
         completely overwrite the previous item
         """
         try:
             response = cls.table.update_item(
-                Key={
-                    'order_id':item['order_id'],
-                    'uid':item['user_id']
-                },
-                UpdateExpression = "SET payment_status = :new_status",
-                ExpressionAttributeValues = {':new_status': item['payment_status']}
+                Key=key_dict,
+                UpdateExpression = update_exp,
+                ExpressionAttributeValues = exp_att_val_dict
             )
             return
         except ClientError as err:

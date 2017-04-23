@@ -86,14 +86,17 @@ def order_handler(event, context):
                     else:
                         print("Order was not created")
 
-                elif 'type' in payload and payload['type'] == 'update_order':
-
+                elif 'type' in sns_message and sns_message['type'] == 'update_payment':
+                    print(sns_message)
                     status, response = update_order(sns_message)
 
                     if status:
+                        print(response)
                         response = client.delete_message(
-                            Queue=Queue.ORDER_QUEUE_URL,
+                            QueueUrl=Queue.ORDER_QUEUE_URL,
                             ReceiptHandle=message['ReceiptHandle']
                         )
+                    else:
+                        print(response)
 
                     return
