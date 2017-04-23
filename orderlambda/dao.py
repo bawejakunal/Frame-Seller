@@ -25,7 +25,7 @@ class Dao(object):
     table = boto3.resource('dynamodb').Table('OrderDB')
 
     @classmethod
-    def put_item(cls, key_dict, item):
+    def put_item(cls, item):
         """
         add item to user table
         """
