@@ -43,3 +43,28 @@ def construct_url(event, order_id):
         return url
     except (KeyError, ValueError, TypeError) as err:
         return ''
+
+def order_queue(event):
+    """
+    query queue db based on event structure
+    """
+
+    try:
+        uid = event['context']['authorizer-principal-id']
+        path = event['params']['path']
+        if 'orderid' in path:
+            order_id = path['orderid']
+            query_dict = {
+                'order_id': order_id,
+                'uid': uid
+            }
+            order = Dao.get_item(query_dict)
+            if order is None:
+                return error(404, "No order found")
+            return order
+
+        else:
+            return (500, "Not Implemented")
+
+    except KeyError:
+        return error(400, "Invalid request")

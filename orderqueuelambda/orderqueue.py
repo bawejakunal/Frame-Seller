@@ -3,7 +3,7 @@ Order queue handling lambda
 """
 
 from __future__ import print_function
-from orderdb import add_order, construct_url
+from orderdb import add_order, construct_url, order_queue
 from error import error
 
 def handler(event, context):
@@ -21,7 +21,7 @@ def handler(event, context):
             pass
 
         # add new orders to queue
-        elif operation == 'orderqueue':
+        elif operation == 'purchase':
             order_id = add_order(body)
             url = construct_url(body['event'], order_id)
             return {
@@ -30,8 +30,8 @@ def handler(event, context):
             }
 
         # get status of queued orders
-        elif operation == 'getorderstatus':
-            pass
+        elif operation == 'orderqueue':
+            return order_queue(event)
 
         else:
             return error(400, 'Invalid operation')
