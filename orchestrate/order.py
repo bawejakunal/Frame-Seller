@@ -78,6 +78,16 @@ def accept(event, order):
     else:
         return data
 
+def orderqueue(event):
+    """
+    view orderqueue of a user
+    """
+    payload = event
+    response = invoke_order_lambda(payload)
+    data = json.loads(response['Payload'].read())
+    #TODO: do some post processing for errors here
+    return data
+
 def invoke_order_lambda(payload, invoke='RequestResponse'):
     """
     invoke order lambda
