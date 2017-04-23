@@ -4,6 +4,8 @@ import pymysql
 import datetime
 from validator import validate_json
 from utils import Response, respond, get_mysql_connection, create_order_query, Payment
+from dao import Dao, AlreadyExistException, UnknownDbException
+from error import error
 
 def create_order(payload):
     """
@@ -14,18 +16,21 @@ def create_order(payload):
         return [False, 'Invalid JSON']
 
     event = payload['event']
+    order_id = payload['order-id']
     userid = event['principal-id']
     host = event['host']
     stage = event['stage']
     protocol = event['proto']
 
     product = payload['data']['product']
-    p_status = Payment.UNPAID
+    payment_status = Payment.UNPAID
     stripe_token = payload['data']['stripe_token']
+
     # Getting UNIX timestamp and creating datetime
     orderdatetime = datetime.datetime.utcnow()
+
     # Format orderdate from datetime
-    orderdate = orderdatetime.strftime('%Y-%m-%d %H:%M:%S')
+    order_date = orderdatetime.strftime('%Y-%m-%d %H:%M:%S')
     product_resturl = ""
 
     linkarray = product["links"]
@@ -39,6 +44,31 @@ def create_order(payload):
     err = False
 
     try:
+        # construct user item to insert in database
+        order_data = {
+            'order_id': order_id,
+            'order_date': order_date,
+            'stripe_token': stripe_token,
+            'payment_status':payment_status,
+            'order_amount': product['price'],
+            'product_url':product_resturl,
+            'user_id':userid
+        }
+
+        # add user entry to database through data abstraction
+        Dao.put_item(order_data)
+
+        order_data["order_url"] = protocol + "://" + host + "/" + stage + "/orders/" + order_id;
+
+        return [True, order_data]
+
+    except AlreadyExistException as err:
+        return [False, 'Order already exists']
+    except UnknownDbException as err:
+        return [False, 'Error creating order entry']
+
+
+    """try:
         conn = get_mysql_connection()
     except Exception as error:
         print(error.message)
@@ -69,4 +99,4 @@ def create_order(payload):
         if err:
             return [False,response_json]
         else:
-            return [True, response_json]
+            return [True, response_json]"""
