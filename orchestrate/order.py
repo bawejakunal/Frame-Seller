@@ -73,8 +73,8 @@ def accept(event, order):
     try:
         response = publish(_order_json, Topic.ORDER)
     except ClientError as err:
-            print(err)
-            return error(500, "Error accepting order")
+        print(err)
+        return error(500, "Error accepting order")
     else:
         return data
 
