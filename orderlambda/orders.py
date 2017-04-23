@@ -2,8 +2,7 @@ from __future__ import print_function
 
 from utils import Response, respond, get_mysql_connection
 from get_orders import get_order_details
-from create_orders import create_order
-from orders_op import update_order
+from orders_op import create_order, update_order
 from subscribe import Subscription, Queue
 from error import error
 from notify import Topic, publish
@@ -13,26 +12,18 @@ import json
 print('Loading orders function')
 
 def order_handler(event, context):
-    '''
+    """
         Handles : GET and POST request
         /GET Request:
             /orders -> Return all orders for the given user.
             /orders/{orderid} -> Return order with particular {orderid} if that order belongs to that user
         /POST Request:
             /orders -> Creates order with the given body JSON and returns 201 : Order created
-    '''
+    """
 
     # If you have received an SNS notification, process here
-    if "Records" in event:
-        # Read from SNS messgage
-        sns = event["Records"][0]["Sns"]
-        topic_arn = sns["TopicArn"]
 
-        # Discard all other messages
-        if Subscription[topic_arn] == "order-update":
-            payload = json.loads(sns["Message"])
-            return put_order_details(payload)
-    elif "context" in event:
+    if "context" in event:
         """
         For HTTP requests process here
         """
@@ -99,4 +90,10 @@ def order_handler(event, context):
 
                     status, response = update_order(sns_message)
 
-                    pass
+                    if status:
+                        response = client.delete_message(
+                            Queue=Queue.ORDER_QUEUE_URL,
+                            ReceiptHandle=message['ReceiptHandle']
+                        )
+
+                    return

@@ -25,7 +25,7 @@ class Dao(object):
     table = boto3.resource('dynamodb').Table('OrderDB')
 
     @classmethod
-    def put_item(cls, item):
+    def put_item(cls, key_dict, item):
         """
         add item to user table
         """
@@ -65,8 +65,15 @@ class Dao(object):
         completely overwrite the previous item
         """
         try:
-            response = cls.table.put_item(Item=item, ReturnValues='ALL_OLD')
-            return response
+            response = cls.table.update_item(
+                Key={
+                    'order_id':item['order_id'],
+                    'uid':item['user_id']
+                },
+                UpdateExpression = "SET payment_status = :new_status",
+                ExpressionAttributeValues = {':new_status': item['payment_status']}
+            )
+            return
         except ClientError as err:
             print(err)
             raise UnknownDbException('Unable to update database')

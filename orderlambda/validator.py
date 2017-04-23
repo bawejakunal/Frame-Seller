@@ -56,6 +56,7 @@ def validate_json_createorder(json):
 
     return True
 
+
 def validate_json_updatepayment(json):
     print(json)
 
@@ -73,6 +74,8 @@ def validate_json_updatepayment(json):
             print(json[field])
             print(type(json[field]))
             return False
+
+    return True
 
     data_fields = ['order_url', 'user_id', 'order_id', 'payment_status', 'order_amount', 'product_url', 'stripe_token', 'order_date']
     data_json = json['data']
