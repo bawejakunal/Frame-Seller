@@ -53,4 +53,6 @@ def create_charge(charge_request):
         print(error)
         order_data['paymentstatus'] = Status.FAILED
 
+    order_data['type'] = 'update_payment'
+
     return order_data
