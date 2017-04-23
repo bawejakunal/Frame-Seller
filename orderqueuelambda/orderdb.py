@@ -16,7 +16,7 @@ def add_order(body):
     try:
         #construct user item to insert in database
         order_data = {
-            'oid': str(uuid.uuid4()),
+            'order_id': str(uuid.uuid4()),
             'uid': uid,
             'info': order
         }
@@ -25,7 +25,7 @@ def add_order(body):
         Dao.put_item(order_data)
 
         #return oid on successful put
-        return order_data['oid']
+        return order_data['order_id']
 
     except AlreadyExistException as err:
         return error(400, 'Order already exists')
@@ -38,7 +38,8 @@ def construct_url(event, order_id):
     """
     try:
         url = "%s://%s/%s/%s/%s" % (event['proto'], event['host'],
-                event['stage'], 'orderqueue', str(order_id))
+                                    event['stage'], 'orderqueue',
+                                    str(order_id))
         return url
-    except:
+    except (KeyError, ValueError, TypeError) as err:
         return ''
