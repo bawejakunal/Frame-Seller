@@ -3,12 +3,9 @@ Call orders lambda service
 """
 import json
 import boto3
-
-class Queue:
-    """
-    Order SQS url
-    """
-    URL = 'https://sqs.us-east-1.amazonaws.com/908762746590/Order-Queue'
+from notify import publish, Topic
+from botocore.exceptions import ClientError
+from error import error
 
 def validate(order):
     """
@@ -51,9 +48,8 @@ def accept(event, order):
     accept valid order json
     add to SQS and intermediate queue database
     """
-    client = boto3.client('sqs')
 
-    #create message to send
+    #create message to publish
     _order_json = dict()
     _order_json['type'] = 'create_order'
     _order_json['data'] = order.copy()
@@ -72,13 +68,15 @@ def accept(event, order):
     response = invoke_order_lambda(payload)
     data = json.loads(response['Payload'].read())
 
-    #add to sqs
+    #publish to SNS Topic for new order
     _order_json['queue-id'] = data['oid']
-    message = json.dumps(_order_json)
-    client.send_message(QueueUrl=Queue.URL, MessageBody=message)
-
-    #return orderqueue url
-    return data
+    try:
+        response = publish(_order_json, Topic.ORDER)
+    except ClientError as err:
+            print(err)
+            return error(500, "Error accepting order")
+    else:
+        return data
 
 def invoke_order_lambda(payload, invoke='RequestResponse'):
     """
