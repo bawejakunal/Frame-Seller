@@ -33,3 +33,14 @@ def error(http_status=500, message=None):
         'message': message
     }
     raise Exception(json.dumps(err))
+
+
+def handle_if_error(response):
+    """
+    handle error stack trace returned by other lambdas
+    """
+    if 'errorMessage' not in response:
+        return response
+
+    err = json.loads(response['errorMessage'])
+    return error(int(err['http_status_code']), err['message'])
