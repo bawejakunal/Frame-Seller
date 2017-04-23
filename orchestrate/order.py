@@ -60,7 +60,7 @@ def accept(event, order):
         'host': event['params']['header']['Host']
     }
 
-    #add to order lambda
+    #add to orderqueue lambda
     payload = {
         'operation': 'orderqueue',
         'body-json': _order_json,
@@ -68,9 +68,9 @@ def accept(event, order):
     response = invoke_order_lambda(payload)
     data = json.loads(response['Payload'].read())
 
-    #publish to SNS Topic for new order
-    _order_json['queue-id'] = data['oid']
+    #publish to SNS Topic for new queued order
     try:
+        _order_json['order_id'] = data['order_id']
         response = publish(_order_json, Topic.ORDER)
     except ClientError as err:
         print(err)

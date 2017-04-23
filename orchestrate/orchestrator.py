@@ -16,18 +16,17 @@ def handler(event, context):
     try:
         print(event)
         #process SNS messages here
-        if 'Records' in event:
-            sns = event['Records'][0]['Sns']
-            topic_arn = sns['TopicArn']
+        # if 'Records' in event:
+        #     sns = event['Records'][0]['Sns']
+        #     topic_arn = sns['TopicArn']
+        #     #publish order update to on receiving payment
+        #     if Subscription[topic_arn] == 'payment':
+        #         payload = json.loads(sns['Message'])
+        #         response = publish(payload, Topic.ORDER_UPDATE)
+        #     else:
+        #         print('Subscribed topic %s not implemented' % topic_arn)
 
-            #publish order update to on receiving payment
-            if Subscription[topic_arn] == 'payment':
-                payload = json.loads(sns['Message'])
-                response = publish(payload, Topic.ORDER_UPDATE)
-            else:
-                print('Subscribed topic %s not implemented' % topic_arn)
-
-        elif event['operation'] == 'purchase':
+        if event['operation'] == 'purchase':
             order_data = event['body-json']
             if validate(order_data) is False:
                 return error(400, "Malformed data")
