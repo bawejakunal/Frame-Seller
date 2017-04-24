@@ -131,6 +131,8 @@ def get_order(event):
         }
         order = Dao.get_item(query_dict)
 
+        del order['stripe_token']
+        
         print(order)
 
         return order
