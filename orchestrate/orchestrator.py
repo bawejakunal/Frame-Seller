@@ -4,6 +4,7 @@ Lamdba Orchestrator
 
 from __future__ import print_function
 from order import accept, validate, orderqueue
+from error import error
 
 def handler(event, context):
     """
