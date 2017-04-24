@@ -5,7 +5,7 @@ import json
 import boto3
 from notify import publish, Topic
 from botocore.exceptions import ClientError
-from error import error
+from error import error, handle_if_error
 
 def validate(order):
     """
@@ -43,38 +43,49 @@ def validate(order):
 
     return True
 
-def accept(event, order):
+def accept(event):
     """
     accept valid order json
     add to SQS and intermediate queue database
     """
 
-    #create message to publish
-    _order_json = dict()
-    _order_json['type'] = 'create_order'
-    _order_json['data'] = order.copy()
-    _order_json['event'] = {
-        'principal-id': event['context']['authorizer-principal-id'],
-        'proto': event['params']['header']['CloudFront-Forwarded-Proto'],
-        'stage': event['context']['stage'],
-        'host': event['params']['header']['Host']
-    }
+    _order_data = event['body-json'].copy()
 
-    #add to orderqueue lambda
-    payload = event.copy()
-    payload['body-json'] = _order_json
-    response = invoke_order_lambda(payload)
-    data = json.loads(response['Payload'].read())
-
-    #publish to SNS Topic for new queued order
     try:
+        #create message to publish
+        _order_json = dict()
+        _order_json['type'] = 'create_order'
+        _order_json['data'] = _order_data
+        _order_json['event'] = {
+            'principal-id': event['context']['authorizer-principal-id'],
+            'proto': event['params']['header']['CloudFront-Forwarded-Proto'],
+            'stage': event['context']['stage'],
+            'host': event['params']['header']['Host']
+        }
+
+        # remove stripe_token before storing in orderqueue db
+        _order_queue_data = _order_json.copy()
+        del _order_queue_data['data']['stripe_token']
+
+        #add to orderqueue lambda
+        payload = dict()
+        payload['operation'] = event['operation']
+        payload['body-json'] = _order_queue_data
+
+        response = invoke_order_lambda(payload)
+        data = json.loads(response['Payload'].read())
+        data = handle_if_error(data) #handle unlikely lambda error
+
+        #publish to SNS Topic for new queued order
         _order_json['order_id'] = data['order_id']
         response = publish(_order_json, Topic.ORDER)
+
+        return data
+
     except ClientError as err:
         print(err)
         return error(500, "Error accepting order")
-    else:
-        return data
+
 
 def orderqueue(event):
     """
@@ -83,8 +94,7 @@ def orderqueue(event):
     payload = event
     response = invoke_order_lambda(payload)
     data = json.loads(response['Payload'].read())
-    #TODO: do some post processing for errors here
-    return data
+    return handle_if_error(data)
 
 def invoke_order_lambda(payload, invoke='RequestResponse'):
     """
