@@ -11,9 +11,9 @@ class Status:
     """
     Describe payment status
     """
-    UNPAID = 0
-    PAID = 1
-    FAILED = 2
+    UNPAID = "UNPAID"
+    PAID = "PAID"
+    FAILED = "FAILED"
 
 def create_charge(charge_request):
     """
