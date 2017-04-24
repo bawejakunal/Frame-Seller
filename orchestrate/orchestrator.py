@@ -22,7 +22,7 @@ def handler(event, context):
         elif event['operation'] == 'orderqueue':
             response = orderqueue(event)
             return response
-        
+
         else:
             return error(500, "Unknown operation")
 

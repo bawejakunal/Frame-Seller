@@ -20,6 +20,8 @@ def error(http_status=500, message=None):
     https://aws.amazon.com/blogs/compute/error-handling-patterns-in-amazon-api-gateway-and-aws-lambda/
     """  
 
+    err = None
+
     """
     If developer is making foolish mistake
     make them pay for it
@@ -27,12 +29,18 @@ def error(http_status=500, message=None):
     if http_status not in HTTP_ERROR:
         http_status = 500
 
-    err = {
-        'http_status_code': http_status,
-        'error_type': HTTP_ERROR[http_status],
-        'message': message
-    }
-    raise Exception(json.dumps(err))
+    #handle redirect 3xx responses
+    if http_status == 301:
+        err = message
+    else:
+        err = {
+            'http_status_code': http_status,
+            'error_type': HTTP_ERROR[http_status],
+            'message': message
+        }
+        err = json.dumps(err)
+
+    raise Exception(err)
 
 
 def handle_if_error(response):
