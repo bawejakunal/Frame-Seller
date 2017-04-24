@@ -72,7 +72,9 @@ def accept(event):
         payload['operation'] = event['operation']
         payload['body-json'] = _order_queue_data
 
-        response = invoke_order_lambda(payload)
+        response = invoke_order_lambda(payload=payload,
+                                       FunctionName='OrderQueueLambda')
+
         data = json.loads(response['Payload'].read())
         data = handle_if_error(data) #handle unlikely lambda error
 
@@ -96,14 +98,25 @@ def orderqueue(event):
     data = json.loads(response['Payload'].read())
     return handle_if_error(data)
 
-def invoke_order_lambda(payload, invoke='RequestResponse'):
+def invoke_order_lambda(payload, FunctionName=None, invoke='RequestResponse'):
     """
     invoke order lambda
     """
     response = boto3.client('lambda').invoke(
-        FunctionName='OrderQueueLambda',
+        FunctionName=FunctionName,
         InvocationType=invoke,
         LogType='None',
         Payload=json.dumps(payload))
 
     return response
+
+def get_orders(event):
+    """
+    get orders
+    """
+    payload = event
+    response = invoke_order_lambda(payload=payload,
+                                   FunctionName='orders')
+    data = json.loads(response['Payload'].read())
+    return handle_if_error(data)
+

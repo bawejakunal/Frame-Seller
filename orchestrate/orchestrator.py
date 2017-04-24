@@ -3,7 +3,7 @@ Lamdba Orchestrator
 """
 
 from __future__ import print_function
-from order import accept, validate, orderqueue
+from order import accept, validate, orderqueue, get_orders
 from error import error
 
 def handler(event, context):
@@ -21,6 +21,10 @@ def handler(event, context):
 
         elif event['operation'] == 'orderqueue':
             response = orderqueue(event)
+            return response
+
+        elif event['operation'] == 'orders':
+            response = get_orders(event)
             return response
 
         else:
