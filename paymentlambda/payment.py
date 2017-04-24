@@ -23,9 +23,9 @@ def create_charge(charge_request):
     try:
 
         order_data = charge_request
-        metadata = {'link': order_data['orderurl']['href']}
+        metadata = {'link': order_data['order_url']}
         stripe_token = order_data['stripe_token']
-        price = int(order_data['price']) * 100
+        price = int(order_data['order_amount']) * 100
 
         charge = stripe.Charge.create(
             amount=price,
@@ -35,22 +35,22 @@ def create_charge(charge_request):
 
         if charge['paid'] is True:
             #set order status as paid
-            order_data['paymentstatus'] = Status.PAID
+            order_data['payment_status'] = Status.PAID
         else:
             #set order status as failed payment
-            order_data['paymentstatus'] = Status.FAILED
+            order_data['payment_status'] = Status.FAILED
 
     except stripe.error.InvalidRequestError as error:
         print(error)
-        order_data['paymentstatus'] = Status.FAILED
+        order_data['payment_status'] = Status.FAILED
     except stripe.error.APIConnectionError as error:
         print(error)
-        order_data['paymentstatus'] = Status.FAILED
+        order_data['payment_status'] = Status.FAILED
     except stripe.error.AuthenticationError as error:
         print(error)
-        order_data['paymentstatus'] = Status.FAILED
+        order_data['payment_status'] = Status.FAILED
     except stripe.error.RateLimitError as error:
         print(error)
-        order_data['paymentstatus'] = Status.FAILED
+        order_data['payment_status'] = Status.FAILED
 
     return order_data
