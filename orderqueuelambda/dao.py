@@ -65,7 +65,7 @@ class Dao(object):
         completely overwrite the previous item
         """
         try:
-            response = cls.table.put_item(Item=item, ReturnValues='ALL_OLD')
+            response = cls.table.put_item(Item=item)
             return response
         except ClientError as err:
             print(err)
