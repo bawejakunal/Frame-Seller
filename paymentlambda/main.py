@@ -48,19 +48,6 @@ def handler(event, context):
 
 
     #batch delete successfully processed requests from queue
-    del_response = client.delete_message_batch(
-        QueueUrl=Queue.PAYMENT_URL,
-        Entries=processed_messages)
-
-
-    #process SNS invoke
-    #ignore non sns invokes
-    # if 'Records' in event:
-    #     sns = event['Records'][0]['Sns']
-    #     topic_arn = sns['TopicArn']
-
-    #     #new order arrives, create payment else ignore
-    #     if Subscription[topic_arn] == 'order':
-    #         payload = json.loads(sns['Message'])
-    #         charge_result = create_charge(payload)
-    #         publish(charge_result, Topic.PAYMENT)
+    if len(processed_messages) > 0:
+        client.delete_message_batch(QueueUrl=Queue.PAYMENT_URL,
+                                    Entries=processed_messages)
