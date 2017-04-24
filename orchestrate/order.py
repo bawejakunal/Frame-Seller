@@ -94,7 +94,8 @@ def orderqueue(event):
     view orderqueue of a user
     """
     payload = event
-    response = invoke_order_lambda(payload)
+    response = invoke_order_lambda(payload=payload,
+                                   FunctionName='OrderQueueLambda')
     data = json.loads(response['Payload'].read())
     return handle_if_error(data)
 
