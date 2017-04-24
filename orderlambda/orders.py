@@ -1,9 +1,7 @@
 from __future__ import print_function
 
-from utils import Response, respond, get_mysql_connection
 from orders_op import create_order, update_order, get_order
-from subscribe import Subscription, Queue
-from error import error
+from subscribe import Queue
 from notify import Topic, publish
 import boto3
 import json
@@ -26,13 +24,6 @@ def order_handler(event, context):
         """
         For HTTP requests process here
         """
-
-        valid_operations = ["GET"]
-        method = event["context"]["http-method"]
-
-        if method not in valid_operations:
-            msg = "Bad Request"
-            error(Response.BAD,msg)
 
         return get_order(event)
     
