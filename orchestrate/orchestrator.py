@@ -11,7 +11,6 @@ def handler(event, context):
     delegate work
     """
     try:
-        print(event)
         if event['operation'] == 'purchase':
             order_data = event['body-json']
             if validate(order_data) is False:

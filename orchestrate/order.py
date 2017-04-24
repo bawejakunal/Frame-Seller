@@ -12,8 +12,7 @@ def validate(order):
     validate order json
     """
     _order_fields = ('product', 'stripe_token')
-    _product_fields = ('url', 'price', 'id', 'links',
-        'description')
+    _product_fields = ('url', 'price', 'id', 'links', 'description')
 
     if not isinstance(order, dict):
         return False
