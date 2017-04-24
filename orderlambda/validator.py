@@ -21,13 +21,11 @@ def validate_json_createorder(json):
             return False
 
     if 'product' not in json['data'] or not isinstance(json['data']['product'], dict):
-        print('product')
-        print json['data']['product'], type(json['data']['product'])
+        print('No product')
         return False
 
     if 'stripe_token' not in json['data'] or not isinstance(json['data']['stripe_token'], unicode):
-        print('stripe_token')
-        print json['data']['stripe_token'], type(json['data']['stripe_token'])
+        print("No stripe token")
         return False
 
     product_fields = ['url', 'price', 'id', 'links']

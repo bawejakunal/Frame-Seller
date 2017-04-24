@@ -74,3 +74,13 @@ class Dao(object):
         except ClientError as err:
             print(err)
             raise UnknownDbException('Unable to update database')
+
+    @classmethod
+    def query(cls,key_cond_exp, exp_attr_val):
+        try:
+            response = cls.table.query(KeyConditionExpression=key_cond_exp,
+                                   ExpressionAttributeValues=exp_attr_val)
+            return response['Items']
+        except ClientError as err:
+            print(err)
+            raise UnknownDbException('Unable to query database')

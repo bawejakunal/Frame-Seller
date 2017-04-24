@@ -13,9 +13,9 @@ def respond(resp, resp_code):
     }
 
 class Payment:
-    UNPAID = 0
-    PAID = 1
-    FAILED = 2
+    UNPAID = 'UNPAID'
+    PAID = 'PAID'
+    FAILED = 'FAILED'
 
 class Response:
     OK = 200

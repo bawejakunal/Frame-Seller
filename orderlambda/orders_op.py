@@ -47,6 +47,7 @@ def create_order(payload):
 
     try:
         # construct user item to insert in database
+        order_url = protocol + "://" + host + "/" + stage + "/orders/" + order_id
 
         order_data = {
             'uid':userid,
@@ -55,20 +56,88 @@ def create_order(payload):
             'stripe_token': stripe_token,
             'payment_status': payment_status,
             'order_amount': product['price'],
-            'product_url': product_resturl
+            'links':[
+                {
+                    'rel':'self',
+                    'href': order_url
+                },
+                {
+                    'rel': 'order.product',
+                    'href': product_resturl
+                }
+
+            ]
         }
 
         # add user entry to database through data abstraction
         Dao.put_item(order_data)
 
-        order_data["order_url"] = protocol + "://" + host + "/" + stage + "/orders/" + order_id;
-
+        order_data["order_url"] = order_url
         return [True, order_data]
 
     except AlreadyExistException as err:
         return [False, 'Order already exists']
     except UnknownDbException as err:
         return [False, 'Error creating order entry']
+
+
+def get_order(event):
+    """
+        Gets single or all orders for the given user
+        """
+
+    # Defining variables used through out the flow
+    response_json = {}
+    err = False
+    error_code = Response.INT_SER_ERR
+
+    print(event)
+    path_parameters = event["params"]["path"]
+    userid = event["context"]["authorizer-principal-id"]
+    stage = event["context"]["stage"].strip().strip('/')
+    path = event["context"]["resource-path"].strip().strip('/')
+    host = event["params"]["header"]["Host"].strip().strip('/')
+
+    if len(path_parameters.keys()) == 0:
+        # If path_parameters is None, no orderid is specified and so return all orders
+
+        key_cond_exp = "uid = :uid"
+
+        exp_attr_val = {':uid': userid}
+
+        orders = Dao.query(key_cond_exp, exp_attr_val)
+
+        for order in orders:
+            del order['stripe_token']
+
+        response = {
+            "orders": orders,
+            "links": [
+                {
+                    'rel': 'orders.list',
+                    'href': 'https://' + host + '/' + stage + '/' + path
+
+                }
+            ]
+        }
+
+        print(response)
+        return response
+
+    elif len(path_parameters.keys()) != 0 and "orderid" in path_parameters:
+        # If path_parameters contains orderid information, return single order
+
+        orderid = path_parameters["orderid"]
+
+        query_dict = {
+            'order_id': orderid,
+            'uid': userid
+        }
+        order = Dao.get_item(query_dict)
+
+        print(order)
+
+        return order
 
 
 def update_order(payload):
