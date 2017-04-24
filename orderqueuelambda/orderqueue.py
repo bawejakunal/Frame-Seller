@@ -31,7 +31,14 @@ def handler(event, context):
 
         # get status of queued orders
         elif operation == 'orderqueue':
-            return order_queue(event)
+            result = order_queue(event)
+            
+            if result is None:
+                return error(404, "No order found")
+            elif isinstance(result, dict) and'redirect_url' in result:
+                return error(301, result['redirect_url'])
+
+            return result
 
         else:
             return error(400, 'Invalid operation')

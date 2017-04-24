@@ -59,12 +59,15 @@ def order_queue(event):
                 'uid': uid
             }
             order = Dao.get_item(query_dict)
-            if order is None:
-                return error(404, "No order found")
             return order
-
         else:
-            return (500, "Not Implemented")
+            query_dict = {
+                'uid': uid
+            }
+            query = Dao.query(query_dict)
+            return query
 
+    except UnknownDbException as err:
+        return error(500, "Error fetching order queue items")
     except KeyError:
         return error(400, "Invalid request")

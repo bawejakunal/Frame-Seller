@@ -70,3 +70,28 @@ class Dao(object):
         except ClientError as err:
             print(err)
             raise UnknownDbException('Unable to update database')
+
+    @classmethod
+    def query(cls, query_dict):
+        """
+        get all items defined by key dictionary
+        """
+        try:
+            condition_list = list()
+            expression_attr_values = dict()
+            for key in query_dict:
+                condition_list.append('%s = :%s' % (key, key))
+                expression_attr_values[":" + str(key)] = query_dict[key]
+            key_condition_expression = " AND ".join(condition_list)
+
+            response = cls.table.query(Select='ALL_ATTRIBUTES',
+                KeyConditionExpression=key_condition_expression,
+                ExpressionAttributeValues=expression_attr_values,
+                FilterExpression='attribute_not_exists(redirect_url)')
+
+            print(response)
+            return response['Items']
+
+        except ClientError as err:
+            print(err)
+            raise UnknownDbException('Unable to query database')
