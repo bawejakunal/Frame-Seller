@@ -5,27 +5,42 @@ import uuid
 from error import error
 from dao import Dao, AlreadyExistException, UnknownDbException
 
-def add_order(body):
+def add_order(event):
     """
     add order to database
     """
 
+    body = event['body-json'].copy()
+
+    #create order info
+    order_id = str(uuid.uuid4())
     uid = body['event']['principal-id']
+    url = construct_url(body['event'], order_id)
+
+    #extract order info
     order = dict(body['data'])
+    product = order['product']
 
     try:
-        #construct user item to insert in database
+        #construct order item to insert in database
         order_data = {
-            'order_id': str(uuid.uuid4()),
+            'order_id': order_id,
             'uid': uid,
-            'info': order
+            'price': product['price'],
+            'links': [{
+                'href': url,
+                'rel': 'self'
+            }, {
+                'href': product['links'][0]['href'],
+                'rel': 'order.product'
+            }]
         }
 
         #add user entry to database through data abstraction
         Dao.put_item(order_data)
 
         #return oid on successful put
-        return order_data['order_id']
+        return order_data
 
     except AlreadyExistException as err:
         return error(400, 'Order already exists')

@@ -14,7 +14,6 @@ def handler(event, context):
             return error(400, 'Invalid operation')
 
         operation = event['operation']
-        body = event['body-json']
 
         # update order queued status to created
         if operation == 'update':
@@ -22,12 +21,8 @@ def handler(event, context):
 
         # add new orders to queue
         elif operation == 'purchase':
-            order_id = add_order(body)
-            url = construct_url(body['event'], order_id)
-            return {
-                'order_id': order_id,
-                'Location': url
-            }
+            order = add_order(event)
+            return order
 
         # get status of queued orders
         elif operation == 'orderqueue':
