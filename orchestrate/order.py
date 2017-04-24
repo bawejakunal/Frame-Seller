@@ -6,6 +6,7 @@ import boto3
 from notify import publish, Topic
 from botocore.exceptions import ClientError
 from error import error, handle_if_error
+from copy import deepcopy
 
 def validate(order):
     """
@@ -48,7 +49,7 @@ def accept(event):
     add to SQS and intermediate queue database
     """
 
-    _order_data = event['body-json'].copy()
+    _order_data = deepcopy(event['body-json'])
 
     try:
         #create message to publish
@@ -63,7 +64,7 @@ def accept(event):
         }
 
         # remove stripe_token before storing in orderqueue db
-        _order_queue_data = _order_json.copy()
+        _order_queue_data = deepcopy(_order_json)
         del _order_queue_data['data']['stripe_token']
 
         #add to orderqueue lambda
@@ -75,7 +76,7 @@ def accept(event):
         data = json.loads(response['Payload'].read())
         data = handle_if_error(data) #handle unlikely lambda error
 
-        #publish to SNS Topic for new queued order
+        # publish to SNS Topic for new queued order
         _order_json['order_id'] = data['order_id']
         response = publish(_order_json, Topic.ORDER)
 
