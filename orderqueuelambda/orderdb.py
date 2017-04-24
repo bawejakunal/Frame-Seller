@@ -15,7 +15,6 @@ def add_order(event):
     #create order info
     order_id = str(uuid.uuid4())
     uid = body['event']['principal-id']
-    url = construct_url(body['event'], order_id)
 
     #extract order info
     order = dict(body['data'])
@@ -28,9 +27,6 @@ def add_order(event):
             'uid': uid,
             'price': product['price'],
             'links': [{
-                'href': url,
-                'rel': 'self'
-            }, {
                 'href': product['links'][0]['href'],
                 'rel': 'order.product'
             }]
@@ -39,7 +35,13 @@ def add_order(event):
         #add user entry to database through data abstraction
         Dao.put_item(order_data)
 
-        #return oid on successful put
+        self_link = {
+            'href': construct_url(body['event'], order_data['order_id']),
+            'rel': 'self'
+        }
+        order_data['links'] = [self_link] + order_data['links']
+
+        #return order_id on successful put
         return order_data
 
     except AlreadyExistException as err:
@@ -66,21 +68,64 @@ def order_queue(event):
 
     try:
         uid = event['context']['authorizer-principal-id']
-        path = event['params']['path']
-        if 'orderid' in path:
-            order_id = path['orderid']
+        params = event['params']['path']
+
+        # construct HATEOAS response            
+        proto = event['params']['header']['CloudFront-Forwarded-Proto']
+        host = event['params']['header']['Host']
+        stage = event['context']['stage']
+        path = event['context']['resource-path'].rstrip('\{orderid\}').\
+                strip('/')
+        queue_url = '%s://%s/%s/%s' % (proto, host, stage, path)
+
+        if 'orderid' in params:
+            order_id = params['orderid']
             query_dict = {
                 'order_id': order_id,
                 'uid': uid
             }
             order = Dao.get_item(query_dict)
+
+            # add hateoas url before sending
+            if 'links' not in order:
+                order['links'] = list()
+
+            order_url = "%s/%s" % (queue_url, order['order_id'])
+            order_link = {'rel':'self',
+                          'href':order_url}
+            order['links'] = [order_link] + order['links']
+
             return order
+
         else:
             query_dict = {
                 'uid': uid
             }
             query = Dao.query(query_dict)
-            return query
+
+            # HATEOAS response
+            response = {
+                'links':[
+                {
+                    'rel': 'orders.queue',
+                    'href': queue_url
+                }],
+                'orders':list()
+            }
+
+            # add order links for HATEOAS compliance
+            for order in query:
+                if 'links' not in order:
+                    order['links'] = list()
+                order_url = "%s/%s" % (queue_url, order['order_id'])
+                order_link = {
+                    'href': order_url,
+                    'rel': 'self'
+                }
+                order['links'] = [order_link] + order['links']
+                response['orders'].append(order)
+
+            return response
 
     except UnknownDbException as err:
         return error(500, "Error fetching order queue items")
