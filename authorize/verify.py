@@ -6,6 +6,8 @@ from error import error
 from dao import Dao, UnknownDbException
 from jwtoken import verify_jwt
 from signup import Role
+import json
+import boto3
 
 CLAIMS = {
     '/orders': ['GET'],
@@ -44,13 +46,18 @@ def verify_customer(body):
         return error(500, 'Unable to update customer information')
 
 
-def verify_resource_access(resource, verb, user_info):
+def verify_resource_access(resource, uid):
     """
     query database and check
     """
-    print(resource)
-    print(user_info)
-    print(verb)
+    payload = {
+        'operation': 'verify',
+        'uid': uid,
+        'resource': resource
+    }
+    response = invoke_order_lambda(payload, 'access-lambda')
+    data = json.loads(response['Payload'].read())
+    print(data)
     return True
 
 
@@ -63,8 +70,22 @@ def verify_access(user_info, verb, resource):
     if 'role' not in user_info or user_info['role'] != Role.CUSTOMER:
         return False
 
+    _resource = resource.rstrip('/') #avoid trailing slash
     # allow access if resource in claims sent to user
-    if resource in CLAIMS and verb in CLAIMS[resource]:
+    if _resource in CLAIMS and verb in CLAIMS[_resource]:
         return True
 
-    return verify_resource_access(user_info, verb, resource)
+    return verify_resource_access(user_info, _resource)
+
+
+def invoke_order_lambda(payload, FunctionName=None, invoke='RequestResponse'):
+    """
+    invoke order lambda
+    """
+    response = boto3.client('lambda').invoke(
+        FunctionName=FunctionName,
+        InvocationType=invoke,
+        LogType='None',
+        Payload=json.dumps(payload))
+
+    return response
