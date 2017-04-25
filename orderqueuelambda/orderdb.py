@@ -74,7 +74,7 @@ def order_queue(event):
         proto = event['params']['header']['CloudFront-Forwarded-Proto']
         host = event['params']['header']['Host']
         stage = event['context']['stage']
-        path = event['context']['resource-path'].rstrip('\{orderid\}').\
+        path = event['context']['resource-path'].rstrip('{orderid}').\
                 strip('/')
         queue_url = '%s://%s/%s/%s' % (proto, host, stage, path)
 
