@@ -3,57 +3,29 @@ Lamdba Orchestrator
 """
 
 from __future__ import print_function
-import json
-import orders
-import purchase
-from respond import respond, error
-from subscribe import Subscription
-from notify import Topic, publish
+from order import accept, validate, orderqueue, get_orders
+from error import error
 
 def handler(event, context):
     """
     delegate work
     """
-    print(event)
     try:
-        #process SNS messages here
-        if 'Records' in event:
+        if event['operation'] == 'purchase':
+            order_data = event['body-json']
+            if validate(order_data) is False:
+                return error(400, "Malformed purchase order")
+            # add to sqs and intermediate database
+            response = accept(event)
+            return response
 
-            sns = event['Records'][0]['Sns']
-            topic_arn = sns['TopicArn']
+        elif event['operation'] == 'orderqueue':
+            response = orderqueue(event)
+            return response
 
-            #publish order update to on receiving payment
-            if Subscription[topic_arn] == 'payment':
-                payload = json.loads(sns['Message'])
-                response = publish(payload, Topic.ORDER_UPDATE)
-
-            else:
-                print('Subscribed topic %s not implemented' % topic_arn)
-
-        #handle API gateway invokes below
-        elif event['resource'].startswith('/orders'):
-            try:
-                response = orders.order(event)
-                data = json.loads(response["Payload"].read())
-                body = json.loads(data['body'])
-                return respond(data['statusCode'], body)
-            except (KeyError, Exception) as err:
-                #in case of unhandled exception
-                print(err)
-                return error(500, 'Error processing order request')
-
-        elif event['resource'].startswith('/purchase'):
-            status = None
-
-            #create order and publish to topic
-            data = purchase.buy_product(event)
-            body = json.loads(data['body'])
-
-            #return accepted with order url once
-            #payment/order accepted for processing
-            status = data['statusCode']
-            headers = data['headers']
-            return respond(status, body, headers)
+        elif event['operation'] == 'orders':
+            response = get_orders(event)
+            return response
 
         else:
             return error(500, "Unknown operation")
