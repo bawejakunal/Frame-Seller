@@ -17,11 +17,11 @@ try:
 except KeyError:
     error(500, 'Error loading JWT environment')
 
-def create_jwt(payload):
+def create_jwt(payload, expire=TIME_DELTA):
     """
     generate jwt token
     """
-    exp = datetime.datetime.now() + datetime.timedelta(seconds=TIME_DELTA)
+    exp = datetime.datetime.now() + datetime.timedelta(seconds=expire)
     exp = timegm(exp.timetuple()) #Unix timestamp is always int
 
     payload['exp'] = exp
