@@ -75,7 +75,11 @@ def policy_builder(event, context):
     verb = apiGatewayArnTmp[2]
     resource = "/" + "/".join(apiGatewayArnTmp[3:])
 
-    if verify_access(payload, verb, resource) is True:
+    # policy validation
+    # correct error should be invalid path
+    if not re.match(policy.pathRegex, resource):
+        raise Exception("Unauthorized")
+    elif verify_access(payload, verb, resource) is True:
         policy.allowMethod(verb, resource)
     else:
         policy.denyMethod(verb, resource)

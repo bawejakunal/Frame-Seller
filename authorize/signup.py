@@ -80,6 +80,7 @@ def create_customer(body):
         payload = dict()
         payload['email'] = user['email']
         payload['jwt'] = _jwt_token
+        payload['uid'] = user['uid']
         payload['verify_page'] = body['verify_page'].strip()
 
         #publish the payload

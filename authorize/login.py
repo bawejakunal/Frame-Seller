@@ -14,6 +14,7 @@ def validate_user(email, password):
     Fetch only user infor from database
     """
     try:
+        customer_info = None
         #get user from databse by 'email' key, value as email
         customer = Dao.get_item('email', email)
 
