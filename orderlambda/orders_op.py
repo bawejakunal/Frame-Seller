@@ -55,6 +55,7 @@ def create_order(payload):
             'stripe_token': stripe_token,
             'payment_status': payment_status,
             'order_amount': product['price'],
+            'product_id': product['id'],
             'links':[
                 {
                     'rel':'self',
