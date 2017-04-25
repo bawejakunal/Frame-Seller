@@ -25,6 +25,7 @@ def add_order(event):
         order_data = {
             'order_id': order_id,
             'uid': uid,
+            'product_id':product['id'],
             'price': product['price'],
             'links': [{
                 'href': product['links'][0]['href'],
