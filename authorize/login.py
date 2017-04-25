@@ -7,6 +7,7 @@ from __future__ import print_function
 from jwtoken import create_jwt
 from error import error
 from dao import Dao, UnknownDbException
+from verify import CLAIMS
 
 def validate_user(email, password):
     """
@@ -31,13 +32,13 @@ def validate_user(email, password):
         if not _info['active']:
             return error(401, 'Customer de-activated')
 
-        #TODO: hash passwords
         if customer['password'] == password:
             customer_info = {
                 'uid': customer['uid'],
                 'firstname': _info['firstname'],
                 'lastname': _info['lastname'],
-                'email': customer['email']
+                'email': customer['email'],
+                'role': customer['role']
             }
 
         return customer_info
