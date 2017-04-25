@@ -39,10 +39,17 @@
             var token = checkToken();
             fillCustomerName(token);
             getOrdersForUser(token);
+            getPendingOrdersForUser(token);
         }
     );
 </script>
-
+<h2>Queued Orders</h2>
+<hr>
+<div id="pending-orders" name="pending-orders">
+</div>
+<hr>
+<h2>Processed Orders</h2>
+<hr>
 <div id="orders" name="orders">
 </div>
 <div id="snackbar"></div>
