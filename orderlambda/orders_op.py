@@ -51,7 +51,7 @@ def create_order(payload):
         order_data = {
             'uid':userid,
             'order_id':order_id,
-            'order_date': order_date+' UTC',
+            'order_date': order_date,
             'stripe_token': stripe_token,
             'payment_status': payment_status,
             'order_amount': product['price'],
