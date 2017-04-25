@@ -11,6 +11,14 @@ from notify import Topic, publish
 
 EMAIL = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
 PASSWORD = re.compile(r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,20}$")
+
+class Role:
+    """
+    User roles
+    """
+    CUSTOMER = "customer"
+
+
 def create_customer(body):
     """
     Create customer entry in table
@@ -37,6 +45,7 @@ def create_customer(body):
             'uid': str(uuid.uuid4()),
             'email': body['email'].strip(),
             'password': body['password'],
+            'role': Role.CUSTOMER,
             'info': {
                 'firstname': body['firstname'].strip(),
                 'lastname': body['lastname'].strip(),

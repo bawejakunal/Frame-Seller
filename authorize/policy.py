@@ -5,36 +5,46 @@ from __future__ import print_function
 
 import re
 from jwtoken import verify_jwt
-from error import error
+from verify import verify_access
+
+class HttpVerb:
+    GET = 'GET'
+    POST = 'POST'
+    PUT = 'PUT'
+    PATCH = 'PATCH'
+    HEAD = 'HEAD'
+    DELETE = 'DELETE'
+    OPTIONS = 'OPTIONS'
+    ALL = '*'
+
 
 def policy_builder(event, context):
-    print("Client token: " + event['authorizationToken'])
-    print("Method ARN: " + event['methodArn'])
-
-    '''
+    """
     Validate the incoming token and produce the principal user identifier
     associated with the token. This can be accomplished in a number of ways:
 
     1. Call out to the OAuth provider
     2. Decode a JWT token inline
     3. Lookup in a self-managed DB
-    '''
+    """
 
     token = event['authorizationToken'].split()[1]
     payload = verify_jwt(token)
-    
+
     """
     verify_jwt returns None for invalid token, reject that as unauthorized
     AWS expects unauthorizing by raising exception with the 'Unauthorized'
-    message: http://docs.aws.amazon.com/apigateway/latest/developerguide/use-custom-authorizer.html
+    message: http://docs.aws.amazon.com/apigateway/latest/developerguide
+    use-custom-authorizer.html
     """
+
     if payload is None:
         raise Exception('Unauthorized')
 
-    #valid jwt token if control reaches here
+    # valid jwt token if control reaches here
     principalId = payload['uid']
 
-    '''
+    """
     You can send a 401 Unauthorized response to the client by failing like so:
       raise Exception('Unauthorized')
 
@@ -52,7 +62,7 @@ def policy_builder(event, context):
     method/resource in the RestApi made with the same token.
 
     The example policy below denies access to all resources in the RestApi.
-    '''
+    """
     tmp = event['methodArn'].split(':')
     apiGatewayArnTmp = tmp[5].split('/')
     awsAccountId = tmp[4]
@@ -61,14 +71,19 @@ def policy_builder(event, context):
     policy.restApiId = apiGatewayArnTmp[0]
     policy.region = tmp[3]
     policy.stage = apiGatewayArnTmp[1]
-    # policy.denyAllMethods()
-    #policy.allowMethod(HttpVerb.GET, '/pets/*')
-    policy.allowAllMethods()
+
+    verb = apiGatewayArnTmp[2]
+    resource = "/" + "/".join(apiGatewayArnTmp[3:])
+
+    if verify_access(payload, verb, resource) is True:
+        policy.allowMethod(verb, resource)
+    else:
+        policy.denyMethod(verb, resource)
 
     # Finally, build the policy
     authResponse = policy.build()
 
-    # new! -- add additional key-value pairs associated with the authenticated principal
+    # add additional key-value pairs with the authenticated principal
     # these are made available by APIGW like so: $context.authorizer.<key>
     # additional context is cached
 
@@ -84,17 +99,6 @@ def policy_builder(event, context):
     return authResponse
 
 
-class HttpVerb:
-    GET = 'GET'
-    POST = 'POST'
-    PUT = 'PUT'
-    PATCH = 'PATCH'
-    HEAD = 'HEAD'
-    DELETE = 'DELETE'
-    OPTIONS = 'OPTIONS'
-    ALL = '*'
-
-
 class AuthPolicy(object):
     # The AWS account id the policy will be generated for. This is used to create the method ARNs.
     awsAccountId = ''
@@ -105,12 +109,12 @@ class AuthPolicy(object):
     # The regular expression used to validate resource paths for the policy
     pathRegex = '^[/.a-zA-Z0-9-\*]+$'
 
-    '''Internal lists of allowed and denied methods.
+    """Internal lists of allowed and denied methods.
 
     These are lists of objects and each object has 2 properties: A resource
     ARN and a nullable conditions statement. The build method processes these
     lists and generates the approriate statements for the final policy.
-    '''
+    """
     allowMethods = []
     denyMethods = []
 
@@ -128,9 +132,9 @@ class AuthPolicy(object):
         self.denyMethods = []
 
     def _addMethod(self, effect, verb, resource, conditions):
-        '''Adds a method to the internal lists of allowed or denied methods. Each object in
+        """Adds a method to the internal lists of allowed or denied methods. Each object in
         the internal list contains a resource ARN and a condition statement. The condition
-        statement can be null.'''
+        statement can be null."""
         if verb != '*' and not hasattr(HttpVerb, verb):
             raise NameError('Invalid HTTP verb ' + verb + '. Allowed verbs in HttpVerb class')
         resourcePattern = re.compile(self.pathRegex)
@@ -154,8 +158,8 @@ class AuthPolicy(object):
             })
 
     def _getEmptyStatement(self, effect):
-        '''Returns an empty statement object prepopulated with the correct action and the
-        desired effect.'''
+        """Returns an empty statement object prepopulated with the correct action and the
+        desired effect."""
         statement = {
             'Action': 'execute-api:Invoke',
             'Effect': effect[:1].upper() + effect[1:].lower(),
@@ -165,8 +169,8 @@ class AuthPolicy(object):
         return statement
 
     def _getStatementForEffect(self, effect, methods):
-        '''This function loops over an array of objects containing a resourceArn and
-        conditions statement and generates the array of statements for the policy.'''
+        """This function loops over an array of objects containing a resourceArn and
+        conditions statement and generates the array of statements for the policy."""
         statements = []
 
         if len(methods) > 0:
@@ -187,40 +191,40 @@ class AuthPolicy(object):
         return statements
 
     def allowAllMethods(self):
-        '''Adds a '*' allow to the policy to authorize access to all methods of an API'''
+        """Adds a '*' allow to the policy to authorize access to all methods of an API"""
         self._addMethod('Allow', HttpVerb.ALL, '*', [])
 
     def denyAllMethods(self):
-        '''Adds a '*' allow to the policy to deny access to all methods of an API'''
+        """Adds a '*' allow to the policy to deny access to all methods of an API"""
         self._addMethod('Deny', HttpVerb.ALL, '*', [])
 
     def allowMethod(self, verb, resource):
-        '''Adds an API Gateway method (Http verb + Resource path) to the list of allowed
-        methods for the policy'''
+        """Adds an API Gateway method (Http verb + Resource path) to the list of allowed
+        methods for the policy"""
         self._addMethod('Allow', verb, resource, [])
 
     def denyMethod(self, verb, resource):
-        '''Adds an API Gateway method (Http verb + Resource path) to the list of denied
-        methods for the policy'''
+        """Adds an API Gateway method (Http verb + Resource path) to the list of denied
+        methods for the policy"""
         self._addMethod('Deny', verb, resource, [])
 
     def allowMethodWithConditions(self, verb, resource, conditions):
-        '''Adds an API Gateway method (Http verb + Resource path) to the list of allowed
+        """Adds an API Gateway method (Http verb + Resource path) to the list of allowed
         methods and includes a condition for the policy statement. More on AWS policy
-        conditions here: http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements.html#Condition'''
+        conditions here: http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements.html#Condition"""
         self._addMethod('Allow', verb, resource, conditions)
 
     def denyMethodWithConditions(self, verb, resource, conditions):
-        '''Adds an API Gateway method (Http verb + Resource path) to the list of denied
+        """Adds an API Gateway method (Http verb + Resource path) to the list of denied
         methods and includes a condition for the policy statement. More on AWS policy
-        conditions here: http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements.html#Condition'''
+        conditions here: http://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements.html#Condition"""
         self._addMethod('Deny', verb, resource, conditions)
 
     def build(self):
-        '''Generates the policy document based on the internal lists of allowed and denied
+        """Generates the policy document based on the internal lists of allowed and denied
         conditions. This will generate a policy with two main statements for the effect:
         one statement for Allow and one statement for Deny.
-        Methods that includes conditions will have their own statement in the policy.'''
+        Methods that includes conditions will have their own statement in the policy."""
         if ((self.allowMethods is None or len(self.allowMethods) == 0) and
                 (self.denyMethods is None or len(self.denyMethods) == 0)):
             raise NameError('No statements defined for the policy')
