@@ -8,12 +8,13 @@ from jwtoken import verify_jwt
 from signup import Role
 import json
 import boto3
+import re
 
 CLAIMS = {
-    '/orders': ['GET'],
-    '/orderqueue': ['GET'],
-    '/purchase': ['POST'],
-    '/products': ['GET']
+    '^/orders(/)?$': ['GET'],
+    '^/orderqueue(/)?$': ['GET'],
+    '^/purchase(/)?$': ['POST'],
+    '^/products(/)?(.)*$': ['GET']
 }
 
 def verify_customer(body):
@@ -46,19 +47,18 @@ def verify_customer(body):
         return error(500, 'Unable to update customer information')
 
 
-def verify_resource_access(resource, uid):
+def verify_resource_access(user_info, resource):
     """
     query database and check
     """
     payload = {
         'operation': 'verify',
-        'uid': uid,
+        'uid': user_info['uid'],
         'resource': resource
     }
     response = invoke_order_lambda(payload, 'access-lambda')
     data = json.loads(response['Payload'].read())
-    print(data)
-    return True
+    return data
 
 
 def verify_access(user_info, verb, resource):
@@ -72,8 +72,10 @@ def verify_access(user_info, verb, resource):
 
     _resource = resource.rstrip('/') #avoid trailing slash
     # allow access if resource in claims sent to user
-    if _resource in CLAIMS and verb in CLAIMS[_resource]:
-        return True
+    # match by regex
+    for regex in CLAIMS:
+        if re.match(regex, _resource) is not None:
+            return verb in CLAIMS[regex]
 
     return verify_resource_access(user_info, _resource)
 
