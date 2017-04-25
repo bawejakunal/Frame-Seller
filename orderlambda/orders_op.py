@@ -102,7 +102,9 @@ def get_order(event):
 
         exp_attr_val = {':uid': userid}
 
-        orders = Dao.query(key_cond_exp, exp_attr_val)
+        indexname ='order-date-index'
+
+        orders = Dao.query(key_cond_exp, exp_attr_val, indexname=indexname)
 
         for order in orders:
             del order['stripe_token']
