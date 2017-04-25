@@ -4,6 +4,7 @@ import os
 import pymysql
 from responses import Response, respond
 from hateoas import hateoas_constraints
+from error import error
 
 """
 Getting MySQL connection
@@ -37,19 +38,19 @@ def get_product_details(event):
     error_code = Response.INT_SER_ERR
 
     # Getting parameters
-    path_parameters = event["pathParameters"]
-    stage = event["requestContext"]["stage"]
-    path = event["path"]
-    host = event["headers"]["Host"]
+    path_parameters = event["params"]["path"]
+    stage = event["context"]["stage"]
+    path = event["context"]["resource-path"]
+    host = event["params"]["header"]["Host"]
 
-    if path_parameters is None:
+    if len(path_parameters.keys()) == 0:
         # If no path parameters, return all orders
         product_list = []
         try:
             conn = get_mysql_connection()
         except:
-            response_json = {"error": "System is facing some issues. Please try again later."}
-            return respond(response_json, Response.INT_SER_ERR)
+            msg = "System is facing some issues. Please try again later."
+            error(Response.INT_SER_ERR, msg)
 
         try:
             with conn.cursor() as cur:
@@ -64,16 +65,16 @@ def get_product_details(event):
         except:
             err = True
             # Not setting error_code and using default
-            response_json = {"error": "System is facing some issues. Please try again later."}
+            msg = "System is facing some issues. Please try again later."
         finally:
             cur.close()
             conn.close()
             if err:
-                return respond(response_json, error_code)
+                error(error_code, msg)
             else:
-                return respond(response_json, Response.OK)
+                return response_json
 
-    elif path_parameters is not None and "productid" in path_parameters:
+    elif len(path_parameters.keys()) != 0 and "productid" in path_parameters:
         # If there is pa in path parameters, return particular order having that orderid
         pid = path_parameters["productid"]
         
@@ -81,14 +82,12 @@ def get_product_details(event):
         try:
             pid = int(pid)
         except ValueError:
-            response_json = {"error": "Bad Request"}
-            return respond(response_json, Response.BAD)
+            error(Response.BAD, "Invalid productid")
 
         try:
             conn = get_mysql_connection()
         except:
-            response_json = {"error": "System is facing some issues. Please try again later."}
-            return respond(response_json, Response.INT_SER_ERR)
+            error(Response.INT_SER_ERR, "System is facing some issues. Please try again later.")
 
         try:
             with conn.cursor() as cur:
@@ -96,8 +95,8 @@ def get_product_details(event):
 
                 if cur.rowcount == 0:
                     err = True
-                    error_code = Response.FORBIDDEN
-                    response_json = {"error": "No product found"}
+                    error_code = Response.NOT_FOUND
+                    msg = "No product found"
                 else:
                     for prow in cur:
                         response_json = get_json(prow, host, stage, path, False)
@@ -105,11 +104,11 @@ def get_product_details(event):
             print(exp.message)
             err = True
             # Not setting error_code and using default Response.INT_SER_ERR = '500'
-            response_json = {"error": "System is facing some issues. Please try again later."}
+            msg = "System is facing some issues. Please try again later."
         finally:
             cur.close()
             conn.close()
             if err:
-                return respond(response_json, error_code)
+                error(error_code, msg)
             else:
-                return respond(response_json, Response.OK)
+                return response_json
