@@ -152,7 +152,6 @@ function fillOrders(orderdata, jwttoken) {
  */
 function fillPendingOrders(orderdata, jwttoken) {
     var orders_p = orderdata["orders"];
-    console.log(orders_p);
     var orderSection = document.getElementById('pending-orders');
     var numOrders = orders_p.length;
     var producturls = new Set();
@@ -197,8 +196,6 @@ function fillPendingOrders(orderdata, jwttoken) {
     });
 
     getAllProductsPromise.then(function () {
-        console.log("Inside siccess method pending");
-        console.log(orders_p);
         for(var k=0; k < numOrders; k++) {
             var productinfo = allproductinfo[orders_p[k].product_id];
             orderSection.innerHTML +=
