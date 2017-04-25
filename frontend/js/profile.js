@@ -39,12 +39,120 @@ function getOrdersForUser(jwttoken) {
     });
 }
 /**
+ * GET request to pendingOrderEndpoint to get pending orders json for logged in user.
+ * @param jwttoken
+ */
+function getPendingOrdersForUser(jwttoken) {
+    var promise = new Promise(function (success, failure) {
+        $.ajax({
+            url: pendingOrderEndpoint,
+            type: 'GET',
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader('Authorization', 'JWT ' + jwttoken);
+            },
+            success: function (data) {
+                success(data);
+            },
+            error: function (data) {
+                failure(data.responseText);
+            }
+        });
+    });
+    promise.then(function (data) {
+        if (data.length != 0) {
+            fillPendingOrders(data, jwttoken);
+        } else {
+            showSnackbar("You have no orders as of now");
+        }
+    }, function (data) {
+        showSnackbar("Failed to fetch orders. Please try again later.");
+    });
+}
+
+/**
  * render orders json on HTML DOM.
  * @param data
  */
 function fillOrders(orderdata, jwttoken) {
     orders = orderdata["orders"]
     var orderSection = document.getElementById('orders');
+    var numOrders = orders.length;
+    var producturls = new Set();
+    var allproductinfo = {};
+
+    // fill product URLs to producturls
+    for (var i = 0; i < numOrders; i++) {
+        for (var j = 0; j < orders[i].links.length; j++) {
+            if (orders[i].links[j].rel == "order.product") {
+                producturls.add(orders[i].links[j].href);
+            }
+        }
+    }
+    // fill product info into allproductinfo
+    var getAllProductsPromise = new Promise(function (success1, failure1) {
+        var productfetchcount = 0;
+        producturls.forEach(function(producturl) {
+            var getSingleProductPromise = new Promise(function (success2, failure2) {
+                $.ajax({
+                    url: producturl,
+                    type: 'GET',
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader('Authorization', 'JWT ' + jwttoken);
+                    },
+                    success: function (data) {
+                        success2(data);
+                    },
+                    error: function (data) {
+                        failure2(data.responseText);
+                    }
+                });
+            });
+
+            getSingleProductPromise.then(function (data) {
+                allproductinfo[data.id] = data;
+                productfetchcount++;
+                if(productfetchcount == producturls.size){
+                    success1();
+                }
+            }, function (data){
+                // ignore if few products are not loaded
+            });
+        });
+    });
+
+    getAllProductsPromise.then(function () {
+        for(var k=0; k < numOrders; k++) {
+            var paymentinfo = getPaymentInfoTag(orders[k].payment_status);
+            var productinfo = allproductinfo[orders[k].product_id];
+            orderSection.innerHTML +=
+                '<div class="well well-lg">\
+                     <div class="row">\
+                           <div class="col-sm-2">\
+                               <img class="img-thumbnail img-responsive" src="' + productinfo.url + '">\
+                        <div class="caption"><p>' + productinfo.description + '</p></div>\
+                    </div>\
+                    <div class="col-sm-5">\
+                        <strong>Date Placed on:&nbsp; </strong> ' + getDateFromString(orders[k].orderdate) + '<br><br>\
+                        <strong>Price:</strong> $ ' + productinfo.price + '\
+                    </div>\
+                    <div class="col-sm-5">\
+                        ' + paymentinfo + '\
+                    </div>\
+                </div>\
+             </div>';
+        }
+    }, function () {
+            showSnackbar("Failed to fetch products. Please try again later.");
+    });
+}
+
+/**
+ * render pending orders json on HTML DOM.
+ * @param data
+ */
+function fillPendingOrders(orderdata, jwttoken) {
+    orders = orderdata["orders"]
+    var orderSection = document.getElementById('pending-orders');
     var numOrders = orders.length;
     var producturls = new Set();
     var allproductinfo = {};
