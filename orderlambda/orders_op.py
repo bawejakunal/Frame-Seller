@@ -31,7 +31,7 @@ def create_order(payload):
     orderdatetime = datetime.datetime.utcnow()
 
     # Format orderdate from datetime
-    order_date = orderdatetime.strftime('%Y-%m-%d %H:%M:%S')
+    order_date = orderdatetime.strftime('%Y-%m-%d %H:%M:%S UTC')
     product_resturl = ""
 
     linkarray = product["links"]
@@ -51,7 +51,7 @@ def create_order(payload):
         order_data = {
             'uid':userid,
             'order_id':order_id,
-            'order_date': order_date,
+            'order_date': order_date+' UTC',
             'stripe_token': stripe_token,
             'payment_status': payment_status,
             'order_amount': product['price'],
