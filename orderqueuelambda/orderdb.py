@@ -74,8 +74,7 @@ def order_queue(event):
         proto = event['params']['header']['CloudFront-Forwarded-Proto']
         host = event['params']['header']['Host']
         stage = event['context']['stage']
-        path = event['context']['resource-path'].rstrip('{orderid}').\
-                strip('/')
+        path = event['context']['resource-path'].split('/')[1] #ign path params
         queue_url = '%s://%s/%s/%s' % (proto, host, stage, path)
 
         if 'orderid' in params:
@@ -87,13 +86,13 @@ def order_queue(event):
             order = Dao.get_item(query_dict)
 
             # add hateoas url before sending
-            if 'links' not in order:
-                order['links'] = list()
+            if order is not None:
+                if 'links' not in order:
+                    order['links'] = list()
 
-            order_url = "%s/%s" % (queue_url, order['order_id'])
-            order_link = {'rel':'self',
-                          'href':order_url}
-            order['links'] = [order_link] + order['links']
+                order_url = "%s/%s" % (queue_url, order['order_id'])
+                order_link = {'rel':'self', 'href':order_url}
+                order['links'] = [order_link] + order['links']
 
             return order
 
