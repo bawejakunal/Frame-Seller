@@ -3,7 +3,7 @@ from __future__ import print_function
 from dao import Dao, UnknownDbException, AlreadyExistException
 import datetime
 from utils import Payment
-
+from error import error
 from validator import validate_json_createorder, validate_json_updatepayment
 
 
@@ -131,6 +131,9 @@ def get_order(event):
             'uid': userid
         }
         order = Dao.get_item(query_dict)
+
+        if order is None:
+            raise error(404, 'Order Not Found')
 
         del order['stripe_token']
         
