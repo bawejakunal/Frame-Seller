@@ -36,13 +36,13 @@ class Dao(object):
             raise UnknownDbException('Unknown error creating entry')
 
     @classmethod
-    def get_item(cls, key, value):
+    def get_item(cls, key_dict):
         """
         get item from database by key
         return None if no matching item found
         """
         try:
-            response = cls.table.get_item(Key={key: value})
+            response = cls.table.get_item(Key=key_dict)
 
             #no result with matching key
             if 'Item' not in response:
