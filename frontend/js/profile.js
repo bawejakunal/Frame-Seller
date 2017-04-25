@@ -74,7 +74,7 @@ function getPendingOrdersForUser(jwttoken) {
  * @param data
  */
 function fillOrders(orderdata, jwttoken) {
-    orders = orderdata["orders"]
+    var orders = orderdata["orders"];
     var orderSection = document.getElementById('orders');
     var numOrders = orders.length;
     var producturls = new Set();
@@ -132,7 +132,7 @@ function fillOrders(orderdata, jwttoken) {
                         <div class="caption"><p>' + productinfo.description + '</p></div>\
                     </div>\
                     <div class="col-sm-5">\
-                        <strong>Date Placed on:&nbsp; </strong> ' + getDateFromString(orders[k].orderdate) + '<br><br>\
+                        <strong>Date Placed on:&nbsp; </strong> ' + getDateFromString(orders[k].order_date) + '<br><br>\
                         <strong>Price:</strong> $ ' + productinfo.price + '\
                     </div>\
                     <div class="col-sm-5">\
@@ -142,7 +142,7 @@ function fillOrders(orderdata, jwttoken) {
              </div>';
         }
     }, function () {
-            showSnackbar("Failed to fetch products. Please try again later.");
+            showSnackbar("Failed to fetch completed orders. Please try again later.");
     });
 }
 
@@ -151,15 +151,16 @@ function fillOrders(orderdata, jwttoken) {
  * @param data
  */
 function fillPendingOrders(orderdata, jwttoken) {
-    orders = orderdata["orders"]
+    var orders_p = orderdata["orders"];
+    console.log(orders_p);
     var orderSection = document.getElementById('pending-orders');
-    var numOrders = orders.length;
+    var numOrders = orders_p.length;
     var producturls = new Set();
     var allproductinfo = {};
     for (var i = 0; i < numOrders; i++) {
-        for (var j = 0; j < orders[i].links.length; j++) {
-            if (orders[i].links[j].rel == "order.product") {
-                producturls.add(orders[i].links[j].href);
+        for (var j = 0; j < orders_p[i].links.length; j++) {
+            if (orders_p[i].links[j].rel == "order.product") {
+                producturls.add(orders_p[i].links[j].href);
             }
         }
     }
@@ -196,9 +197,10 @@ function fillPendingOrders(orderdata, jwttoken) {
     });
 
     getAllProductsPromise.then(function () {
+        console.log("Inside siccess method pending");
+        console.log(orders_p);
         for(var k=0; k < numOrders; k++) {
-            var paymentinfo = getPaymentInfoTag(orders[k].paymentstatus);
-            var productinfo = allproductinfo[orders[k].product_id];
+            var productinfo = allproductinfo[orders_p[k].product_id];
             orderSection.innerHTML +=
                 '<div class="well well-lg">\
                      <div class="row">\
@@ -207,17 +209,15 @@ function fillPendingOrders(orderdata, jwttoken) {
                         <div class="caption"><p>' + productinfo.description + '</p></div>\
                     </div>\
                     <div class="col-sm-5">\
-                        <strong>Date Placed on:&nbsp; </strong> ' + getDateFromString(orders[k].orderdate) + '<br><br>\
                         <strong>Price:</strong> $ ' + productinfo.price + '\
                     </div>\
                     <div class="col-sm-5">\
-                        ' + paymentinfo + '\
                     </div>\
                 </div>\
              </div>';
         }
     }, function () {
-            showSnackbar("Failed to fetch products. Please try again later.");
+            showSnackbar("Failed to fetch pending orders. Please try again later.");
     });
 }
 /**
