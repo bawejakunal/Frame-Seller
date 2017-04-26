@@ -3,7 +3,6 @@ Payment processing
 """
 import os
 import stripe
-from order import update
 
 stripe.api_key = os.environ['STRIPE_API_KEY']
 
