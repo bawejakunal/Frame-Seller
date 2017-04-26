@@ -120,4 +120,3 @@ def get_orders(event):
                                    FunctionName='orders')
     data = json.loads(response['Payload'].read())
     return handle_if_error(data)
-
