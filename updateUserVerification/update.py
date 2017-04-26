@@ -41,7 +41,7 @@ def handler(event, context):
 
         #accepted for verification user should login to verify
         #alternatively we can send mail
-        return respond(202, 'Verification Request Accepted')
+        return respond(200, 'Verification Request Accepted')
 
     except Exception as err:
         print(err)
