@@ -150,6 +150,7 @@ function login() {
                 showSnackbar("Passwords do not match");
                 element.addClass("invalid");
                 $("supassword").addClass("invalid");
+                bool = false;
             }
         }
         return bool
