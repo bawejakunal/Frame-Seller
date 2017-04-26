@@ -80,6 +80,5 @@ function setTokenCookie(jwttoken) {
     var d = new Date();
     d.setTime(parseInt(exptime * 1000));
     var expires = "expires=" + d.toUTCString();
-    console.log(expires);
     document.cookie = "jwttoken=" + jwttoken + ";" + expires + ";path=/";
 }
