@@ -2,9 +2,8 @@
 Publish payment to SNS topic
 """
 
-import boto3
 import json
-
+import boto3
 
 """
 PAYMENT SNS TOPIC

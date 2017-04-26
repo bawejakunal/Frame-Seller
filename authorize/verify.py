@@ -2,13 +2,15 @@
 user verification
 """
 from __future__ import print_function
+
+import re
+import json
+
 from error import error
 from dao import Dao, UnknownDbException
 from jwtoken import verify_jwt
 from signup import Role
-import json
 import boto3
-import re
 
 CLAIMS = {
     '^/orders(/)?$': ['GET'],
