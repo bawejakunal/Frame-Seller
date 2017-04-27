@@ -51,5 +51,8 @@ def create_charge(charge_request):
     except stripe.error.RateLimitError as error:
         print(error)
         order_data['payment_status'] = Status.FAILED
+    except Exception as error:
+        print(error)
+        order_data['payment_status'] = Status.FAILED
 
     return order_data
