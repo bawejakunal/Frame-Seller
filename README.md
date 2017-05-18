@@ -1,178 +1,306 @@
-# Stripe Demo using Javascript Promises
+# FrameSeller - Buy Amazing Photos !
 
-## Team Name: Errors-as-a-Service
+### Final Product Design Document and Report
 
-### Team Members
-1. Abhijeet Mehrotra (am4586)
-2. Akshay Nagpal (an2756)
-3. Kunal Baweja (kb2896)
-4. Siddharth Shah (sas2387)
+**Team Name:** A Team Has No Name
 
-## URLs
-1. **S3 frontend**: https://s3-us-west-2.amazonaws.com/stripe6998/index.html
+**Team Members:**
 
-## Architecture ##
-![Architecture Diagram](./screenshots/Architecture.jpg "Architecture Diagram")
+Abhijeet Mehrotra (am4586)  
+Akshay Nagpal (an2756)  
+Kunal Baweja (kb2896)  
+Siddharth Shah (sas2387)  
 
-## Tech Stack
-1. Python (Django REST Framework)
-2. HTML5, CSS, Javascript
-3. jQuery, Bootstrap
-4. MySQL (Storing Hashed passwords with Salt)
+**DATE**: 27th April, 2017
 
-## Deployment
-1. Front end static files hosted on S3 bucket
-2. Database hosted on Amazon RDS
-3. Backend server hosted on Elastic Beanstalk (Load Balancer + EC2 instance)
+**S3 Website URL:**
+[***https://s3-us-west-2.amazonaws.com/stripe6998/index.html***](https://s3-us-west-2.amazonaws.com/stripe6998/index.html)
 
-## Communication with the Stripe Service ##
-### Client Side ###
-Stripe.js was used to integrate payment popup on client side'
-### Server Side ###
-Server end uses the Charge API to communicate with the Stripe service and store the order **meta data** on Stripe and the order status in the database
-```python
-charge = stripe.Charge.create(
-            amount=int(product.price*100),
-            currency="usd",
-            metadata={"order_id": order_id},
-            source=stripe_token);
+***Updates***
+
+-   Added **Slack integration** which notifies a channel on every new user registration
+
+-   Exported **Swagger file** **from API Gateway** (for the integrated API to the various Lambda functions and microservices) with request and response models, paths and HTTP response codes.
+
+-   **Tested all API Endpoints** using Swagger Editor using editor.swagger.io
+
+-   **Deployed API directly** from Swagger file. *(Optional part of assignment)*
+
+-   Included **HATEOAS** style resource URLs in the response object
+
+-   We added **Amazon SQS** (Simple Queue Service) + **SNS** (added in the last assignment) at the following points in the workflow to decouple the interaction between orchestrator and microservices:
+
+    1. *Order-Queue SQS* polled by Orders Lambda. SNS messages published by Order Topic and Payment topic are added in this queue to create order and update payment status of the order respectively.
+
+    2.  *Payment SQS* polled by payment lambda - SNS messages published by order-created topic are added in this queue to process payment with the third-party payment services.
+
+    3.  *Order-created SQS* polled by Order Queue Lambda - SNS messages published by order-created topic are added in this queue to update the record of the order when the order is processed and created in Dynamo.
+
+    4.  *Access-Rule SQS* polled by Access Rule Lambda - SNS messages published by order topic are added in this queue to update the access record for the user. This access record is used to create access rules for Custom Authorizer.
+
+The above modifications are indicated in the following diagrams:
+
+**Implementation Diagram**
+
+![](media/image17.png){width="6.5in" height="6.069444444444445in"}
+
+**Component Diagram**
+
+![](media/image11.png){width="6.5in" height="6.069444444444445in"}
+
+**Slack Notifications**
+
+![](media/image15.png){width="6.5in" height="1.1527777777777777in"}
+
+
+**UPDATE**: 31st March, 2017
+
+**SUMMARY**
+
+-   We added Amazon SNS (Simple Notification Service) at the following points in the workflow to decouple the interaction between orchestrator and microservices:
+
+    1. Between Custom Authorizer and Email Verify Trigger - Custom authorizer publishes to Create-Customer topic which is subscribed by Email Verify Trigger which starts the step function execution.
+
+    2. Between Orchestrator and Orders Microservice - Orchestrator publishes to Order-Update topic which is subscribed by Orders microservice.
+
+    3. Between Orchestrator and Payments adapter (2 way) - Orchestrator publishes to New-Order topic which is subscribed by Payments Adapter. After this, Payments adapter publishes to Payment-Update topic which is in turn subscribed by Orchestrator.
+
+-   Added Step function to carry out user email verification process with below two states:
+
+    1. Verify Customer: Sends an email to the the user with token. User verifies by clicking on the link and the step function turns green.
+
+    2. Customer Verified: Updates customer verification status in database and the step function turns green.
+
+**Step function execution**
+
+![](media/image12.png){width="6.5in" height="6.486111111111111in"}
+
+
+
+*UPDATE : 23th March, 2017*
+
+**SUMMARY**
+
+**S3 Website URL:**
+[*https://s3-us-west-2.amazonaws.com/stripe6998/index.html*](https://s3-us-west-2.amazonaws.com/stripe6998/index.html)
+
+**API Gateway Endpoints:**
+
+**/POST**
+
+**Signup:**
+[*https://82d0motn04.execute-api.us-east-1.amazonaws.com/prod/authorize/signup/*](https://82d0motn04.execute-api.us-east-1.amazonaws.com/prod/authorize/signup/)
 ```
-
-## API endpoints
-**Note: Calls authenticated by the token in case of invalid / expired token return 403.**
-### Auth service     
-
-  **POST api/api-token-auth/**   
-  Request parameters
-  ```json
-  {
-   "username": "dummy@user.com",
-   "password": "password"
-}
-   ```
- Response: 200 Success
-   ```json
-{"token":"JWT_TOKEN_HERE"}
-```
-
-Response: 400 Failure
-
-```json
-{"detail":"authorization failure"}
-```
-### SignUp service
-   **POST api/signup/**
-
-  Request parameters
-
-  ```json
-     parameters = {
-                "first_name": "foo",
-                "last_name": "bar",
-                "email": "foobar@gmail.com",
-                "password": "password"
-            };
-  ```
-Response: 201 Success
-
-  ```json
-    {"success":true}
-```
-
-Response: 400 Failure
-
-```json
 {
-   "success": false,
-   "error": "failure message here"
+
+    “email”: “[*test@address.com*](mailto:test@address.com)”,
+    “password”: “test123A@”,
+    “firstname”: “First”,
+    “lastname”: “Last”,
+    “verify\_page”:
+    “https://s3-us-west-2.amazonaws.com/stripe6998/verify.html”
 }
 ```
-### Fetch product catalog service
-**GET api/product/**    
- Response: 200 Success
+**/POST**
 
-  ```json
-  [
-  {
-    "id": 1,
-    "price": 100,
-    "description": "Brooklyn Bridge",
-    "url": "https://c1.staticflickr.com/1/728/31226388014_5558604d0f_k.jpg"
-  },
-  {
-    "id": 2,
-    "price": 150,
-    "description": "Singapore Grand Prix",
-    "url": "https://c1.staticflickr.com/6/5763/20977162524_c8931fe2d3_k.jpg"
-  }
-]
-  ```
-### Fetch orders of logged in user
-**GET api/order/**    
-Response: 200 Success
-
-  ```json
-[
-  {
-    "id": 14,
-    "user": 5,
-    "orderdate": "2017-02-11T02:40:24.333429Z",
-    "paymentstatus": "PAID",
-    "product": {
-      "id": 1,
-      "price": 100,
-      "description": "Brooklyn Bridge",
-      "url": "https://c1.staticflickr.com/1/728/31226388014_5558604d0f_k.jpg"
-    }
-  },
-  {
-    "id": 15,
-    "user": 5,
-    "orderdate": "2017-02-11T02:40:56.373584Z",
-    "paymentstatus": "PAID",
-    "product": {
-      "id": 2,
-      "price": 150,
-      "description": "Singapore Grand Prix",
-      "url": "https://c1.staticflickr.com/6/5763/20977162524_c8931fe2d3_k.jpg"
-    }
-  }
-]
+**Login:**
+[*https://82d0motn04.execute-api.us-east-1.amazonaws.com/prod/authorize/login/*](https://82d0motn04.execute-api.us-east-1.amazonaws.com/prod/authorize/login/)
 ```
-
-### Submit order &amp; stripe token to backend ###
-**POST api/order/**  
-Request parameters    
-  ```json
 {
-    "token": "STRIPE_CLIENT_TOKEN",
-    "product": "PRODUCT_ID"
-}
-   ```
-Response: 201 Success
 
-   ```json
-{
-  "success": true
+    “email” : “string”,
+    “password”: “password”
 }
 ```
-Response: 400 Bad request: In case of missing parameters.
+**/GET (Authorization: JWT {token})**
 
-## Screenshots
-![Homepage](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/home.png?token=AEfjcjQ9VMv2yIekNWJe5cetgrbk856Rks5Yp6qQwA%3D%3D "Homepage")
+**View All Orders:**
+[*https://82d0motn04.execute-api.us-east-1.amazonaws.com/prod/orders/*](https://82d0motn04.execute-api.us-east-1.amazonaws.com/prod/orders/)
 
-![Catalog](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/card_popup.png?token=AEfjcvJmBo945Nja1luvW5o3EFUZdVOTks5Yp6gLwA%3D%3D "Catalog")
+**View Single Order:**
+[*https://82d0motn04.execute-api.us-east-1.amazonaws.com/prod/orders/{orderid}*](https://82d0motn04.execute-api.us-east-1.amazonaws.com/prod/orders/%7Borderid%7D)
 
-![Card Popup](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/card_popup.png?token=AEfjcj_5Y3tZOmL6VHWmy5Rw9fxFKj1Aks5Yp6s9wA%3D%3D "Card Popup")
+**/GET (Authorization: JWT {token})**
 
-![Payment submitted](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/payment_submitted.png?token=AEfjcuVDduoWWE_6YJ-WqK6GiiBtPrIfks5Yp6r7wA%3D%3D "Payment submitted")
+**View All Products:**
+[*https://82d0motn04.execute-api.us-east-1.amazonaws.com/prod/products/*](https://82d0motn04.execute-api.us-east-1.amazonaws.com/prod/products/)
 
-![Orders](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/orders.png?token=AEfjcn3LhHthr4Ahlv7TUCTd4r6143HKks5Yp6rOwA%3D%3D "Orders by user")
+**View Single Product:**
+[*https://82d0motn04.execute-api.us-east-1.amazonaws.com/prod/products/{productid}*](https://82d0motn04.execute-api.us-east-1.amazonaws.com/prod/products/%7Bproductid%7D)
 
-![Stripe Oder Meta](https://raw.githubusercontent.com/bawejakunal/stripe-demo/master/screenshots/stripe_order_meta.png?token=AEfjcqrMeDc4srLO5PE9fCWJVPQQ61SKks5Yp6sRwA%3D%3D "Stripe Metadata")
+**/GET (Authorization: JWT {token})**
 
+**Verify User:**
+[*https://82d0motn04.execute-api.us-east-1.amazonaws.com/prod/authorize/verify/*](https://82d0motn04.execute-api.us-east-1.amazonaws.com/prod/authorize/verify/)
 
-## Further Improvements
-1. Use [AngularJS](https://angularjs.org/) in future assignments
-2. As suggested by Prof. Donald Ferguson, segregate the microservices further into Order, Payment and User services.
-3. Add randomly generated `idempotency_key` in `stripe.Charge.create()` method call to implement [Stripe Idempotent Requests](https://stripe.com/docs/api/python#idempotent_requests) for retrying payment requests that fail due to network errors.
+**/POST (Authorization: JWT {token})**
+
+**Purchase Product:**
+[*https://82d0motn04.execute-api.us-east-1.amazonaws.com/prod/purchase/*](https://82d0motn04.execute-api.us-east-1.amazonaws.com/prod/purchase/)
+```
+{
+    "product":{
+        "url":
+        "https://c1.staticflickr.com/1/728/31226388014\_5558604d0f\_k.jpg",
+        "price": 100,
+        "id": 1,
+        "links": \[
+            {
+                "href": "https://82d0motn04.execute-api.us-east-1.amazonaws.com/prod/products/1",
+                "rel": "self"
+            }\],
+        "description": "Brooklyn Bridge"
+    },
+    "stripe\_token": "valid\_stripe\_token”
+}
+```
+
+**Key Points**:
+
+-   Serverless architecture using AWS Lambda and API GateWay
+
+-   Added/Implemented HATEOAS constraint to REST API design
+
+-   Email Verification for new users registered on FrameSeller
+
+-   Custom Authorizer to generate temporary IAM policies for authenticated users
+
+-   Separated microservices for various tasks
+
+**Microservices / Components**:
+
+-   **Custom Authorizer**/Customer Core Service**:
+
+    - Signup request validates user data and creates a user entry in DynamoDB Customer table.
+
+    - Upon user signup triggers email microservice to send validation email
+
+    - For user login request, generates a JWT token with 1 hour validity and returns as a json to user.
+
+    - Validates user requests with JWT tokens to API and generates temporary IAM policies to further invoke the inner components of API such as orders or product microservice.
+
+    - **Email Sending Service**:
+
+        - Triggered by Custom Authorizer to send confirmation emails to new users using SES.
+
+    - **Orchestrator:**
+
+        - Orchestrates complex operations related to placing new order and retrieving details of past orders and payments.
+
+        -   Delegates request to fetch order details to order microservice.
+
+        -   Coordinates order creation and communication with payments microservice upon user request to place a new order.
+
+    -   **Orders Microservice:**
+
+        -   The orders microservice has two functions.
+
+        -   First function is to return orders pertaining to the given user.
+
+        -   The second function to create a order when a user purchases a new product along with its payment status.
+
+        -   It manages the Orders DB.
+
+    -   **Products Microservice:**
+
+        -   It manages the Products DB. It returns a list of all the products. Future implementations would including paging filter.
+
+        -   Individual product details can be retrieved by providing product id.
+
+    -   **Payment Adapter(Stripe):**
+
+        -   Triggered by orchestrator to process payments by interacting with Stripe API.
+
+    -   **Static Client Site Hosting on S3:**
+
+        -   The frontend client is built using HTML, CSS and Javascript and talks with the *FrameSeller* API using Promises and appropriate HTTP requests.
+
+**1. Introduction **
+
+**1.1 Purpose**
+
+The purpose of this document is to show comprehensive architecture
+overview and implementation of *FrameSeller* system to buy photos
+online. The different diagrams in the document depict different aspects
+of the system such as how various components interact with each other,
+sequence of interactions that take place inside the system. Thus, it
+gives a holistic picture of the entire system. This document show
+various architecture decisions taken while initial design of the system.
+
+**1.2 Scope**
+
+*FrameSeller* is a system that allows user to choose their favourite
+photos and order printed photo frames for delivery, online. The user
+will be able to signup on website using email and login with email and
+password. The user can buy photo frames through the website and pay
+using their Credit Card / Debit Card. The user will be able to see all
+of their past orders along with relevant order details.
+
+**1.3 Definitions, Acronyms, and Abbreviations**
+
+-   *FrameSeller* - web platform to buy photo frames
+
+**1.4 Overview**
+
+The following sections outline the software product in higher detail. We
+will start with defining the key features (user stories) that will be
+implemented for *FrameSeller*. Next, we will discuss the data model that
+we designed for this system. Then we will present the component diagram,
+followed by interaction diagrams and future scope, challenges and target
+of this project.
+
+**2. User Stories **
+
+-   As a user, I want to register for a new account, so I can start to browse FrameSeller website.
+
+-   For security and authentication purposes a user’s email should be verified thorugh a unique link or token
+
+-   As a user, I want to login to Frame Seller, to see product listings from catalog.
+
+-   As a user, I should be able to change my profile information, so that I can update my information.
+
+-   As a user, if I forget my password, I can find it through email authentication, so that I can use my account. (Todo)
+
+-   As a user, I want to buy products listed on the website.
+
+-   As a user, I want to pay using credit/debit card for the products I purchase.
+
+-   As a user, I want to see my past orders and their payment status.
+
+-   As a user I want to add multiple items to cart so that I can buy them with a single payment. (Todo)
+
+-   As a user I want to return items/ avail refunds. (Todo)
+
+**3. Data Model**
+
+![](media/image4.png){width="7.099882983377078in"
+height="4.869792213473316in"}
+
+**4. Interaction/Sequence Diagrams**
+
+![](media/image13.png){width="6.5in" height="3.4444444444444446in"}
+
+User Signup Sequence Diagram
+
+![](media/image14.png){width="6.5in" height="7.347222222222222in"}
+
+User Login Sequence Diagram
+
+![](media/image2.png){width="8.380207786526684in"
+height="5.414609580052494in"}
+
+Buy Product Sequence Diagram
+
+![](media/image18.png){width="5.25in" height="8.053526902887139in"}
+
+View Order Sequence Diagram
+
+**5. Future Scope**
+
+1.  Integrate Google Firebase OAuth 2.0 Login / AWS Cognito
+
+2.  Refund / return items
+
+3.  Improve user profile
+
+4.  Shopping cart
