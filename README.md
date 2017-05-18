@@ -42,15 +42,15 @@ The above modifications are indicated in the following diagrams:
 
 **Implementation Diagram**
 
-![](media/image17.png){width="6.5in" height="6.069444444444445in"}
+![](media/image17.png)
 
 **Component Diagram**
 
-![](media/image11.png){width="6.5in" height="6.069444444444445in"}
+![](media/image11.png)
 
 **Slack Notifications**
 
-![](media/image15.png){width="6.5in" height="1.1527777777777777in"}
+![](media/image15.png)
 
 
 **UPDATE**: 31st March, 2017
@@ -73,7 +73,7 @@ The above modifications are indicated in the following diagrams:
 
 **Step function execution**
 
-![](media/image12.png){width="6.5in" height="6.486111111111111in"}
+![](media/image12.png)
 
 
 
@@ -273,25 +273,23 @@ of this project.
 
 **3. Data Model**
 
-![](media/image4.png){width="7.099882983377078in"
-height="4.869792213473316in"}
+![](media/image4.png)
 
 **4. Interaction/Sequence Diagrams**
 
-![](media/image13.png){width="6.5in" height="3.4444444444444446in"}
+![](media/image13.png)
 
 User Signup Sequence Diagram
 
-![](media/image14.png){width="6.5in" height="7.347222222222222in"}
+![](media/image14.png)
 
 User Login Sequence Diagram
 
-![](media/image2.png){width="8.380207786526684in"
-height="5.414609580052494in"}
+![](media/image2.png)
 
 Buy Product Sequence Diagram
 
-![](media/image18.png){width="5.25in" height="8.053526902887139in"}
+![](media/image18.png)
 
 View Order Sequence Diagram
 
